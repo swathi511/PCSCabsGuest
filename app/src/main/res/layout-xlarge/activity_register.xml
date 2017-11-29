@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="32dp"
+    android:layout_margin="10dp"
+    android:background="@drawable/rect_ash_stroke_bg">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mobile_number"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="16sp"
+            android:gravity="left"
+            android:layout_marginBottom="10dp"/>
+        <EditText android:id="@+id/ar_et_mobile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="18dp"
+            android:inputType="number"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/name"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="16sp"
+            android:gravity="left"
+            android:layout_marginBottom="10dp"/>
+        <EditText android:id="@+id/ar_et_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="18dp" />
+
+        <!--
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/password"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="16sp"
+            android:gravity="left"
+            android:layout_marginBottom="10dp" />
+        <EditText android:id="@+id/ar_et_pwd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="18dp"
+            android:inputType="textPassword"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/c_pwd"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="16sp"
+            android:gravity="left"
+            android:layout_marginBottom="10dp"/>
+        <EditText android:id="@+id/ar_et_cpwd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="18dp"
+            android:inputType="textPassword"/>
+
+            -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/email"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="16sp"
+            android:gravity="left"
+            android:layout_marginBottom="10dp"/>
+        <EditText android:id="@+id/ar_et_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="18dp"
+            android:inputType="textEmailAddress"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/city"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="16sp"
+            android:gravity="left"
+            android:layout_marginBottom="10dp"/>
+        <EditText android:id="@+id/ar_et_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="18dp"/>
+    </LinearLayout>
+
+    <Button android:id="@+id/ar_bt_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/register"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/login_bt_bg"
+        android:layout_alignParentBottom="true"
+        android:textSize="20sp"
+        android:padding="24dp"/>
+</RelativeLayout>

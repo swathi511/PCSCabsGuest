@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="12dp"
+        android:background="@color/colorWhite">
+
+        <LinearLayout android:id="@+id/ap_ll_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/et_ash_stroke_bg"
+            android:padding="8dp"
+            android:gravity="center">
+
+            <ImageButton android:id="@+id/ap_ib_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_left"
+                android:background="#ffffff"/>
+            <EditText android:id="@+id/ap_et_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_pickup"
+                android:textColorHint="#9e9e9e"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="1"
+                android:textSize="16sp"
+                android:background="@drawable/et_invisible_stroke_bg"
+                android:textColor="@color/colorBlack"/>
+
+            <ImageButton android:id="@+id/ap_ib_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_close"
+                android:background="#ffffff" />
+
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/ap_rView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ap_ll_cont"
+            android:layout_above="@+id/poweredBy">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <ImageView
+            android:id="@+id/poweredBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/powered_by_google_light"
+            android:layout_margin="11dp" />
+
+    </RelativeLayout>

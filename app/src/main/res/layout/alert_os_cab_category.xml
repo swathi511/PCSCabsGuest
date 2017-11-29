@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/rect_ash_stroke_bg"
+    >
+    <TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/select_category"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginTop="6dp"
+        android:background="#fff59d"
+        android:textColor="@color/colorBlack"
+        android:textStyle="bold"/>
+    <LinearLayout
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="24dp">
+
+        <TextView android:id="@+id/aocc_tv_mini"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mini"
+            android:textAllCaps="true"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"/>
+
+        <TextView android:id="@+id/aocc_tv_sedan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sedan"
+            android:textAllCaps="true"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"/>
+
+        <TextView android:id="@+id/aocc_tv_micra"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SUV"
+            android:textAllCaps="true"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+</LinearLayout>

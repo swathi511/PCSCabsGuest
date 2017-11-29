@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <LinearLayout android:id="@+id/flp_ll_0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="32dp"
+            android:background="#d0d0d0"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <TextView android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="We have accepted your cab request for Local booking."
+                android:textSize="12sp"
+                android:textColor="@color/colorBlack"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"/>
+
+            <TextView android:id="@+id/flp_tv_bid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/booking_id_reference"
+                android:textSize="16sp"
+                android:textColor="@color/colorBlack"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+        </LinearLayout>
+
+        <TextView android:id="@+id/flp_tv_datetime_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/date_time_details"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_below="@+id/flp_ll_0"
+            android:textAllCaps="true"/>
+
+        <ImageView android:id="@+id/flp_iv_datetime"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/m_edit"
+            android:layout_above="@+id/flp_tv_datetime"
+            android:layout_alignRight="@+id/view"
+            android:layout_alignEnd="@+id/view" />
+        <TextView android:id="@+id/flp_tv_datetime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose Date and Time "
+            android:layout_below="@+id/flp_tv_datetime_text"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:layout_marginBottom="12dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_below="@+id/flp_tv_datetime"
+            android:id="@+id/view" />
+
+
+
+        <TextView android:id="@+id/flp_tv_pkg_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/package_details"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:layout_below="@+id/flp_tv_datetime"
+            android:layout_marginTop="12dp"
+            android:textAllCaps="true"/>
+        <ImageView android:id="@+id/flp_iv_pkg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/m_edit"
+            android:layout_alignTop="@+id/flp_tv_pkg_text"
+            android:layout_alignRight="@+id/flp_bt_book"
+            android:layout_alignEnd="@+id/flp_bt_book"
+            android:visibility="gone"/>
+
+        <LinearLayout android:id="@+id/flp_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/flp_tv_pkg_text"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp">
+            <TextView android:id="@+id/flp_tv_pkg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_package"
+                android:textColor="@color/colorBlack"
+                android:textSize="14sp"
+                android:gravity="left"
+                android:layout_weight="1" />
+            <TextView android:id="@+id/flp_tv_fare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/xxx"
+                android:textColor="@color/colorBlack"
+                android:gravity="right"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_below="@+id/flp_ll"/>
+
+        <TextView android:id="@+id/flp_tv_cab_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cab_category"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:layout_below="@+id/flp_ll"
+            android:layout_marginTop="12dp"
+            android:textAllCaps="true"/>
+        <ImageView android:id="@+id/flp_iv_cab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/m_edit"
+            android:layout_alignTop="@+id/flp_tv_cab_text"
+            android:layout_alignRight="@+id/flp_bt_book"
+            android:layout_alignEnd="@+id/flp_bt_book"
+            android:visibility="gone"/>
+
+        <LinearLayout android:id="@+id/flp_ll1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@+id/flp_tv_cab_text"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp">
+            <TextView android:id="@+id/flp_tv_cab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_category"
+                android:textColor="@color/colorBlack"
+                android:textSize="14sp"
+                android:gravity="left"
+                android:layout_weight="1" />
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_below="@+id/flp_ll1"/>
+
+
+        <LinearLayout android:id="@+id/flp_ll3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp"
+            android:layout_below="@+id/flp_ll1"
+            android:visibility="gone">
+
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Additional Km Fare"
+                    android:textColor="@color/colorAsh"
+                    android:textSize="14sp"
+                    android:gravity="left"/>
+
+                <TextView android:id="@+id/flp_tv_add_km"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Rs.130"
+                    android:textColor="@color/colorAsh"
+                    android:textSize="14sp"
+                    android:gravity="right"/>
+
+
+            </LinearLayout>
+
+            <TextView android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="After first 15 km"
+                android:gravity="left"
+                android:textColor="@color/colorAsh"
+                android:textSize="12sp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+
+
+        <LinearLayout android:id="@+id/flp_ll4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
+            android:layout_below="@+id/flp_ll3"
+            android:visibility="gone">
+
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Additional Hour Fare"
+                    android:textColor="@color/colorAsh"
+                    android:textSize="14sp"
+                    android:gravity="left"/>
+
+                <TextView android:id="@+id/flp_tv_add_hr"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Rs.10"
+                    android:textColor="@color/colorAsh"
+                    android:textSize="14sp"
+                    android:gravity="right"/>
+
+
+            </LinearLayout>
+
+            <TextView android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="After first 1 hr"
+                android:gravity="left"
+                android:textColor="@color/colorAsh"
+                android:textSize="12sp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_below="@+id/flp_ll4"/>
+
+        <TextView android:id="@+id/flp_tv_payment_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/payment_type"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:layout_below="@+id/flp_ll4"
+            android:layout_marginTop="12dp"
+            android:textAllCaps="true"/>
+        <LinearLayout android:id="@+id/flp_ll2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/flp_ll4"
+            android:layout_toRightOf="@+id/flp_tv_payment_type"
+            android:layout_marginTop="12dp"
+            android:layout_alignParentRight="true"
+            android:gravity="right">
+            <TextView android:id="@+id/flp_tv_cash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cash"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textAllCaps="true"
+                android:textColor="@color/colorTextBlue"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="    /    "
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@color/colorAsh"/>
+
+            <TextView android:id="@+id/flp_tv_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wallet"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textAllCaps="true"
+                android:textColor="@color/colorAshLight"/>
+
+        </LinearLayout>
+
+        <TextView android:id="@+id/flp_tv_add_money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_money"
+            android:textSize="12sp"
+            android:textColor="@color/colorBlack"
+            android:textStyle="bold"
+            android:gravity="right"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_gravity="right"
+            android:background="@drawable/rect_ash_stroke_bg_single_line"
+            android:padding="8dp"
+            android:layout_below="@+id/flp_ll2"
+            android:layout_alignParentRight="true"/>
+
+        <Button android:id="@+id/flp_bt_book"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="Book Cab"
+            android:textColor="@color/colorYellow"
+            android:background="@drawable/ride_now_bg"
+            android:layout_alignParentBottom="true"
+            android:alpha="0.5"
+            android:layout_below="@+id/flp_tv_add_money"
+            android:layout_marginTop="30dp"
+            android:layout_centerHorizontal="true"
+            android:textAllCaps="false"/>
+
+
+    </RelativeLayout>
+</ScrollView>

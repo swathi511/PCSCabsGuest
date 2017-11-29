@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:background="@drawable/rect_ash_stroke_bg"
+    android:padding="16dp">
+
+    <!--
+    <TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select A Package"
+        android:textSize="14sp"
+        android:textColor="@color/colorWhite"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"
+        android:background="@color/colorAsh"
+        android:padding="12dp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:visibility="gone"/>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="16dp"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/aos_rg_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <RadioButton android:id="@+id/aos_rb_drop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Drop"
+            android:checked="false"
+            android:layout_margin="12dp"
+            android:textSize="12sp"
+            android:textColor="@color/colorBlack"
+            android:layout_weight="1"
+            android:textAllCaps="true"/>
+        <RadioButton android:id="@+id/aos_rb_round_trip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Round Trip"
+            android:layout_margin="12dp"
+            android:checked="false"
+            android:textColor="@color/colorBlack"
+            android:textSize="12sp"
+            android:layout_weight="1"
+            android:textAllCaps="true"/>
+        </RadioGroup>
+    </LinearLayout>
+
+</LinearLayout>

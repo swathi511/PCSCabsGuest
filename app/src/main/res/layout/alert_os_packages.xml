@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:background="@drawable/rect_ash_stroke_bg">
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CHOOSE PACKAGE"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textAllCaps="true"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:layout_marginBottom="24dp"
+            android:background="#fff59d"
+            android:textColor="@color/colorBlack"
+            android:textStyle="bold"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="6dp"/>
+
+        <TextView android:id="@+id/apd_tv_1way"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="One way trip"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+        <TextView android:id="@+id/apd_tv_1rnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="One day round trip"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+        <TextView android:id="@+id/apd_tv_2rnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Two day round trip"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+        <TextView android:id="@+id/apd_tv_3rnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Three day round trip"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+        <TextView android:id="@+id/apd_tv_4rnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Four day round trip"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+        <TextView android:id="@+id/apd_tv_5rnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Five day round trip"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+        <TextView android:id="@+id/apd_tv_6rnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Six day round trip"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

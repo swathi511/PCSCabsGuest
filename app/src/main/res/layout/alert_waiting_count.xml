@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView android:id="@+id/awc_tv_close"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Close"
+        android:textSize="10sp"
+        android:textColor="@color/colorTextBlue"
+        android:gravity="right"
+        android:visibility="gone"/>
+
+    <TextView android:id="@+id/awc_tv_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Waiting for driver to accept..."
+        android:gravity="center"
+        android:textSize="14sp"
+        android:layout_margin="16dp"
+        android:textColor="@color/colorBlack"
+        android:textAllCaps="true"/>
+
+    <!--
+
+    <TextView android:id="@+id/awc_tv_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="5"
+        android:gravity="center"
+        android:textSize="200sp"
+        android:textColor="#414040"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Minute(s) "
+        android:textSize="20sp"
+        android:textColor="#414040"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Left"
+            android:textSize="20sp"
+            android:textColor="#414040"/>
+    </LinearLayout>-->
+
+    <ProgressBar
+        android:id="@+id/abs_progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:indeterminateDrawable="@drawable/progress_circle"
+        android:layout_gravity="center"
+        android:visibility="gone">
+    </ProgressBar>
+
+    <Button android:id="@+id/awc_bt_cancel_ride"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel_ride"
+        android:textSize="14sp"
+        android:layout_margin="32dp"
+        android:background="@drawable/rect_blue_stroke_bg_nc"
+        android:textColor="@color/colorTextBlue"
+        android:visibility="gone"/>
+</LinearLayout>

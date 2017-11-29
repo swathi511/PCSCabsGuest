@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp">
+
+    <TextView android:id="@+id/alp_tv_no_pkg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Packages "
+        android:gravity="center"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:textColor="@color/colorBlack"
+        android:textStyle="bold" />
+
+    <LinearLayout android:id="@+id/alp_ll1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="14dp"
+        android:visibility="gone">
+
+        <TextView android:id="@+id/alp_tv_pkg1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 hours / 30 kms"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="0.5"
+            android:gravity="left"/>
+        <TextView android:id="@+id/alp_tv_rate1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rs.500/- "
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:layout_weight="0.25"/>
+
+        <TextView android:id="@+id/alp_tv_cab1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sedan"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+
+    <View android:id="@+id/alpl_vw2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0"
+        android:layout_marginBottom="14dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="14dp"
+        android:visibility="gone"/>
+
+    <LinearLayout android:id="@+id/alp_ll2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView android:id="@+id/alp_tv_pkg2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 hours / 30 kms"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="0.5"
+            android:gravity="left"/>
+        <TextView android:id="@+id/alp_tv_rate2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rs.500/- "
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:layout_weight="0.25"/>
+
+        <TextView android:id="@+id/alp_tv_cab2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sedan"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+    <View android:id="@+id/alpl_vw3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0"
+        android:layout_marginBottom="14dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="14dp"
+        android:visibility="gone"/>
+    <LinearLayout android:id="@+id/alp_ll3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView android:id="@+id/alp_tv_pkg3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 hours / 30 kms"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="0.5"
+            android:gravity="left"/>
+        <TextView android:id="@+id/alp_tv_rate3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rs.500/- "
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:layout_weight="0.25"/>
+
+        <TextView android:id="@+id/alp_tv_cab3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sedan"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+    <View android:id="@+id/alpl_vw4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0"
+        android:layout_marginBottom="14dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="14dp"
+        android:visibility="gone"/>
+    <LinearLayout android:id="@+id/alp_ll4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView android:id="@+id/alp_tv_pkg4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 hours / 30 kms"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="0.5"
+            android:gravity="left"/>
+        <TextView android:id="@+id/alp_tv_rate4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rs.500/- "
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:layout_weight="0.25"/>
+
+        <TextView android:id="@+id/alp_tv_cab4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sedan"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+    <View android:id="@+id/alpl_vw5"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0"
+        android:layout_marginBottom="14dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="14dp"
+        android:visibility="gone"/>
+
+    <LinearLayout android:id="@+id/alp_ll5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView android:id="@+id/alp_tv_pkg5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 hours / 30 kms"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="0.5"
+            android:gravity="left"/>
+        <TextView android:id="@+id/alp_tv_rate5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rs.500/- "
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:layout_weight="0.25"/>
+
+        <TextView android:id="@+id/alp_tv_cab5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sedan"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+    <View android:id="@+id/alpl_vw6"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0"
+        android:layout_marginBottom="14dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="14dp"
+        android:visibility="gone"/>
+    <LinearLayout android:id="@+id/alp_ll6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView android:id="@+id/alp_tv_pkg6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 hours / 30 kms"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="0.5"
+            android:gravity="left"/>
+        <TextView android:id="@+id/alp_tv_rate6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rs.500/- "
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:layout_weight="0.25"/>
+
+        <TextView android:id="@+id/alp_tv_cab6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sedan"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+    <View android:id="@+id/alpl_vw7"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0"
+        android:layout_marginBottom="14dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="14dp"
+        android:visibility="gone"/>
+
+    <LinearLayout android:id="@+id/alp_ll7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView android:id="@+id/alp_tv_pkg7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 hours / 30 kms"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="0.5"
+            android:gravity="left"/>
+        <TextView android:id="@+id/alp_tv_rate7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rs.500/- "
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:layout_weight="0.25"/>
+
+        <TextView android:id="@+id/alp_tv_cab7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sedan"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+    <View android:id="@+id/alpl_vw8"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0"
+        android:layout_marginBottom="14dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="14dp"
+        android:visibility="gone"/>
+
+    <LinearLayout android:id="@+id/alp_ll8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView android:id="@+id/alp_tv_pkg8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 hours / 30 kms"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="0.5"
+            android:gravity="left"/>
+        <TextView android:id="@+id/alp_tv_rate8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rs.500/- "
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:layout_weight="0.25"/>
+
+        <TextView android:id="@+id/alp_tv_cab8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sedan"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+    <View android:id="@+id/alpl_vw9"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0"
+        android:layout_marginBottom="14dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="14dp"
+        android:visibility="gone"/>
+
+    <LinearLayout android:id="@+id/alp_ll9"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView android:id="@+id/alp_tv_pkg9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 hours / 30 kms"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="0.5"
+            android:gravity="left"/>
+        <TextView android:id="@+id/alp_tv_rate9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rs.500/- "
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:layout_weight="0.25"/>
+
+        <TextView android:id="@+id/alp_tv_cab9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sedan"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+    <View android:id="@+id/alpl_vw10"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0"
+        android:layout_marginBottom="14dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="14dp"
+        android:visibility="gone"/>
+
+    <LinearLayout android:id="@+id/alp_ll10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView android:id="@+id/alp_tv_pkg10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 hours / 30 kms"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="0.5"
+            android:gravity="left"/>
+        <TextView android:id="@+id/alp_tv_rate10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rs.500/- "
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:layout_weight="0.25"/>
+
+        <TextView android:id="@+id/alp_tv_cab10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sedan"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+    <Button android:id="@+id/alp_bt_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:textColor="@color/colorYellow"
+        android:background="@drawable/ride_now_bg"
+        android:layout_margin="32dp"
+        android:layout_gravity="center"
+        android:textAllCaps="false"/>
+
+
+</LinearLayout>
+
+    </ScrollView>

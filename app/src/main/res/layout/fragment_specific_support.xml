@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/colorWhite">
+
+    <LinearLayout
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:clickable="true">
+
+        <LinearLayout android:id="@+id/fss_ll_response"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/colorPaleYellow"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Feedback sent!"
+                android:textColor="@color/colorBlack"
+                android:padding="8dp"
+                android:textSize="14sp"
+                android:gravity="center"/>
+            <TextView android:id="@+id/fss_tv_refid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=" Reference Id xxxxxxxxxxx generated."
+                android:textColor="@color/colorBlack"
+                android:padding="8dp"
+                android:textSize="14sp"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rect_ash_stroke_bg_single_line"
+            android:padding="12dp"
+            android:layout_marginBottom="10dp">
+
+            <TextView android:id="@+id/fss_tv_rid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="RID xxx"
+                android:textSize="12sp"
+                android:textAllCaps="true"
+                android:textColor="@color/colorTextBlue"
+                android:layout_marginBottom="6dp"/>
+
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView android:id="@+id/fss_tv_b_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="@string/booking_date"
+                    android:textColor="@color/colorBlack"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:layout_weight="1"/>
+
+                <TextView android:id="@+id/fss_tv_total_bill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/Rs"
+                    android:textColor="@color/colorBlack"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:gravity="left"
+                android:layout_gravity="center">
+
+                <TextView android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:background="@drawable/round_green"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="16dp"/>
+
+                <TextView android:id="@+id/fss_tv_pickup_loc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pickup_loc"
+                    android:gravity="left"
+                    android:layout_gravity="center"
+                    android:textSize="12sp"
+                    android:textColor="@color/colorAsh"/>
+
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:gravity="left"
+                android:layout_gravity="center">
+
+                <TextView android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:background="@drawable/round_pink"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="16dp"/>
+
+                <TextView android:id="@+id/fss_tv_drop_loc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/drop_loc"
+                    android:gravity="left"
+                    android:layout_gravity="center"
+                    android:textSize="12sp"
+                    android:textColor="@color/colorAsh"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!--
+
+        <TextView android:id="@+id/fss_tv_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="I need a copy of my invoice"
+            android:gravity="left"
+            android:textSize="14sp"
+            android:textColor="@color/colorBlack"
+            android:layout_margin="10dp"/>
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"/>
+
+        <TextView android:id="@+id/fss_tv_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Charged cancellation fee incorrectly"
+            android:gravity="left"
+            android:textSize="14sp"
+            android:textColor="@color/colorBlack"
+            android:layout_margin="10dp"/>
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"/>
+
+        <TextView android:id="@+id/fss_tv_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Driver did not come for pickup"
+            android:gravity="left"
+            android:textSize="14sp"
+            android:textColor="@color/colorBlack"
+            android:layout_margin="10dp"/>
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"/>
+
+        <TextView android:id="@+id/fss_tv_4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Delay in pickup"
+            android:gravity="left"
+            android:textSize="14sp"
+            android:textColor="@color/colorBlack"
+            android:layout_margin="10dp"/>
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"/>
+
+        <TextView android:id="@+id/fss_tv_5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Other driver related issue?"
+            android:gravity="left"
+            android:textSize="14sp"
+            android:textColor="@color/colorBlack"
+            android:layout_margin="10dp"/>
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"/>
+
+        <TextView android:id="@+id/fss_tv_6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Driver was not contactable"
+            android:gravity="left"
+            android:textSize="14sp"
+            android:textColor="@color/colorBlack"
+            android:layout_margin="10dp"/>
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"/>
+
+        <TextView android:id="@+id/fss_tv_7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="I need a copy of my invoice"
+            android:gravity="left"
+            android:textSize="14sp"
+            android:textColor="@color/colorBlack"
+            android:layout_margin="10dp"/>
+
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"/>-->
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose an issue"
+            android:textAllCaps="true"
+            android:textSize="12sp"
+            android:gravity="left"
+            android:layout_margin="10dp"
+            android:textColor="@color/colorTextBlue"
+            android:textStyle="bold"/>
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:fadeScrollbars="false"/>
+
+        <EditText android:id="@+id/fss_et_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="false"
+            android:hint="Or Tell us about it ..."
+            android:textSize="14sp"
+            android:textColorHint="@color/colorAshLight"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/colorAsh"
+            android:lines="5"
+            android:gravity="left"
+            android:background="@drawable/rect_ash_stroke_bg_single_line"
+            android:padding="6dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"/>
+
+        <Button android:id="@+id/fss_bt_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/submit"
+            android:textColor="@color/colorYellow"
+            android:background="@drawable/ride_now_bg"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:textAllCaps="false"/>
+
+    </LinearLayout>
+
+</ScrollView>

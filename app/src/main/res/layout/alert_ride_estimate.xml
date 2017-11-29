@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:padding="24dp"
+    android:background="@drawable/rect_ash_stroke_bg">
+
+    <TextView android:id="@+id/are_tv_cab_cat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cab_category"
+        android:textColor="@color/colorTextBlue"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:gravity="center"
+        android:textStyle="bold"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorAshLight"
+        android:layout_margin="16dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/base_fare"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="left"/>
+
+        <TextView android:id="@+id/are_tv_base_fare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Rs. - "
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="right"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bslab"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="left"/>
+
+        <TextView android:id="@+id/are_tv_bslab_fare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Rs. - "
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="right"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/aslab"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="left"/>
+
+        <TextView android:id="@+id/are_tv_aslab_fare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Rs. - "
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="right"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ride_time_charges"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="left"/>
+
+        <TextView android:id="@+id/are_tv_ride_time_fare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Rs. - "
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="right"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/min_fare"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="left"/>
+
+        <TextView android:id="@+id/are_tv_min_fare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Rs. - "
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="right"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/approx_fare"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:textStyle="bold"/>
+
+        <TextView android:id="@+id/are_tv_fare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Rs. -"
+            android:textColor="@color/colorLoginBlue"
+            android:textSize="16sp"
+            android:layout_weight="1"
+            android:gravity="right"/>
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
+

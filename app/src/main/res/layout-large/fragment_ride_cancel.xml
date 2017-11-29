@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/colorWhite">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="12dp">
+
+        <TextView android:id="@+id/frc_tv_trip_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/colorTextBlue"
+            android:text="TRIP ID"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:textStyle="bold"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorAshLight"
+            android:layout_margin="16dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <TextView android:id="@+id/frc_tv_driver_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/driver_name"
+                android:textColor="@color/colorBlack"
+                android:textSize="14sp"
+                android:layout_weight="1"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="12dp"
+            android:layout_gravity="center"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/car_image"
+                android:layout_gravity="left" />
+
+            <TextView android:id="@+id/frc_tv_veh_cat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/veh_cat"
+                android:textSize="14sp"
+                android:textColor="@color/colorTextBlue"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="4dp"/>
+
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorAshLight"/>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="12dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_weight="1">
+
+                <TextView android:id="@+id/frc_tv_fare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rs. 0"
+                    android:textColor="@color/colorTextBlue"
+                    android:textSize="14sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/total_fare"
+                    android:textColor="@color/colorAshLight"
+                    android:textSize="12sp"
+                    android:layout_marginTop="6dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_weight="1">
+
+                <TextView android:id="@+id/frc_tv_distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="14sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dist_travelled"
+                    android:textColor="@color/colorAshLight"
+                    android:textSize="12sp"
+                    android:layout_marginTop="6dp"/>
+
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_weight="1">
+
+                <TextView android:id="@+id/frc_tv_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="14sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/time_taken"
+                    android:textColor="@color/colorAshLight"
+                    android:textSize="12sp"
+                    android:layout_marginTop="6dp"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:gravity="center">
+
+            <TextView android:id="@+id/frc_tv_ride_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ride_start_time"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="4dp"
+                android:textColor="@color/colorAsh"
+                android:textSize="10sp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/round_green"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"/>
+            <TextView android:id="@+id/frc_tv_from"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/xxx"
+                android:textColor="@color/colorAsh"
+                android:layout_weight="1"
+                android:layout_marginLeft="8dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:gravity="center">
+
+            <TextView android:id="@+id/frc_tv_ride_stop_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ride_end_time"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="4dp"
+                android:textColor="@color/colorAsh"
+                android:textSize="10sp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/round_pink"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"/>
+            <TextView android:id="@+id/frc_tv_to"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/xxx"
+                android:textColor="@color/colorAsh"
+                android:layout_weight="1"
+                android:layout_marginLeft="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView android:id="@+id/frc_tv_cancel_charge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rs. xxx"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:textColor="@color/colorBlack"
+                android:layout_margin="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancellation Charges to be added to next ride."
+                android:textSize="14sp"
+                android:gravity="left"
+                android:textColor="@color/colorTextBlue"
+                android:layout_margin="16dp"
+                android:layout_weight="1"/>
+
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</ScrollView>

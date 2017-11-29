@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView android:id="@+id/fs_iv_retry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/retry"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:visibility="gone"/>
+
+    <TextView android:id="@+id/fs_tv_no_rides"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="You haven't booked any rides yet."
+        android:textSize="18sp"
+        android:textColor="@color/colorBlack"
+        android:gravity="center"
+        android:layout_margin="16dp"/>
+
+    <TextView android:id="@+id/fs_tv_select_booking"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select a booking"
+        android:textSize="13sp"
+        android:textColor="@color/colorBlack"
+        android:layout_margin="8dp"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:background="@drawable/rect_ash_stroke_bg_single_line"
+        android:padding="8dp"/>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fs_rview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>
+

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:background="@drawable/rect_ash_stroke_bg">
+
+
+    <LinearLayout android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="12dp"
+        android:layout_weight="1"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cab Type"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:gravity="left"
+            android:layout_marginBottom="8dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mini"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:gravity="left"
+            android:layout_marginBottom="8dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/micro"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:gravity="left"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sedan"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:gravity="left"
+            android:layout_marginBottom="8dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="12dp"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <TextView  android:id="@+id/aocd_tv_kms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/approx.kms"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginBottom="8dp"/>
+
+
+        <TextView  android:id="@+id/aocd_tv_mini_kms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView  android:id="@+id/aocd_tv_sedan_kms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:gravity="left"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+
+        <TextView  android:id="@+id/aocd_tv_micra_kms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:gravity="left"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+
+
+    </LinearLayout>
+    <LinearLayout android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="12dp"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <TextView  android:id="@+id/aocd_tv_per_km_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/per_km_rate"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView  android:id="@+id/aocd_tv_mini_kms_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView  android:id="@+id/aocd_tv_micra_kms_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:gravity="left"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+
+        <TextView  android:id="@+id/aocd_tv_sedan_kms_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorAsh"
+            android:textSize="14sp"
+            android:gravity="left"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+    <LinearLayout android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="12dp"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <TextView  android:id="@+id/aocd_tv_approx_fare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Approx. Fare"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView  android:id="@+id/aocd_tv_mini"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView  android:id="@+id/aocd_tv_micra"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+
+        <TextView  android:id="@+id/aocd_tv_sedan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:gravity="left"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</LinearLayout>

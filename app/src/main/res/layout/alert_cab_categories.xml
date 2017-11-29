@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="24dp"
+    android:background="@drawable/rect_yellow_stroke_bg">
+
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/acc_rg_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <RadioButton android:id="@+id/acc_rb_mini"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mini"
+            android:layout_margin="12dp"
+            android:layout_gravity="center_horizontal"
+            android:textSize="16sp"
+            android:textColor="@color/colorAsh" />
+
+        <RadioButton android:id="@+id/acc_rb_sedan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sedan"
+            android:layout_margin="12dp"
+            android:layout_gravity="center_horizontal"
+            android:textSize="16sp"
+            android:textColor="@color/colorAsh" />
+
+        <RadioButton android:id="@+id/acc_rb_micra"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Suv "
+            android:layout_margin="12dp"
+            android:checked="false"
+            android:textColor="@color/colorAsh"
+            android:layout_gravity="center_horizontal"
+            android:textSize="16sp" />
+
+    </RadioGroup>
+
+</LinearLayout>

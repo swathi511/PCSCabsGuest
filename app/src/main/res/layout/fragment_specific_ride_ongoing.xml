@@ -1,0 +1,428 @@
+<android.support.design.widget.CoordinatorLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:background="@color/colorWhite">
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment" />
+
+        <RelativeLayout
+            android:id="@+id/container_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary">
+        </RelativeLayout>
+
+        <LinearLayout android:id="@+id/fsro_ll_main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/colorWhite"
+            android:gravity="center"
+            android:layout_below="@+id/container_toolbar"
+            android:visibility="gone">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_left"
+                android:layout_margin="8dp"/>
+
+            <TextView android:id="@+id/fsro_tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:text="@string/ride_progress"
+                android:gravity="left"
+                android:textColor="@color/colorBlack"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/fsro_ll_arrival_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/colorAshLight"
+            android:layout_below="@+id/container_toolbar"
+            android:gravity="center">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/rect_ash_stroke_bg"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="left"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="center">
+                    <TextView android:id="@+id/fsro_tv_arrival_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/colorBlack"
+                        android:text="Cab will arrive in few minutes... "
+                        android:layout_weight="1"
+                        android:gravity="right"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/colorBlack"
+                        android:text="-- mins"
+                        android:gravity="left"
+                        android:layout_weight="1"
+                        android:visibility="gone"/>
+                </LinearLayout>
+
+                <TextView android:id="@+id/fsro_tv_cancel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cancel_ride"
+                    android:textAllCaps="true"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorTextBlue"
+                    android:gravity="right"
+                    android:layout_marginRight="16dp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <ImageButton android:id="@+id/fsro_ib_phone"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_phone"
+            android:background="@drawable/round_btn_green"
+            android:layout_below="@+id/fsro_rl"
+            android:layout_margin="22dp"
+            android:scaleX="0.9"
+            android:scaleY="0.9"/>
+
+        <RelativeLayout android:id="@+id/fsro_rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/container_toolbar"
+            android:background="@color/colorAshLight">
+            <LinearLayout
+                android:id="@+id/fsro_ll_cont"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/rect_light_bg"
+                android:padding="10dp"
+                android:layout_margin="8dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/car_image"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_gravity="center"/>
+                <View android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#424242"/>
+                <TextView
+                    android:id="@+id/fsro_tv_place"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/c_loc"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="12sp"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rect_bg"
+                android:text="@string/track_ride"
+                android:layout_margin="24dp"
+                android:padding="18dp"
+                android:textSize="12sp"
+                android:textColor="@color/colorBlack"
+                android:layout_weight="1"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rect_bg"
+                android:text="@string/cancel_ride"
+                android:layout_margin="24dp"
+                android:padding="18dp"
+                android:textSize="12sp"
+                android:textColor="@color/colorBlack"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <!-- <LinearLayout android:id="@+id/fsro_ll_track_ride"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_alignParentBottom="true"
+             android:orientation="horizontal"
+             android:background="@drawable/rect_bg"
+             android:visibility="gone">
+             <Button
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/track_ride"
+                 android:textColor="@color/colorBlack"
+                 android:padding="12dp"
+                 android:layout_weight="1"
+                 android:background="@drawable/rect_bg"
+                 android:textSize="14sp"/>
+         </LinearLayout>-->
+        <ImageButton android:id="@+id/fsro_ib_dots"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_dots_vertical"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="40dp"
+            android:background="@drawable/round_btn"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+
+
+
+    <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/fsro_rl_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:behavior_peekHeight="210dp"
+        app:behavior_hideable="true"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        android:elevation="4dp"
+        android:background="#ffffff">
+
+        <ImageButton android:id="@+id/fsro_ib_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close_circle"
+            android:layout_alignParentRight="true"
+            android:background="@color/colorWhite"
+            android:layout_margin="8dp" />
+        <TextView android:id="@+id/fsro_tv_otp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/fsro_ib_close"
+            android:text="OTP : XXXX"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="8dp"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorBlack"/>
+        <TextView android:id="@+id/fsro_tv_creq_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cab_details"
+            android:textSize="12sp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="6dp"
+            android:textAllCaps="true"
+            android:textColor="@color/colorTextBlue"
+            android:textStyle="bold"/>
+
+        <LinearLayout android:id="@+id/fsro_ll0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/fsro_tv_creq_title">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/fsro_iv_driver"
+                android:layout_width="56dp"
+                android:layout_height="50dp"
+                fresco:backgroundImage="@color/colorAshLight"
+                android:padding="2dp"
+                android:layout_marginLeft="16dp"
+                fresco:roundAsCircle="true" />
+
+            <!--
+
+            <ImageView android:id="@+id/fsro_iv_driver"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/rect_ash_stroke_bg_single_line"
+                android:layout_marginLeft="24dp"
+                android:padding="2dp"/>-->
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView android:id="@+id/fsro_tv_gname_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/d_name"
+                    android:textColor="#6e6e6e"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="4dp"
+                    android:textSize="12sp"/>
+                <TextView android:id="@+id/fsro_tv_dname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/fsro_tv_gname_title"
+                    android:text="@string/xxx"
+                    android:textColor="@color/colorAsh"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:textSize="12sp"
+                    android:textStyle="bold"/>
+                <TextView android:id="@+id/fsro_tv_gmobile_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/d_mobile"
+                    android:textColor="#6e6e6e"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="4dp"
+                    android:textSize="12sp"
+                    android:layout_below="@+id/fsro_tv_dname" />
+                <TextView android:id="@+id/fsro_tv_gmobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/fsro_tv_gmobile_title"
+                    android:text="@string/xxx"
+                    android:textColor="@color/colorAsh"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_below="@+id/fsro_tv_dname"/>
+                <TextView android:id="@+id/fsro_tv_gveh_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/fsro_tv_gmobile"
+                    android:text="@string/veh_cat"
+                    android:textColor="#6e6e6e"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="2dp"
+                    android:textSize="12sp"/>
+                <TextView android:id="@+id/fsro_tv_veh_regno"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/fsro_tv_gmobile"
+                    android:layout_toRightOf="@+id/fsro_tv_gveh_title"
+                    android:text="@string/xxx"
+                    android:textColor="@color/colorAsh"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginBottom="2dp"
+                    android:textSize="12sp"
+                    android:textStyle="bold"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout android:id="@+id/fsro_ll1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:orientation="horizontal"
+            android:layout_below="@+id/fsro_ll0"
+            android:layout_marginTop="2dp">
+
+            <TextView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:background="@drawable/round_green"
+                android:layout_marginRight="4dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"/>
+            <TextView android:id="@+id/fsro_tv_ploc_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pickup_loc"
+                android:textColor="#6e6e6e"
+                android:textSize="12sp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginRight="4dp"/>
+            <TextView android:id="@+id/fsro_tv_ploc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/xxx"
+                android:textColor="@color/colorBlack"
+                android:textSize="12sp"
+                android:gravity="left"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/fsro_ll2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal"
+            android:layout_below="@+id/fsro_ll1">
+
+            <TextView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:background="@drawable/round_pink"
+                android:layout_marginRight="6dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"/>
+
+            <TextView android:id="@+id/fsro_tv_dloc_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/drop_loc"
+                android:textColor="#6e6e6e"
+                android:layout_marginRight="6dp"
+                android:textSize="12sp"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+            <TextView android:id="@+id/fsro_tv_dloc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/xxx"
+                android:textColor="@color/colorBlack"
+                android:textSize="12sp"
+                android:layout_gravity="center"
+                android:gravity="left" />
+
+        </LinearLayout>
+
+        <Button android:id="@+id/fsro_bt_track"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/track_ride"
+            android:layout_centerInParent="true"
+            android:layout_below="@+id/fsro_ll2"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/ride_now_bg"
+            android:padding="8dp"
+            android:textSize="12sp"
+            android:textColor="#ffd600"
+            android:alpha="0.5"
+            android:textAllCaps="false"/>
+
+
+    </RelativeLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

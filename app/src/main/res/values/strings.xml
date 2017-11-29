@@ -1,0 +1,148 @@
+<resources>
+    <string name="app_title">PCS Cabs </string>
+    <string name="app_name">PCS Cabs</string>
+    <string name="title_activity_maps">GuestBookTaxi</string>
+    <string name="pickup_loc">Pickup from </string>
+    <string name="cab_at">Cab At</string>
+    <string name="cab_loc">Cab Location</string>
+    <string name="book_ride">Book A Ride</string>
+    <string name="drop_loc">Drop at </string>
+    <string name="waiting_for_driver">Waiting for driver to accept request ..</string>
+    <string name="sec_left">60 sec left</string>
+    <string name="confirm_ride">Confirm Booking</string>
+    <string name="track_ride">Track My Ride</string>
+    <string name="call_driver">Call Driver</string>
+    <string name="book_other_cab">Book Other Cab</string>
+    <string name="authentic_progress">Authentication in Progress...Please wait!</string>
+    <string name="ok">Ok</string>
+    <string name="c_loc">Current Location</string>
+    <string name="cab_type">Cab Type :</string>
+    <string name="select">Select</string>
+    <string name="micro">Micra</string>
+    <string name="mini">Mini</string>
+    <string name="sedan">Sedan</string>
+    <string name="luxury">luxury</string>
+    <string-array name="android_dropdown_arrays_cab_type">
+        <item>Choose a Cab</item>
+        <item>Micra</item>
+        <item>Mini</item>
+        <item>Sedan</item>
+    </string-array>
+    <string name="cab_avail">Cab Visibility (radius) :</string>
+    <string-array name="android_dropdown_arrays_cab_avail">
+        <item>Choose a km</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+    <string name="get_cabs">Get Cabs</string>
+    <string name="lat">1</string>
+    <string name="lng">2</string>
+    <string name="loc">3</string>
+    <string name="enter_pickup">Enter location</string>
+    <string name="s_pickup">SELECT PICKUP</string>
+    <string name="f_loc">Fetching Location ...</string>
+    <string name="s_drop">SELECT DROP</string>
+    <string name="load_cabs">LOADING CABS ...</string>
+    <string name="no_cabs">No Cabs</string>
+    <string name="cab_cat">Cab Category : </string>
+    <string name="ride_progress">Ride in Progress</string>
+    <string name="cancel_ride">CANCEL RIDE</string>
+    <string name="ride_now">RIDE NOW</string>
+    <string name="book_taxi">BOOK A TAXI</string>
+    <string-array name="navigation_drawer_items_array">
+        <item>Book a Taxi</item>
+        <item>Your Profile</item>
+        <item>Your Rides</item>
+    </string-array>
+    <string name="pickup_location">Pickup :</string>
+    <string name="drop_location">Drop Location</string>
+    <string name="rate_card">Rate Card</string>
+    <string name="ride_estimate">Get Ride Estimate</string>
+    <string name="apply_coupon">Apply Coupon</string>
+    <string name="offline_msg">You seem to be Offline.</string>
+    <string name="check_internet">Check Internet Settings !</string>
+    <string name="from">FROM :</string>
+    <string name="to">TO :</string>
+    <string name="status">STATUS :</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="save">Save</string>
+    <string name="logout">Logout</string>
+    <string name="email">Email ID</string>
+    <string name="name">Name</string>
+    <string name="c_pwd">Confirm Password</string>
+    <string name="city">City</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="signup">Sign Up</string>
+    <string name="forgot_pwd">forgot password?</string>
+    <string name="driver_name">Driver Name</string>
+    <string name="xxx">xxxx</string>
+    <string name="veh_cat">Vehicle Category</string>
+    <string name="sub_veh_cat">Sub Vehicle Category</string>
+    <string name="total_fare">Total Fare</string>
+    <string name="dist_travelled">Kilometers</string>
+    <string name="time_taken">Trip Time</string>
+    <string name="ride_start_time">Ride Start Time</string>
+    <string name="ride_end_time">Ride End Time</string>
+    <string name="bill_details">Bill Details</string>
+    <string name="taxes">GST</string>
+    <string name="total_bill">Total Bill</string>
+    <string name="cab_details">Ride Details</string>
+    <string name="d_name">Driver :</string>
+    <string name="d_mobile"> Mob : </string>
+    <string name="veh_no">Vehicle Reg. No. :</string>
+    <string name="validate_otp">Validate OTP</string>
+    <string name="g_otp">Generate OTP</string>
+    <string name="pay">Pay</string>
+    <string name="tripId">Trip Id</string>
+    <string name="cash">Cash</string>
+    <string name="wallet">Wallet</string>
+    <string name="cab_category">Cab Category</string>
+    <string name="hyderabad">Hyderabad</string>
+    <string name="standard_fare">Standard Fare</string>
+    <string name="base_fare">Base Fare</string>
+    <string name="bslab">0-15 km</string>
+    <string name="aslab">After 15 km</string>
+    <string name="ride_time_charges">Ride Time Charges</string>
+    <string name="min_fare">Minimum Fare</string>
+    <string name="peak_time_charges">Peak Time Charges</string>
+    <string name="service_tax">GST</string>
+    <string name="approx_fare">Approx. Fare </string>
+    <string name="approx.kms">Approx. Kms</string>
+    <string name="per_km_rate">Per Km Rate</string>
+    <string name="out_station">OutStation</string>
+    <string name="travel_type">Travel Type</string>
+    <string name="local">Local</string>
+    <string name="per_km_fare">Per Km Fare</string>
+    <string name="booking_type">Booking Type : </string>
+    <string name="booked_on">Booked On : </string>
+    <string name="fare_estimate">Get Fare Estimate</string>
+    <string name="book">Book</string>
+    <string name="package_details">Package Details</string>
+    <string name="date_time_details">Date and Time Details</string>
+    <string name="booking_id_reference">Booking Id Reference</string>
+    <string name="payment_by">Payment By</string>
+    <string name="add_money">Add Money</string>
+    <string name="total_wallet_balance">Total Wallet Balance</string>
+    <string name="enter_amount">Enter Amount</string>
+    <string name="payment_type">Payment Type</string>
+    <string name="Rs">\u20B9</string>
+    <string name="category">Category</string>
+    <string name="booking_date">Booking Date</string>
+    <string name="info_needed">Enquiry Details</string>
+    <string name="enter_here">Write here ...</string>
+    <string name="submit">Submit</string>
+    <string name="select_package">Select Package</string>
+    <string name="select_category">Select Category</string>
+    <string name="pkg">Package</string>
+    <string name="book_now">Book Now</string>
+    <string name="book_later">Book Later</string>
+    <string name="ride_later">Ride Later</string>
+    <string name="visakhapatnam">Visakhapatnam</string>
+
+
+</resources>

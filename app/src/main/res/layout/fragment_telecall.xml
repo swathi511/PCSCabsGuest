@@ -1,0 +1,105 @@
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="For any enquiry, TeleCall No. (0891) 2 555 333"
+        android:textColor="@color/colorBlack"
+        android:textSize="14sp"
+        android:background="@color/colorPaleYellow"
+        android:gravity="center"
+        android:padding="8dp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:gravity="center_horizontal">
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vehicle Type"
+            android:textSize="13sp"
+            android:textColor="@color/colorTextBlue"
+            android:gravity="left"
+            android:textAllCaps="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <Spinner
+            android:id="@+id/ft_spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:fadeScrollbars="false" />
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/booking_date"
+            android:textSize="13sp"
+            android:textColor="@color/colorTextBlue"
+            android:gravity="left"
+            android:textAllCaps="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"/>
+
+        <DatePicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ft_datePicker"
+            android:datePickerMode="spinner"
+            android:calendarViewShown="false"
+            android:scaleX="0.9"
+            android:scaleY="0.9"
+            android:background="@drawable/rect_ash_stroke_bg_single_line"/>
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/info_needed"
+            android:textColor="@color/colorTextBlue"
+            android:textSize="13sp"
+            android:gravity="left"
+            android:layout_margin="12dp"
+            android:textAllCaps="true" />
+
+        <EditText android:id="@+id/ft_et_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="false"
+            android:hint="@string/enter_here"
+            android:textSize="14sp"
+            android:textColorHint="@color/colorAshLight"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:lines="5"
+            android:gravity="left"
+            android:background="@drawable/rect_ash_stroke_bg_single_line"
+            android:padding="6dp"/>
+
+        <Button android:id="@+id/ft_bt_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/submit"
+            android:textColor="@color/colorYellow"
+            android:background="@drawable/ride_now_bg"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:textAllCaps="false"/>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
+
+    </ScrollView>

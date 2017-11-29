@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rect_ash_stroke_bg">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ALERT!"
+        android:textSize="16sp"
+        android:textColor="@color/colorAsh"
+        android:textAllCaps="true"
+        android:gravity="left"
+        android:paddingTop="14dp"
+        android:paddingLeft="18dp"
+        android:paddingBottom="14dp"
+        android:textStyle="bold"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorAshLight"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Are you sure you want to cancel the ride?"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:layout_margin="16dp"
+        android:textColor="@color/colorAsh"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp">
+
+        <Button android:id="@+id/acr_bt_yes"
+            android:layout_width="30dp"
+            android:layout_height="40dp"
+            android:text="Confirm"
+            android:textSize="12sp"
+            android:background="@drawable/btn_bg_green"
+            android:textColor="@color/colorWhite"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="24dp"
+            android:layout_weight="1"
+            android:textAllCaps="false"/>
+        <Button android:id="@+id/acr_bt_no"
+            android:layout_width="30dp"
+            android:layout_height="40dp"
+            android:text="Back"
+            android:textSize="12sp"
+            android:background="@drawable/btn_bg_red"
+            android:textColor="@color/colorWhite"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="32dp"
+            android:layout_weight="1"
+            android:textAllCaps="false"/>
+    </LinearLayout>
+
+</LinearLayout>

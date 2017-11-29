@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item type="id" name="lat" />
+    <item type="id" name="lng" />
+    <item type="id" name="loc" />
+
+</resources>

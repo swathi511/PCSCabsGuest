@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:layout_margin="10dp"
+    android:background="@drawable/rect_ash_stroke_bg">
+
+    <TextView android:id="@+id/aro_tv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:textColor="@color/colorTextBlue"
+        android:textSize="12sp"
+        android:gravity="left"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/rect_blue_stroke_bg_nc"
+        android:layout_gravity="left"
+        android:padding="4dp"/>
+
+    <TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign Up using the OTP sent to your mobile."
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:textColor="@color/colorBlack"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:gravity="center"/>
+    <TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter OTP"
+        android:textColor="@color/colorTextBlue"
+        android:textSize="13sp"
+        android:gravity="left"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="32dp"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"/>
+
+    <EditText android:id="@+id/aro_et_otp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/colorBlack"
+        android:layout_marginBottom="4dp"
+        android:inputType="number"
+        android:maxLines="1"
+        android:hint="@string/xxx"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        />
+
+    <Button android:id="@+id/aro_bt_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ok"
+        android:textColor="@color/colorTextBlue"
+        android:background="@drawable/rect_blue_stroke_bg_nc"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"/>
+
+</LinearLayout>
