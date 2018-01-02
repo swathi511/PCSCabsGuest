@@ -103,10 +103,12 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/ic_phone"
-            android:background="@drawable/round_btn"
+            android:background="@drawable/round_btn_green"
             android:layout_below="@+id/ftr_rl"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:scaleX="0.9"
+            android:scaleY="0.9"/>
 
         <RelativeLayout android:id="@+id/ftr_rl"
             android:layout_width="match_parent"
@@ -191,8 +193,8 @@
         </LinearLayout>
 
         <ImageButton android:id="@+id/ftr_ib_dots"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:src="@drawable/ic_dots_vertical"
             android:layout_marginRight="24dp"
             android:layout_marginBottom="40dp"
@@ -237,7 +239,7 @@
             android:text="@string/cab_details"
             android:textSize="12sp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="6dp"
             android:textAllCaps="true"
             android:textColor="@color/colorTextBlue"
@@ -338,7 +340,7 @@
         <LinearLayout android:id="@+id/ftr_ll1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
+            android:layout_marginBottom="4dp"
             android:orientation="horizontal"
             android:layout_below="@+id/ftr_ll0"
             android:layout_marginTop="2dp">
@@ -413,11 +415,12 @@
             android:layout_centerInParent="true"
             android:layout_below="@+id/ftr_ll2"
             android:layout_marginBottom="4dp"
-            android:background="@drawable/rect_blue_stroke_bg_nc"
+            android:background="@drawable/ride_now_bg"
             android:padding="8dp"
             android:textSize="12sp"
-            android:textColor="@color/colorTextBlue"
-            android:alpha="0.5"/>
+            android:textColor="#ffd600"
+            android:alpha="0.5"
+            android:textAllCaps="false"/>
 
 
     </RelativeLayout>

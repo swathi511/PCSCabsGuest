@@ -154,6 +154,7 @@ public class SpecificRideOngoingOtherFragment extends Fragment implements OnMapR
 
         requestId=data.getRequestId();
         driverName=data.getDriverName();
+        driverMobile=data.getDriverMobile();
         stCategorySelected=data.getVehicleCategory();
     }
 
@@ -237,7 +238,7 @@ public class SpecificRideOngoingOtherFragment extends Fragment implements OnMapR
             public void onClick(View view) {
 
                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:"));//GUEST NUMBER HERE...
+                intent.setData(Uri.parse("tel:"+driverMobile));//GUEST NUMBER HERE...
                 startActivity(intent);
             }
         });
@@ -557,8 +558,11 @@ public class SpecificRideOngoingOtherFragment extends Fragment implements OnMapR
                     @Override
                     public void onResponse(Call<List<CabLocationPojo>> call, Response<List<CabLocationPojo>> response) {
 
-                        if (myBottomSheet.isAdded()) {
-                            myBottomSheet.dismiss();
+                        if(myBottomSheet!=null) {
+
+                            if (myBottomSheet.isAdded()) {
+                                myBottomSheet.dismiss();
+                            }
                         }
                         CabLocationPojo cl;
                         List<CabLocationPojo> cabLocData;
@@ -630,11 +634,14 @@ public class SpecificRideOngoingOtherFragment extends Fragment implements OnMapR
                     @Override
                     public void onFailure(Call<List<CabLocationPojo>> call, Throwable t) {
 
-                        if (myBottomSheet.isAdded()) {
-                            //return;
-                        } else {
-                            if (rootView.isShown()) {
-                                myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                        if(myBottomSheet!=null) {
+
+                            if (myBottomSheet.isAdded()) {
+                                //return;
+                            } else {
+                                if (rootView.isShown()) {
+                                    myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                                }
                             }
                         }
                     }

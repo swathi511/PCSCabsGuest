@@ -1,6 +1,7 @@
 package com.hjsoft.guestbooktaxi.fragments;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hjsoft.guestbooktaxi.R;
+
+import com.hjsoft.guestbooktaxi.activity.PackagesActivity;
 import com.hjsoft.guestbooktaxi.model.LocalPackagesPojo;
 import com.hjsoft.guestbooktaxi.webservices.API;
 import com.hjsoft.guestbooktaxi.webservices.RestClient;
@@ -47,6 +50,7 @@ public class PackagesFragment extends Fragment {
     TextView tvNoPkg;
     boolean flag=true;
     String stCity;
+    PackagesActivity a;
 
 
     @Nullable
@@ -276,7 +280,7 @@ public class PackagesFragment extends Fragment {
 
                 progressDialog.dismiss();
 
-                Toast.makeText(getActivity(),"Please check Internet Connection!",Toast.LENGTH_LONG).show();
+                Toast.makeText(a,"Please check Internet Connection!",Toast.LENGTH_LONG).show();
 
             }
         });
@@ -420,5 +424,15 @@ public class PackagesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof PackagesActivity){
+            a=(PackagesActivity) context;
+        }
+
     }
 }

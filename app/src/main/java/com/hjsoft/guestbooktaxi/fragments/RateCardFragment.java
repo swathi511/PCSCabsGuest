@@ -485,6 +485,7 @@ public class RateCardFragment extends Fragment {
         v.addProperty("traveltype",stTravelType);
         v.addProperty("vehicle_type",stCategory);
         v.addProperty("approxkms",0);
+        v.addProperty("duration",0);
 
         Call<List<OutStationPojo>> call1=REST_CLIENT.getFareEstimate(v);
         call1.enqueue(new Callback<List<OutStationPojo>>() {

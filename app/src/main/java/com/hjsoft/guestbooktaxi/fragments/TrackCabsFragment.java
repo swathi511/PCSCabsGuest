@@ -63,6 +63,11 @@ import com.hjsoft.guestbooktaxi.adapter.DBAdapter;
 import com.hjsoft.guestbooktaxi.model.CabArrivalTimePojo;
 import com.hjsoft.guestbooktaxi.model.CabData;
 import com.hjsoft.guestbooktaxi.model.CabPojo;
+import com.hjsoft.guestbooktaxi.model.Distance;
+import com.hjsoft.guestbooktaxi.model.Duration;
+import com.hjsoft.guestbooktaxi.model.DurationPojo;
+import com.hjsoft.guestbooktaxi.model.Element;
+import com.hjsoft.guestbooktaxi.model.Row;
 import com.hjsoft.guestbooktaxi.model.ServiceLocationPojo;
 import com.hjsoft.guestbooktaxi.webservices.API;
 import com.hjsoft.guestbooktaxi.webservices.RestClient;
@@ -143,7 +148,10 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
     TextView tvCity;
     TextView tvLoc1,tvLoc2,tvLoc3,tvLoc4,tvLoc5;
     int j=0;
-    int radius;
+    double radius;
+    String stKms;
+    double localDistance = 0;
+    double outstationDistance = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -160,7 +168,9 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
         city=pref.getString("city",null);
         cityCenterLat=Double.parseDouble(pref.getString("cityCenterLat",null));
         cityCenterLong=Double.parseDouble(pref.getString("cityCenterLong",null));
-        radius=Integer.parseInt(pref.getString("radius","30"));
+//        cityCenterLat=17.6868;
+//        cityCenterLong=83.2185;
+        radius=Double.parseDouble(pref.getString("radius","30"));
 
         mRequestingLocationUpdates=false;
 
@@ -588,8 +598,10 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                 stCategorySelected="Mini";
 
                 //remove comments if handlers are used
-                hStart.removeCallbacks(rStart);
-                hStart.post(rStart);
+                if(hStart!=null) {
+                    hStart.removeCallbacks(rStart);
+                    hStart.post(rStart);
+                }
 
 //                getCabs();
 //                getCabTimes();
@@ -633,8 +645,10 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                 //remove comments if handlers are used
 
-                hStart.removeCallbacks(rStart);
-                hStart.post(rStart);
+                if(hStart!=null) {
+                    hStart.removeCallbacks(rStart);
+                    hStart.post(rStart);
+                }
 
 //                getCabs();
 //                getCabTimes();
@@ -700,8 +714,10 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                 stCategorySelected = "Micra";
 
                 //remove comments if handlers are used
-                hStart.removeCallbacks(rStart);
-                hStart.post(rStart);
+                if(hStart!=null) {
+                    hStart.removeCallbacks(rStart);
+                    hStart.post(rStart);
+                }
 
 //                getCabs();
 //                getCabTimes();
@@ -748,13 +764,17 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                 stCategorySelected="Sedan";
 
                 //remove comments if handlers are used
-                hStart.removeCallbacks(rStart);
-                hStart.post(rStart);
+                if(hStart!=null) {
+                    hStart.removeCallbacks(rStart);
+                    hStart.post(rStart);
+                }
 
 //                getCabs();
 //                getCabTimes();
             }
         });
+
+
 
         btBookCab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -764,16 +784,14 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                     if (tvDrop.getText().toString().trim().equals("")) {
 
-                        if(stCategorySelected.equals("Packages"))
-                        {
+                        if (stCategorySelected.equals("Packages")) {
 //
 //                            Intent i=new Intent(getActivity(),LocalPackagesActivity.class);
 //                            i.putExtra("time","now");
 //                            startActivity(i);
 //                            getActivity().finish();
 
-                        }
-                        else {
+                        } else {
 
                             Toast.makeText(getContext(), "Please enter drop location!", Toast.LENGTH_SHORT).show();
                             Intent i = new Intent(getContext(), PlacesAutoCompleteActivity.class);
@@ -782,42 +800,228 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                         }
 
-                    }
-                    else if(tvPickup.getText().toString().trim().equals("Unable to get the location details")||
-                            tvPickup.getText().toString().trim().equals("-")||tvPickup.getText().toString().trim().equals(""))
-                    {
+                    } else if (tvPickup.getText().toString().trim().equals("Unable to get the location details") ||
+                            tvPickup.getText().toString().trim().equals("-") || tvPickup.getText().toString().trim().equals("")) {
                         Toast.makeText(getContext(), "Please enter pickup location !", Toast.LENGTH_SHORT).show();
                         Intent i = new Intent(getContext(), PlacesAutoCompleteActivity.class);
                         startActivityForResult(i, 2);
                         stClicked = "pickup";
-                        pickupChanged=true;
-                    }
-                    else {
+                        pickupChanged = true;
+                    } else {
 
                         //Pickup and Drop Bookings
-                        if(stCategorySelected.equals("Mini")||stCategorySelected.equals("Micra")||stCategorySelected.equals("Sedan")||stCategorySelected.equals("SUV"))
-                        {
-                            if(stLocalPkg.equals("")) {
+                        if (stCategorySelected.equals("Mini") || stCategorySelected.equals("Micra") || stCategorySelected.equals("Sedan") || stCategorySelected.equals("SUV")) {
+                            if (stLocalPkg.equals("")) {
 
-                                if(!(tvDrop.getText().toString().trim().equals("-")))
-                                {
-                                    Location.distanceBetween(cityCenterLat, cityCenterLong, Double.parseDouble(pickupLat), Double.parseDouble(pickupLong), results);
+                                if (!(tvDrop.getText().toString().trim().equals("-"))) {
+                                    // **Location.distanceBetween(cityCenterLat, cityCenterLong, Double.parseDouble(pickupLat), Double.parseDouble(pickupLong), results);
 
-                                    long localDistance = 0;
 
-                                    localDistance = localDistance + (long) results[0];
-                                    localDistance = localDistance / 1000;
 
-                                    if(localDistance < radius)
-                                    {
+//                                    localDistance = localDistance + (long) results[0];
+//                                    localDistance = localDistance / 1000;
+                                    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+                                    final ProgressDialog progressDialog = new ProgressDialog(getContext());
+                                    progressDialog.setIndeterminate(true);
+                                    progressDialog.setMessage("Please wait...");
+                                    progressDialog.show();
+
+//                                    String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+//                                            "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+pickupLat+","+pickupLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
+
+                                    String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                            "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+pickupLat+","+pickupLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+
+                                    //System.out.println("url String is  "+urlString);
+
+                                    Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
+                                    call.enqueue(new Callback<DurationPojo>() {
+                                        @Override
+                                        public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
+
+                                            DurationPojo d;
+
+                                            if(response.isSuccessful())
+                                            {
+                                                d=response.body();
+                                                List<Row> r=d.getRows();
+                                                Row r1;
+                                                for(int a=0;a<r.size();a++)
+                                                {
+                                                    r1=r.get(a);
+                                                    List<Element> e=r1.getElements();
+
+                                                    Element e1;
+
+                                                    for(int b=0;b<e.size();b++)
+                                                    {
+                                                        e1=e.get(b);
+                                                        Distance t1=e1.getDistance();
+
+                                                        Duration t2=e1.getDuration();
+
+                                                        String stDist=t1.getText();
+                                                        String stDistDetails[]=stDist.split(" ");
+                                                        localDistance=Double.parseDouble(stDistDetails[0]);
+                                                        //progressDialog.dismiss();
+
+//                            stTime=String.valueOf((t2.getValue())/60);
+                                                        //System.out.println("d & t is "+stKms+":"+stTime);
+
+                                                        //System.out.println("************ "+localDistance+":"+radius);
+
+                                                        if (localDistance < radius) {
+
+                                                            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+//                                                            String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+//                                                                    "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
+
+                                                            String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                                                    "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+
+
+                                                            System.out.println("url String is  "+urlString);
+
+                                                            Call<DurationPojo> call1=REST_CLIENT.getDistanceDetails(urlString);
+                                                            call1.enqueue(new Callback<DurationPojo>() {
+                                                                @Override
+                                                                public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
+
+                                                                    DurationPojo d;
+
+                                                                    if(response.isSuccessful())
+                                                                    {
+                                                                        d=response.body();
+                                                                        List<Row> r=d.getRows();
+                                                                        Row r1;
+                                                                        for(int a=0;a<r.size();a++)
+                                                                        {
+                                                                            r1=r.get(a);
+                                                                            List<Element> e=r1.getElements();
+
+                                                                            Element e1;
+
+                                                                            for(int b=0;b<e.size();b++)
+                                                                            {
+                                                                                e1=e.get(b);
+                                                                                Distance t1=e1.getDistance();
+
+                                                                                Duration t2=e1.getDuration();
+
+                                                                                String stDist=t1.getText();
+                                                                                String stDistDetails[]=stDist.split(" ");
+                                                                                outstationDistance=Double.parseDouble(stDistDetails[0]);
+                                                                               // progressDialog.dismiss();
+
+//                            stTime=String.valueOf((t2.getValue())/60);
+
+                                                                                //System.out.println("d & t is "+stKms+":"+stTime);
+
+                                                                                //System.out.println("************ "+outstationDistance+":"+radius);
+                                                                                if (outstationDistance < radius) {
+
+                                                                                    progressDialog.dismiss();
+
+                                                                                    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                                                                    //view.clearAnimation();
+
+                                                                                    //hStart.removeCallbacks(rStart);
+                                                                                    //h.removeCallbacks(r);
+                                                                                    //Reason for not removing callbacks is in case if this is called again from confirmfragment.
+                                                                                    Fragment frag = new ConfirmRideFragment();
+                                                                                    Bundle args = new Bundle();
+                                                                                    args.putString("CategorySelected", stCategorySelected);
+                                                                                    args.putDouble("latitude", Double.parseDouble(locLat));
+                                                                                    args.putDouble("longitude", Double.parseDouble(locLong));
+                                                                                    args.putString("city", city);
+                                                                                    args.putString("localPackage", stLocalPkg);
+                                                                                    args.putString("travelType", stTravelType);
+                                                                                    args.putString("fare", stFare);
+                                                                                    frag.setArguments(args);
+                                                                                    FragmentManager fragmentManager = getFragmentManager();
+                                                                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                                                                    fragmentTransaction.add(R.id.content_frame, frag, "confirm_ride");
+                                                                                    fragmentTransaction.addToBackStack(null);
+                                                                                    fragmentTransaction.commit();
+                                                                                } else {
+
+                                                                                    Toast.makeText(getActivity(), " Invalid Drop! Location outside city limits.", Toast.LENGTH_SHORT).show();
+                                                                                    progressDialog.dismiss();
+
+                                                                                }
+
+
+                                                                            }
+
+
+                                                                        }
+                                                                    }
+
+                                                                }
+
+                                                                @Override
+                                                                public void onFailure(Call<DurationPojo> call, Throwable t) {
+
+                                                                    progressDialog.dismiss();
+                                                                    Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
+
+                                                                }
+                                                            });
+
+
+
+                                                            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+                                                        } else {
+                                                            Toast.makeText(getActivity(), "Invalid Drop! Location outside city limits.", Toast.LENGTH_LONG).show();
+                                                            progressDialog.dismiss();
+                                                        }
+
+                                                    }
+
+
+                                                }
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<DurationPojo> call, Throwable t) {
+
+                                            progressDialog.dismiss();
+                                            Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
+
+                                        }
+                                    });
+
+
+
+
+
+
+
+
+                                    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+                                   /* if (localDistance < radius) {
                                         //Location.distanceBetween(cityCenterLat, cityCenterLong, Double.parseDouble(dropLat), Double.parseDouble(dropLong), results);
                                         //actual logic
-                                        Location.distanceBetween(Double.parseDouble(pickupLat), Double.parseDouble(pickupLong), Double.parseDouble(dropLat), Double.parseDouble(dropLong), results);
+                                       /*//** Location.distanceBetween(Double.parseDouble(pickupLat), Double.parseDouble(pickupLong), Double.parseDouble(dropLat), Double.parseDouble(dropLong), results);
 
-                                        long outstationDistance = 0;
 
-                                        outstationDistance = outstationDistance + (long) results[0];
-                                        outstationDistance = outstationDistance / 1000;
+
+//                                        outstationDistance = outstationDistance + (long) results[0];
+//                                        outstationDistance = outstationDistance / 1000;
+                                        System.out.println("data isssss "+getDistance(pickupLat,pickupLong,dropLat,dropLong));
+
+                                        outstationDistance=Long.parseLong(getDistance(pickupLat,pickupLong,dropLat,dropLong));
+
+                                        System.out.println("outstation distance isssss "+outstationDistance);
 
                                         if (outstationDistance < radius) {
 
@@ -834,7 +1038,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                             args.putString("city", city);
                                             args.putString("localPackage", stLocalPkg);
                                             args.putString("travelType", stTravelType);
-                                            args.putString("fare",stFare);
+                                            args.putString("fare", stFare);
                                             frag.setArguments(args);
                                             FragmentManager fragmentManager = getFragmentManager();
                                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -847,20 +1051,17 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                                         }
                                         //actual logic
-                                    }
-                                    else
-                                    {
-                                        Toast.makeText(getActivity(),"Invalid Local Booking! Change location.",Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                                else {
+                                    } else {
+                                        Toast.makeText(getActivity(), "Invalid Local Booking! Change location.", Toast.LENGTH_LONG).show();
+                                    }*/
+                                } else {
 
                                     Toast.makeText(getContext(), "Please enter drop location!", Toast.LENGTH_SHORT).show();
                                     Intent i = new Intent(getContext(), PlacesAutoCompleteActivity.class);
                                     startActivityForResult(i, 2);
-                                    stClicked = "drop";  }
-                            }
-                            else {
+                                    stClicked = "drop";
+                                }
+                            } else {
 
                                 Fragment frag = new ConfirmRideFragment();
                                 Bundle args = new Bundle();
@@ -870,7 +1071,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                 args.putString("city", city);
                                 args.putString("localPackage", stLocalPkg);
                                 args.putString("travelType", stTravelType);
-                                args.putString("fare",stFare);
+                                args.putString("fare", stFare);
                                 frag.setArguments(args);
                                 FragmentManager fragmentManager = getFragmentManager();
                                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -878,56 +1079,263 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                 fragmentTransaction.addToBackStack(null);
                                 fragmentTransaction.commit();
                             }
-                        }
-                        else {
+                        } else {
 
                             if (stCategorySelected.equals("Outstation")) {
 
-                                if(tvDrop.getText().toString().trim().equals("-"))
-                                {
+                                if (tvDrop.getText().toString().trim().equals("-")) {
                                     Toast.makeText(getContext(), "Please enter drop location!", Toast.LENGTH_SHORT).show();
                                     Intent i = new Intent(getContext(), PlacesAutoCompleteActivity.class);
                                     startActivityForResult(i, 2);
                                     stClicked = "drop";
-                                }
+                                } else {
 
-                                else {
 
-                                    Location.distanceBetween(cityCenterLat, cityCenterLong, Double.parseDouble(pickupLat), Double.parseDouble(pickupLong), results);
+                                    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-                                    long localDistance = 0;
+                                    final ProgressDialog progressDialog = new ProgressDialog(getContext());
+                                    progressDialog.setIndeterminate(true);
+                                    progressDialog.setMessage("Confirming...Please wait!");
+                                    progressDialog.show();
 
-                                    localDistance = localDistance + (long) results[0];
-                                    localDistance = localDistance / 1000;
+                                    /*String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                            "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
+*/
+                                    String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                            "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
 
-                                    if(localDistance < radius) {
+                                    System.out.println("url String is  "+urlString);
 
-                                        Location.distanceBetween(Double.parseDouble(pickupLat), Double.parseDouble(pickupLong), Double.parseDouble(dropLat), Double.parseDouble(dropLong), results);
+                                    Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
+                                    call.enqueue(new Callback<DurationPojo>() {
+                                        @Override
+                                        public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
 
-                                        long outstationDistance = 0;
+                                            DurationPojo d;
 
-                                        outstationDistance = outstationDistance + (long) results[0];
-                                        outstationDistance = outstationDistance / 1000;
+                                            if(response.isSuccessful())
+                                            {
+                                                d=response.body();
+                                                List<Row> r=d.getRows();
+                                                Row r1;
+                                                for(int a=0;a<r.size();a++)
+                                                {
+                                                    r1=r.get(a);
+                                                    List<Element> e=r1.getElements();
 
-                                        if (outstationDistance > radius) {
-                                            //hStart.removeCallbacks(rStart);
+                                                    Element e1;
 
-                                            Intent i = new Intent(getActivity(), OutStationActivity.class);
-                                            i.putExtra("city", city);
-                                            startActivity(i);
-                                            //getActivity().finish();
-                                        } else {
+                                                    for(int b=0;b<e.size();b++)
+                                                    {
+                                                        e1=e.get(b);
+                                                        Distance t1=e1.getDistance();
 
-                                            Toast.makeText(getActivity(), "Invalid Outstation Drop! Change Location.", Toast.LENGTH_LONG).show();
+                                                        Duration t2=e1.getDuration();
+
+                                                        String stDist=t1.getText();
+                                                        String stDistDetails[]=stDist.split(" ");
+                                                        localDistance=Double.parseDouble(stDistDetails[0]);
+                                                        //progressDialog.dismiss();
+
+//                            stTime=String.valueOf((t2.getValue())/60);
+                                                        //System.out.println("d & t is "+stKms+":"+stTime);
+
+                                                        //System.out.println("************ "+localDistance+":"+radius);
+
+                                                        if (localDistance < radius) {
+
+                                                            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+//                                                            String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+//                                                                    "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
+
+                                                            String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                                                    "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+
+
+                                                            System.out.println("url String is  "+urlString);
+
+                                                            Call<DurationPojo> call1=REST_CLIENT.getDistanceDetails(urlString);
+                                                            call1.enqueue(new Callback<DurationPojo>() {
+                                                                @Override
+                                                                public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
+
+                                                                    DurationPojo d;
+
+                                                                    if(response.isSuccessful())
+                                                                    {
+                                                                        d=response.body();
+                                                                        List<Row> r=d.getRows();
+                                                                        Row r1;
+                                                                        for(int a=0;a<r.size();a++)
+                                                                        {
+                                                                            r1=r.get(a);
+                                                                            List<Element> e=r1.getElements();
+
+                                                                            Element e1;
+
+                                                                            for(int b=0;b<e.size();b++)
+                                                                            {
+                                                                                e1=e.get(b);
+                                                                                Distance t1=e1.getDistance();
+
+                                                                                Duration t2=e1.getDuration();
+
+                                                                                String stDist=t1.getText();
+                                                                                String stDistDetails[]=stDist.split(" ");
+                                                                                outstationDistance=Double.parseDouble(stDistDetails[0]);
+                                                                                // progressDialog.dismiss();
+
+//                            stTime=String.valueOf((t2.getValue())/60);
+
+                                                                                //System.out.println("d & t is "+stKms+":"+stTime);
+
+                                                                                //System.out.println("************ "+outstationDistance+":"+radius);
+                                                                                if (outstationDistance > radius) {
+
+                                                                                    progressDialog.dismiss();
+
+                                                                                    Intent i = new Intent(getActivity(), OutStationActivity.class);
+                                                                                    i.putExtra("city", city);
+                                                                                    startActivity(i);
+
+                                                                                } else {
+
+                                                                                    Toast.makeText(getActivity(), " Invalid Outstation drop. Change Location!", Toast.LENGTH_SHORT).show();
+                                                                                    progressDialog.dismiss();
+
+                                                                                }
+
+
+                                                                            }
+
+
+                                                                        }
+                                                                    }
+
+                                                                }
+
+                                                                @Override
+                                                                public void onFailure(Call<DurationPojo> call, Throwable t) {
+
+                                                                    progressDialog.dismiss();
+                                                                    Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
+
+                                                                }
+                                                            });
+
+
+
+                                                            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+                                                        } else {
+
+                                                            progressDialog.dismiss();
+
+                                                            Intent i = new Intent(getActivity(), OutStationActivity.class);
+                                                            i.putExtra("city", city);
+                                                            startActivity(i);
+                                                        }
+
+                                                    }
+
+
+                                                }
+                                            }
+
                                         }
 
-                                    }
-                                    else {
+                                        @Override
+                                        public void onFailure(Call<DurationPojo> call, Throwable t) {
 
-                                        Intent i = new Intent(getActivity(), OutStationActivity.class);
-                                        i.putExtra("city", city);
-                                        startActivity(i);
-                                    }
+                                            progressDialog.dismiss();
+                                            Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
+
+                                        }
+                                    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+//
+//                                    long localDistance = 0;
+//
+////                                    localDistance = localDistance + (long) results[0];
+////                                    localDistance = localDistance / 1000;
+//
+//                                    System.out.println("data isssss "+getDistance(String.valueOf(cityCenterLat),String.valueOf(cityCenterLong),dropLat,dropLong));
+//
+//                                    localDistance=Long.parseLong(getDistance(String.valueOf(cityCenterLat),String.valueOf(cityCenterLong),dropLat,dropLong));
+//
+//                                    System.out.println("local distance isssss "+localDistance);
+//
+//
+//                                    if (localDistance < radius) {
+//                                        //Location.distanceBetween(cityCenterLat, cityCenterLong, Double.parseDouble(dropLat), Double.parseDouble(dropLong), results);
+//                                        //actual logic
+//                                        //** Location.distanceBetween(Double.parseDouble(pickupLat), Double.parseDouble(pickupLong), Double.parseDouble(dropLat), Double.parseDouble(dropLong), results);
+//
+//                                        long outstationDistance = 0;
+//
+////                                        outstationDistance = outstationDistance + (long) results[0];
+////                                        outstationDistance = outstationDistance / 1000;
+//                                        System.out.println("data isssss "+getDistance(pickupLat,pickupLong,dropLat,dropLong));
+//
+//                                        outstationDistance=Long.parseLong(getDistance(pickupLat,pickupLong,dropLat,dropLong));
+//
+//                                        System.out.println("outstation distance isssss "+outstationDistance);
+//
+//                                        //***********************
+///*
+//                                    Location.distanceBetween(cityCenterLat, cityCenterLong, Double.parseDouble(pickupLat), Double.parseDouble(pickupLong), results);
+//
+//                                    long localDistance = 0;
+//
+//                                    localDistance = localDistance + (long) results[0];
+//                                    localDistance = localDistance / 1000;
+//
+//                                    if (localDistance < radius) {
+//
+//                                        Location.distanceBetween(Double.parseDouble(pickupLat), Double.parseDouble(pickupLong), Double.parseDouble(dropLat), Double.parseDouble(dropLong), results);
+//
+//                                        long outstationDistance = 0;
+//
+//                                        outstationDistance = outstationDistance + (long) results[0];
+//                                        outstationDistance = outstationDistance / 1000;*/
+//
+//                                        // ***************************
+//
+//                                        if (outstationDistance > radius) {
+//                                            //hStart.removeCallbacks(rStart);
+//
+//                                            Intent i = new Intent(getActivity(), OutStationActivity.class);
+//                                            i.putExtra("city", city);
+//                                            startActivity(i);
+//                                            //getActivity().finish();
+//                                        } else {
+//
+//                                            Toast.makeText(getActivity(), "Invalid Outstation Drop! Change Location.", Toast.LENGTH_LONG).show();
+//                                        }
+//
+//                                    } else {
+//
+//                                        Intent i = new Intent(getActivity(), OutStationActivity.class);
+//                                        i.putExtra("city", city);
+//                                        startActivity(i);
+//                                    }
 
                                 }
 
@@ -936,14 +1344,13 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                             }
                         }
                     }
-                }
-                else
-                {
-                    Toast.makeText(getActivity(),"Connectivity Issue! Please Check.",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "Connectivity Issue! Please Check.", Toast.LENGTH_SHORT).show();
                 }
             }
 
         });
+
 
         ibLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -972,10 +1379,15 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 //                    getCabs();
 //                    getCabTimes();
 
-                    hStart.removeCallbacks(rStart);
-                    hStart.post(rStart);
-                    h.removeCallbacks(r);
-                    h.post(r);
+                    if(hStart!=null) {
+                        hStart.removeCallbacks(rStart);
+                        hStart.post(rStart);
+                    }
+
+                    if(h!=null) {
+                        h.removeCallbacks(r);
+                        h.post(r);
+                    }
                 }
 
             }
@@ -1029,9 +1441,11 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                         CabArrivalTimePojo data;
                         List<CabArrivalTimePojo> dataList;
 
-                        if(myBottomSheet.isAdded())
-                        {
-                            myBottomSheet.dismiss();
+                        if(myBottomSheet!=null) {
+
+                            if (myBottomSheet.isAdded()) {
+                                myBottomSheet.dismiss();
+                            }
                         }
 
                         if(response.isSuccessful())
@@ -1322,9 +1736,12 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                             progressDialog.dismiss();
                         }
-                        if(myBottomSheet.isAdded())
-                        {
-                            myBottomSheet.dismiss();
+
+                        if(myBottomSheet!=null) {
+
+                            if (myBottomSheet.isAdded()) {
+                                myBottomSheet.dismiss();
+                            }
                         }
 
                         List<CabPojo> cabs;
@@ -1365,9 +1782,11 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                 }
                             }else {
 
-                                LatLng pLatLng=new LatLng(Double.parseDouble(locLat),Double.parseDouble(locLong));
-                                mMap.addMarker(new MarkerOptions().position(pLatLng)
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                if(locLat!=null&&locLong!=null) {
+                                    LatLng pLatLng = new LatLng(Double.parseDouble(locLat), Double.parseDouble(locLong));
+                                    mMap.addMarker(new MarkerOptions().position(pLatLng)
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                }
                             }
 
 
@@ -1447,15 +1866,17 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                         if(rootView.isShown()) {
 
-                            if (myBottomSheet.isAdded()) {
-                                return;
-                            }
-                            else {
-                                //System.out.println(rootView.isActivated()+":"+rootView.isFocusable()+":"+rootView.isShown()+":"+rootView.isFocused());
+                            if(myBottomSheet!=null) {
+
+                                if (myBottomSheet.isAdded()) {
+                                    return;
+                                } else {
+                                    //System.out.println(rootView.isActivated()+":"+rootView.isFocusable()+":"+rootView.isShown()+":"+rootView.isFocused());
 
 
-                                myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                                    myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
 
+                                }
                             }
                         }
                     }
@@ -1914,8 +2335,8 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);//45 sec
-        mLocationRequest.setFastestInterval(5000);//5 sec
+        mLocationRequest.setInterval(2000);//2 sec
+        mLocationRequest.setFastestInterval(2000);//2 sec
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -2611,5 +3032,66 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+    }
+
+    public String getDistance(String p_lat,String p_lng,String d_lat,String d_lng)
+    {
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Confirming...");
+        progressDialog.show();
+
+        String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                "origins="+p_lat+","+p_lng+"&destinations="+d_lat+","+d_lng+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+
+        System.out.println("url String is  "+urlString);
+
+        Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
+        call.enqueue(new Callback<DurationPojo>() {
+            @Override
+            public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
+
+                DurationPojo d;
+
+                if(response.isSuccessful())
+                {
+                    d=response.body();
+                    List<Row> r=d.getRows();
+                    Row r1;
+                    for(int a=0;a<r.size();a++)
+                    {
+                        r1=r.get(a);
+                        List<Element> e=r1.getElements();
+
+                        Element e1;
+
+                        for(int b=0;b<e.size();b++)
+                        {
+                            e1=e.get(b);
+                            Distance t1=e1.getDistance();
+
+                            Duration t2=e1.getDuration();
+
+                            String stDist=t1.getText();
+                            String stDistDetails[]=stDist.split(" ");
+                            stKms=stDistDetails[0];
+                            progressDialog.dismiss();
+
+//                            stTime=String.valueOf((t2.getValue())/60);
+                            //System.out.println("d & t is "+stKms+":"+stTime);
+                        }
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<DurationPojo> call, Throwable t) {
+
+            }
+        });
+
+        return stKms;
+
     }
 }

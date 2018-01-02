@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pickup_location"
                 android:textColor="@color/colorAsh"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:gravity="left"
@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/drop_location"
                 android:textColor="@color/colorAsh"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:gravity="left"
@@ -99,18 +99,18 @@
             android:layout_height="wrap_content"
             android:text="@string/date_time_details"
             android:textColor="@color/colorTextBlue"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:gravity="center"
             android:layout_below="@+id/fos_ll_drop"
             android:layout_marginTop="16dp"/>
 
         <ImageView android:id="@+id/fos_iv_datetime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:src="@drawable/m_edit"
             android:layout_alignTop="@+id/fos_tv_datetime_text"
-            android:layout_alignRight="@+id/fos_bt_book"
-            android:layout_alignEnd="@+id/fos_bt_book" />
+            android:layout_alignRight="@+id/fos_ll_drop"
+            android:layout_alignEnd="@+id/fos_ll_drop" />
         <TextView android:id="@+id/fos_tv_datetime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -120,7 +120,8 @@
             android:textSize="14sp"
             android:layout_marginTop="12dp"
             android:gravity="center"
-            android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="12dp"
+            android:fontFamily="sans-serif-smallcaps" />
 
         <View
             android:layout_width="match_parent"
@@ -133,17 +134,17 @@
             android:layout_height="wrap_content"
             android:text="@string/package_details"
             android:textColor="@color/colorTextBlue"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:gravity="center"
             android:layout_below="@+id/fos_tv_datetime"
             android:layout_marginTop="12dp"/>
         <ImageView android:id="@+id/fos_iv_pkg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:src="@drawable/m_edit"
             android:layout_alignTop="@+id/fos_tv_pkg_text"
-            android:layout_alignRight="@+id/fos_bt_book"
-            android:layout_alignEnd="@+id/fos_bt_book" />
+            android:layout_alignRight="@+id/fos_ll"
+            android:layout_alignEnd="@+id/fos_ll" />
 
         <LinearLayout android:id="@+id/fos_ll"
             android:layout_width="match_parent"
@@ -159,7 +160,8 @@
                 android:textColor="@color/colorRed"
                 android:textSize="14sp"
                 android:gravity="left"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-smallcaps"/>
         </LinearLayout>
 
         <View
@@ -173,17 +175,17 @@
             android:layout_height="wrap_content"
             android:text="@string/cab_category"
             android:textColor="@color/colorTextBlue"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:gravity="center"
             android:layout_below="@+id/fos_ll"
             android:layout_marginTop="12dp"/>
         <ImageView android:id="@+id/fos_iv_cab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:src="@drawable/m_edit"
             android:layout_alignTop="@+id/fos_tv_cab_text"
-            android:layout_alignRight="@+id/fos_bt_book"
-            android:layout_alignEnd="@+id/fos_bt_book" />
+            android:layout_alignRight="@+id/fos_ll1"
+            android:layout_alignEnd="@+id/fos_ll1" />
 
         <LinearLayout android:id="@+id/fos_ll1"
             android:layout_width="match_parent"
@@ -199,7 +201,8 @@
                 android:textColor="@color/colorRed"
                 android:textSize="14sp"
                 android:gravity="left"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-smallcaps"/>
             <TextView android:id="@+id/fos_bt_fare_estimate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -224,7 +227,7 @@
             android:layout_height="wrap_content"
             android:text="@string/payment_type"
             android:textColor="@color/colorBlack"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:gravity="center"
             android:layout_below="@+id/fos_ll1"
             android:layout_marginTop="12dp" />
@@ -242,7 +245,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/cash"
                 android:textStyle="bold"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:textAllCaps="true"
                 android:textColor="@color/colorTextBlue"/>
 
@@ -259,7 +262,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/wallet"
                 android:textStyle="bold"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:textAllCaps="true"
                 android:textColor="@color/colorAshLight"/>
 
@@ -283,14 +286,16 @@
 
 
         <Button android:id="@+id/fos_bt_book"
-            android:layout_width="match_parent"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="@string/book"
-            android:textColor="@color/colorWhite"
-            android:background="@drawable/login_bt_bg"
+            android:text="Book Cab"
+            android:textColor="@color/colorYellow"
+            android:background="@drawable/ride_now_bg"
             android:layout_below="@+id/fos_tv_add_money"
-            android:layout_marginTop="16dp"
-            android:alpha="0.5"/>
+            android:layout_marginTop="24dp"
+            android:layout_centerHorizontal="true"
+            android:alpha="0.5"
+            android:textAllCaps="false"/>
     </RelativeLayout>
 
 </ScrollView>

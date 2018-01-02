@@ -198,7 +198,12 @@ public class PlacesAutoCompleteAdapter
     }
 
     public PlaceAutocomplete getItem(int position) {
-        return mResultList.get(position);
+
+        if (mResultList!=null && mResultList.size()>0)
+            return mResultList.get(position);
+        return null;
+
+        //return mResultList.get(position);
     }
 
     public class PredictionHolder extends RecyclerView.ViewHolder {

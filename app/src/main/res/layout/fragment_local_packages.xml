@@ -330,6 +330,22 @@
             android:layout_below="@+id/flp_ll2"
             android:layout_alignParentRight="true"/>
 
+        <TextView android:id="@+id/flp_tv_coupon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Apply Coupon"
+            android:textSize="12sp"
+            android:textColor="#FF8F00"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp"
+            android:drawableLeft="@drawable/coupon"
+            android:layout_below="@+id/flp_tv_add_money"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:drawablePadding="6dp"/>
+
         <Button android:id="@+id/flp_bt_book"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
@@ -338,7 +354,7 @@
             android:background="@drawable/ride_now_bg"
             android:layout_alignParentBottom="true"
             android:alpha="0.5"
-            android:layout_below="@+id/flp_tv_add_money"
+            android:layout_below="@+id/flp_tv_coupon"
             android:layout_marginTop="30dp"
             android:layout_centerHorizontal="true"
             android:textAllCaps="false"/>

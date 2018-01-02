@@ -1,5 +1,6 @@
 package com.hjsoft.guestbooktaxi.fragments;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.hjsoft.guestbooktaxi.R;
 import com.hjsoft.guestbooktaxi.SessionManager;
+import com.hjsoft.guestbooktaxi.activity.TeleCallActivity;
 import com.hjsoft.guestbooktaxi.model.BookCabPojo;
 import com.hjsoft.guestbooktaxi.model.MSeaterPojo;
 import com.hjsoft.guestbooktaxi.webservices.API;
@@ -55,6 +57,7 @@ public class TeleCallFragment extends Fragment {
     String item="";
     SessionManager session;
     HashMap<String, String> user;
+    TeleCallActivity a;
 
 
 
@@ -91,30 +94,33 @@ public class TeleCallFragment extends Fragment {
 
                     }
 
-                    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, categories);
+                    //if(isAdded()) {
 
-                    // Drop down layout style - list view with radio button
-                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(a, android.R.layout.simple_spinner_item, categories);
 
-                    // attaching data adapter to spinner
-                    sp.setAdapter(dataAdapter);
+                        // Drop down layout style - list view with radio button
+                        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                        // attaching data adapter to spinner
+                        sp.setAdapter(dataAdapter);
 
 
-                    sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        public void onItemSelected(AdapterView<?> parent, View view,
-                                                   int position, long id) {
+                        sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            public void onItemSelected(AdapterView<?> parent, View view,
+                                                       int position, long id) {
 
-                            if(position!=0) {
+                                if (position != 0) {
 
-                                item = parent.getItemAtPosition(position).toString();
+                                    item = parent.getItemAtPosition(position).toString();
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {
 
-                        }
-                    });
+                            }
+                        });
+                   // }
 
                 }
             }
@@ -268,5 +274,15 @@ public class TeleCallFragment extends Fragment {
 
             Toast.makeText(getActivity(),"Please select the vehicle category!",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof TeleCallActivity){
+            a=(TeleCallActivity) context;
+        }
+
     }
 }

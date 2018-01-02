@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     API REST_CLIENT;
     EditText etEmail;
     String stEmail;
-    BottomSheetDialogFragment myBottomSheet;
+    //BottomSheetDialogFragment myBottomSheet;
     SessionManager session;
     String companyId="CMP00001";
     int count=0;
@@ -76,9 +76,9 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences.Editor editor;
     int PRIVATE_MODE = 0;
     private static final String PREF_NAME = "SharedPref";
-    String version="3.8";
+    //String version="4.5";
     String city="Visakhapatnam";
-    //String version="2";//20
+    String version="2";//20
 
 
     @Override
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         pref = getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
 
-        myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
+        //myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
         btValidateOTP.setVisibility(View.GONE);
         dbAdapter=new DBAdapter(getApplicationContext());
         dbAdapter=dbAdapter.open();
@@ -336,7 +336,9 @@ public class MainActivity extends AppCompatActivity {
 
                             progressDialog.dismiss();
 
-                            if(myBottomSheet!=null) {
+                            Toast.makeText(MainActivity.this,"Please check Internet connection!",Toast.LENGTH_SHORT).show();
+
+                            /*if(myBottomSheet!=null) {
 
                                 if (myBottomSheet.isAdded()) {
                                     //return;
@@ -345,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     myBottomSheet.show(getSupportFragmentManager(), myBottomSheet.getTag());
                                 }
-                            }
+                            }*/
                         }
                     });
                 }

@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.design.widget.CoordinatorLayout
     android:id="@+id/at_cLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:clickable="true">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorBg">
-
         <LinearLayout android:id="@+id/fcr_ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/rect_light_bg"
             android:padding="12dp"
-            android:layout_margin="6dp">
-
+            android:layout_margin="6dp"
+            android:clickable="true">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,9 +38,7 @@
                     android:layout_weight="1"
                     android:textSize="12sp"
                     android:textColor="@color/colorBlack"/>
-
             </LinearLayout>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,11 +60,8 @@
                     android:layout_weight="1"
                     android:textSize="12sp"
                     android:textColor="@color/colorBlack"/>
-
             </LinearLayout>
-
         </LinearLayout>
-
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
@@ -87,14 +80,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/colorAshLight"/>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@color/colorWhite"
                 android:clickable="true">
-
                 <ImageView android:id="@+id/fcr_iv_tick"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -103,8 +94,6 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="8dp"
                     android:visibility="gone"/>
-
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -112,7 +101,6 @@
                     android:layout_margin="6dp"
                     android:clickable="true"
                     >
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -124,7 +112,6 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:layout_weight="1" />
-
                     <TextView android:id="@+id/fcr_tv_cash"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -140,7 +127,6 @@
                         android:textStyle="bold"
                         android:background="@drawable/rect_blue_stroke_bg_nc"
                         android:layout_weight="1"/>
-
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
@@ -148,7 +134,6 @@
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:visibility="invisible"/>
-
                     <TextView android:id="@+id/fcr_tv_wallet"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -164,9 +149,7 @@
                         android:textStyle="bold"
                         android:background="@drawable/rect_blue_stroke_bg_nc"
                         android:layout_weight="1"/>
-
                 </LinearLayout>
-
                 <TextView android:id="@+id/fcr_tv_add_money"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -181,14 +164,11 @@
                     android:background="@drawable/rect_ash_stroke_bg_single_line"
                     android:padding="8dp"
                     android:visibility="gone"/>
-
-
             </LinearLayout>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#d0d0d0"/>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -215,13 +195,23 @@
                 <TextView android:id="@+id/fcr_tv_ride_estimate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Fare Estimate - Rs.-"
+                    android:text="Fare Estimate ~ Rs.- "
                     android:textSize="13sp"
                     android:layout_weight="1"
-                    android:gravity="center"
+                    android:gravity="right"
                     android:layout_marginTop="12dp"
                     android:layout_marginBottom="12dp"
                     android:textColor="@color/colorBlack" />
+                <TextView android:id="@+id/fcr_tv_fare_msg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="  + Taxes apply"
+                    android:textSize="10sp"
+                    android:gravity="left"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:textColor="@color/colorBlack"
+                    android:layout_weight="0.5"/>
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
@@ -236,19 +226,15 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:textColor="@color/colorBlack"/>
-
             </LinearLayout>
             <Button android:id="@+id/fcr_bt_confirm_ride"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/confirm_ride"
-                android:background="@drawable/rect_bg"
-                android:textColor="@color/colorBlack"
+                android:background="@drawable/ride_now_bg"
+                android:textColor="#ffd600"
                 android:textSize="14sp"
                 android:padding="8dp"/>
-
         </LinearLayout>
-
     </RelativeLayout>
-
 </android.support.design.widget.CoordinatorLayout>

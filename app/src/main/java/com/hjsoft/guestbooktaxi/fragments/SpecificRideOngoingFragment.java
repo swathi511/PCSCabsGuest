@@ -166,6 +166,7 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
 
         requestId=data.getRequestId();
         driverName=data.getDriverName();
+        driverMobile=data.getDriverMobile();
 
         stCategorySelected=data.getVehicleCategory();
         status=dbAdapter.getUserStatus(requestId);
@@ -249,7 +250,7 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
         tvDriverMobile.setText(data.getDriverMobile());
         //tvDriverMobile.setText(data.getP);
 
-      //  llTrackRide.setVisibility(View.INVISIBLE);
+        //  llTrackRide.setVisibility(View.INVISIBLE);
         //llCont.setVisibility(View.GONE);
         rlCont.setVisibility(View.INVISIBLE);
         llArrivalTime.setVisibility(View.GONE);
@@ -337,7 +338,7 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
             public void onClick(View view) {
 
                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:"));//GUEST NUMBER HERE...
+                intent.setData(Uri.parse("tel:"+driverMobile)); //GUEST NUMBER HERE...
                 startActivity(intent);
             }
         });
@@ -392,22 +393,22 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
     public void showTrackCabFunctionality()
     {
         //if(llArrivalTime.isShown())
-       // {
-          //  llArrivalTime.setVisibility(View.GONE);
-      //  }
+        // {
+        //  llArrivalTime.setVisibility(View.GONE);
+        //  }
         tvArrivalTime.setText("Driver waiting at your location.");
-      //  llTrackRide.setVisibility(View.VISIBLE);
+        //  llTrackRide.setVisibility(View.VISIBLE);
         btTrackRide.setVisibility(View.VISIBLE);
-       // checkForDutyFinish();
+        // checkForDutyFinish();
         checkOTPstatus();
     }
 
     public void showingTrackCab()
     {
-       // if(llTrackRide.isShown())
-      //  {
-       //     llTrackRide.setVisibility(View.VISIBLE);
-      //  }
+        // if(llTrackRide.isShown())
+        //  {
+        //     llTrackRide.setVisibility(View.VISIBLE);
+        //  }
 
         //ibPhone.setVisibility(View.GONE);
 
@@ -437,10 +438,12 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                     @Override
                     public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
 
-                        if(myBottomSheet.isAdded())
-                        {
-                            myBottomSheet.dismiss();
+                        if(myBottomSheet!=null) {
 
+                            if (myBottomSheet.isAdded()) {
+                                myBottomSheet.dismiss();
+
+                            }
                         }
 
                         if(response.isSuccessful())
@@ -459,8 +462,8 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                                 dbAdapter.updateUserRideStatus(requestId,"arrived");
                                 tvArrivalTime.setText("Cab has arrived!");
                                 //tvCancelRide.setVisibility(View.GONE);
-                               // llArrivalTime.setVisibility(View.GONE);
-                               // llTrackRide.setVisibility(View.VISIBLE);
+                                // llArrivalTime.setVisibility(View.GONE);
+                                // llTrackRide.setVisibility(View.VISIBLE);
 
                                 h.removeCallbacks(run);
                                 btTrackRide.setVisibility(View.VISIBLE);
@@ -512,14 +515,14 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                     @Override
                     public void onFailure(Call<BookCabPojo> call, Throwable t) {
 
+                        if(myBottomSheet!=null) {
 
-                        if(myBottomSheet.isAdded())
-                        {
-                            //return;
+                            if (myBottomSheet.isAdded()) {
+                                //return;
 
-                        }
-                        else {
-                            myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                            } else {
+                                myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                            }
                         }
                     }
                 });
@@ -747,8 +750,8 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                 complete_address = "Unable to get the location details";
                 tvMyLoc.setText(complete_address);
             }
-          //  mMap.addMarker(new MarkerOptions().position(lastLoc)
-                   // .icon(BitmapDescriptorFactory.fromResource(R.drawable.sedan)));
+            //  mMap.addMarker(new MarkerOptions().position(lastLoc)
+            // .icon(BitmapDescriptorFactory.fromResource(R.drawable.sedan)));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastLoc, 16));
             mMap.getUiSettings().setMapToolbarEnabled(false);
         }
@@ -999,8 +1002,11 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                         @Override
                         public void onResponse(Call<List<CabLocationPojo>> call, Response<List<CabLocationPojo>> response) {
 
-                            if (myBottomSheet.isAdded()) {
-                                myBottomSheet.dismiss();
+                            if(myBottomSheet!=null) {
+
+                                if (myBottomSheet.isAdded()) {
+                                    myBottomSheet.dismiss();
+                                }
                             }
                             CabLocationPojo cl;
                             List<CabLocationPojo> cabLocData;
@@ -1025,7 +1031,7 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.prime_15)));
                                             }
                                         } else {
-                                           // cab.setPosition(cabLocLatLng);
+                                            // cab.setPosition(cabLocLatLng);
                                             startPosition = cab.getPosition();
                                             finalPosition = new LatLng(Double.parseDouble(cl.getLatitude()), Double.parseDouble(cl.getLongitude()));
                                             double toRotation = bearingBetweenLocations(startPosition, finalPosition);
@@ -1073,11 +1079,14 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                         @Override
                         public void onFailure(Call<List<CabLocationPojo>> call, Throwable t) {
 
-                            if (myBottomSheet.isAdded()) {
-                                //return;
-                            } else {
-                                if (rootView.isShown()) {
-                                    myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                            if(myBottomSheet!=null) {
+
+                                if (myBottomSheet.isAdded()) {
+                                    //return;
+                                } else {
+                                    if (rootView.isShown()) {
+                                        myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                                    }
                                 }
                             }
                         }
@@ -1244,6 +1253,8 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
 
                 hOtp.postDelayed(this,30000);
 
+                System.out.println("checking OTP status ...."+requestId+":"+companyId);
+
                 JsonObject v=new JsonObject();
                 v.addProperty("requestid",requestId);
                 v.addProperty("companyid",companyId);
@@ -1253,13 +1264,15 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                     @Override
                     public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
 
+                        System.out.println("in response .. "+response.isSuccessful()+response.message());
+
                         if(response.isSuccessful())
                         {
                             hOtp.removeCallbacks(rOtp);
                             checkForDutyFinish();
                             OTPAuthenticated=true;
                             llArrivalTime.setVisibility(View.GONE);
-                           // ibPhone.setVisibility(View.GONE);
+                            // ibPhone.setVisibility(View.GONE);
                             btTrackRide.setVisibility(View.VISIBLE);
                             btTrackRide.setAlpha(Float.parseFloat("1"));
                         }

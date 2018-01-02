@@ -224,7 +224,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center">
             <TextView android:id="@+id/frc_tv_cancel_charge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -234,7 +236,7 @@
                 android:textColor="@color/colorBlack"
                 android:layout_margin="16dp" />
 
-            <TextView
+            <TextView android:id="@+id/frc_tv_cancel_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Cancellation Charges to be added to next ride."
@@ -242,12 +244,39 @@
                 android:gravity="left"
                 android:textColor="@color/colorTextBlue"
                 android:layout_margin="16dp"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
+        </LinearLayout>
 
+        <LinearLayout android:id="@+id/frc_ll_wallet"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp">
 
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAllCaps="true"
+                android:text="@string/total_wallet_balance"
+                android:textColor="@color/colorBlack"
+                android:textSize="10sp"
+                android:gravity="left"
+                android:textStyle="bold"/>
+
+            <TextView android:id="@+id/frc_tv_wallet_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAllCaps="true"
+                android:text="@string/xxx"
+                android:textColor="@color/colorTextBlue"
+                android:textSize="12sp"
+                android:gravity="right"/>
 
         </LinearLayout>
 
 
     </LinearLayout>
+
+
 </ScrollView>

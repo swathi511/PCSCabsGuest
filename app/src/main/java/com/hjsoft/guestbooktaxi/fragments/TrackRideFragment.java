@@ -138,7 +138,7 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
     TextView tvArrivalTime,tvArrivalText;
     double curnt_lat,curnt_long;
     ProgressDialog progressDialog;
-    BottomSheetDialogFragment myBottomSheet;
+    //BottomSheetDialogFragment myBottomSheet;
     DBAdapter dbAdapter;
     String pickupLoc,dropLoc,pickupLat,pickupLong;
     String rideDate;
@@ -167,6 +167,7 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
     String stLocalPkg="";
     TextView tvOTP;
     NotificationManager notificationManager;
+    RideInProgressActivity a;
 
 
     @Override
@@ -230,7 +231,7 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
         tvMyLoc=(TextView)rootView.findViewById(R.id.ftr_tv_place);
         ibPhone=(ImageButton)rootView.findViewById(R.id.ftr_ib_phone);
         tvArrivalTime=(TextView)rootView.findViewById(R.id.ftr_tv_arrival_time);
-        myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
+        //myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
         llArrivalTime=(LinearLayout)rootView.findViewById(R.id.ftr_ll_arrival_time);
         llTrackRide=(LinearLayout)rootView.findViewById(R.id.ftr_ll_track_ride);
         rlCont=(RelativeLayout)rootView.findViewById(R.id.ftr_rl);
@@ -408,9 +409,12 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
                                 @Override
                                 public void onResponse(Call<List<CabLocationPojo>> call, Response<List<CabLocationPojo>> response) {
 
-                                    if (myBottomSheet.isAdded()) {
-                                        myBottomSheet.dismiss();
-                                    }
+                                    /*if(myBottomSheet!=null) {
+
+                                        if (myBottomSheet.isAdded()) {
+                                            myBottomSheet.dismiss();
+                                        }
+                                    }*/
                                     CabLocationPojo cl;
                                     List<CabLocationPojo> cabLocData;
                                     if (response.isSuccessful()) {
@@ -488,14 +492,19 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
                                 @Override
                                 public void onFailure(Call<List<CabLocationPojo>> call, Throwable t) {
 
-                                    if (myBottomSheet.isAdded()) {
-                                        //return;
-                                    } else {
+                                    Toast.makeText(a,"Check Internet connection!",Toast.LENGTH_SHORT).show();
 
-                                        if(rootView.isShown()) {
-                                            myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                                    /*if(myBottomSheet!=null) {
+
+                                        if (myBottomSheet.isAdded()) {
+                                            //return;
+                                        } else {
+
+                                            if (rootView.isShown()) {
+                                                myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                                            }
                                         }
-                                    }
+                                    }*/
                                 }
                             });
                         }
@@ -634,8 +643,12 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
         progressDialog.setMessage("Getting Cab Arrival Time");
         progressDialog.show();
 
+//        String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+//                "origins="+data.getLatitude()+","+data.getLongitude()+"&destinations="+pickupLat+","+pickupLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
+
         String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
-                "origins="+data.getLatitude()+","+data.getLongitude()+"&destinations="+pickupLat+","+pickupLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
+                "origins="+data.getLatitude()+","+data.getLongitude()+"&destinations="+pickupLat+","+pickupLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+
 
         Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
         call.enqueue(new Callback<DurationPojo>() {
@@ -700,11 +713,13 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
                     @Override
                     public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
 
-                        if(myBottomSheet.isAdded())
-                        {
-                            myBottomSheet.dismiss();
+                        /*if(myBottomSheet!=null) {
 
-                        }
+                            if (myBottomSheet.isAdded()) {
+                                myBottomSheet.dismiss();
+
+                            }
+                        }*/
 
                         if(response.isSuccessful())
                         {
@@ -778,18 +793,21 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
                     @Override
                     public void onFailure(Call<BookCabPojo> call, Throwable t) {
 
+                        Toast.makeText(a,"Check Internet connection!",Toast.LENGTH_SHORT).show();
 
-                        if(myBottomSheet.isAdded())
-                        {
-                            //return;
 
-                        }
-                        else {
+                        /*if(myBottomSheet!=null) {
 
-                            if(rootView.isShown()) {
-                                myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                            if (myBottomSheet.isAdded()) {
+                                //return;
+
+                            } else {
+
+                                if (rootView.isShown()) {
+                                    myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                                }
                             }
-                        }
+                        }*/
                     }
                 });
             }
@@ -1350,6 +1368,16 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
+        //myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof RideInProgressActivity){
+            a=(RideInProgressActivity) context;
+        }
+
     }
 }

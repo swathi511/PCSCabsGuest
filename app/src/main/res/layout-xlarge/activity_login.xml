@@ -41,7 +41,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp">
 
-                <TextView android:id="@+id/al_tv_signup"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="left"
@@ -50,7 +50,8 @@
                     android:textSize="18sp"
                     android:layout_weight="1"
                     android:textAllCaps="true"
-                    android:layout_marginLeft="16dp"/>
+                    android:layout_marginLeft="16dp"
+                    android:visibility="gone"/>
 
                 <!--
 
@@ -73,7 +74,7 @@
                 android:textSize="16sp"
                 android:textColorHint="@color/colorWhite"
                 android:textColor="@color/colorWhite"
-                android:background="@drawable/login_et_bg"
+                android:background="@drawable/login_bt_bg"
                 android:padding="10dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
@@ -104,14 +105,13 @@
                 android:orientation="horizontal"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
-                android:layout_gravity="center"
-                >
+                android:layout_gravity="center_horizontal">
 
                 <Button android:id="@+id/al_bt_login"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/g_otp"
+                    android:text="@string/login"
                     android:textColor="@color/colorWhite"
                     android:layout_marginTop="40dp"
                     android:layout_marginBottom="16dp"
@@ -145,10 +145,20 @@
                     android:textAllCaps="false"
                     android:layout_weight="1"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="8dp"
-                    />
+                    android:layout_marginRight="8dp" />
 
             </LinearLayout>
+
+            <TextView android:id="@+id/al_tv_signup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=" New user ?  SIGN UP !"
+                android:textColor="@color/colorYellow"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textSize="14sp"
+                android:layout_weight="1"
+                android:textStyle="bold"/>
 
 
 

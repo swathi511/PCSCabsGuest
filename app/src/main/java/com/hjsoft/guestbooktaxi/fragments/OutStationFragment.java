@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -81,7 +83,9 @@ public class OutStationFragment extends Fragment {
     TextView tvCash,tvWallet;
     DBAdapter dbAdapter;
     String stWalletAmount;
-    TextView tvAddMoney;
+    TextView tvAddMoney,tvCoupon;
+    String stDuration;
+    String stCoupon="-";
 
     @Nullable
     @Override
@@ -108,6 +112,7 @@ public class OutStationFragment extends Fragment {
         tvWallet=(TextView)v.findViewById(R.id.fos_tv_wallet);
         pref = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         tvAddMoney=(TextView)v.findViewById(R.id.fos_tv_add_money);
+        tvCoupon=(TextView)v.findViewById(R.id.fos_tv_coupon);
         tvAddMoney.setVisibility(View.GONE);
 
         editor = pref.edit();
@@ -170,7 +175,7 @@ public class OutStationFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                getFareEstimate();
+                //getFareEstimate();
 
                 stWalletAmount=dbAdapter.getWalletAmount();
 
@@ -179,6 +184,21 @@ public class OutStationFragment extends Fragment {
                 tvCash.setTextColor(Color.parseColor("#9e9e9e"));
                 tvWallet.setTextColor(Color.parseColor("#0067de"));
                 stPaymentType="wallet";
+
+                if(Integer.parseInt(stWalletAmount)<amnt)
+                {
+                    Toast.makeText(getActivity(),"Insufficient balance! Please Add Money.",Toast.LENGTH_SHORT).show();
+                    btBook.setAlpha(Float.parseFloat("0.5"));
+                    btBook.setClickable(false);
+                    btBook.setEnabled(false);
+                    tvAddMoney.setVisibility(View.VISIBLE);
+                }
+                else {
+                    btBook.setAlpha(1);
+                    btBook.setClickable(true);
+                    btBook.setEnabled(true);
+
+                }
 
 //                if(Integer.parseInt(stWalletAmount)<amnt)
 //                {
@@ -203,6 +223,52 @@ public class OutStationFragment extends Fragment {
                 Intent i=new Intent(getActivity(), PaymentActivity.class);
                 i.putExtra("value","yes");
                 startActivity(i);
+            }
+        });
+
+        tvCoupon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                /*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.alert_coupon, null);
+                dialogBuilder.setView(dialogView);
+
+                final AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.show();
+
+                final EditText etCoupon=(EditText)dialogView.findViewById(R.id.ac_et_otp);
+                Button btOk=(Button)dialogView.findViewById(R.id.ac_bt_ok);
+
+                btOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        stCoupon=etCoupon.getText().toString().trim();
+
+                        if(stCoupon.equals(""))
+                        {
+                            Toast.makeText(getActivity(),"Please enter coupon code",Toast.LENGTH_SHORT).show();
+                            stCoupon="-";
+                        }
+                        else {
+
+                            tvCoupon.setText(stCoupon);
+                            tvCoupon.setTypeface(null, Typeface.BOLD);
+                            tvCoupon.setTextColor(Color.parseColor("#4CAF50"));
+                            //tvCoupon.setTextColor(Color.parseColor("#FBC02D"));
+                            //tvCoupon.setBackgroundColor(Color.parseColor("#FFF176"));
+
+                            tvCoupon.setTextSize(13);
+                            alertDialog.dismiss();
+                        }
+
+                        //Promcode Not Applicable
+                    }
+                });*/
+
             }
         });
 
@@ -231,7 +297,7 @@ public class OutStationFragment extends Fragment {
                     progressDialog.setMessage("Please Wait ...");
                     progressDialog.show();
 
-                   // System.out.println("fare estimate issssss "+amnt);
+                    // System.out.println("fare estimate issssss "+amnt);
 
                     JsonObject v=new JsonObject();
                     v.addProperty("GuestProfileid",guestProfileId);
@@ -253,7 +319,10 @@ public class OutStationFragment extends Fragment {
                     v.addProperty("fare_estimate",amnt);
                     v.addProperty("slabhours","-");
                     v.addProperty("slabkms","-");
+                    v.addProperty("Promocode",stCoupon);
                     //  v.addProperty("Profileid"," ");
+
+                    System.out.println("promocode is "+stCoupon);
 
                     System.out.println("data is "+stPkg+":"+stCab+":"+amnt);
 
@@ -266,19 +335,40 @@ public class OutStationFragment extends Fragment {
 
                             if(response.isSuccessful())
                             {
-                                progressDialog.dismiss();
-                                lBookingLayout.setVisibility(View.VISIBLE);
+
                                 data=response.body();
-                                btBook.setVisibility(View.INVISIBLE);
-                                // tvBookingid.setText("' "+data.getMessage()+" ' is your Booking Id !");
-                                // tvBookingid.setVisibility(View.VISIBLE);
-                                tvBookingid.setText("Booking Id ' "+data.getMessage()+" ' generated");
-                                ivCab.setClickable(false);
-                                ivPkg.setClickable(false);
-                                ivDateTime.setClickable(false);
-                                btFareEstimate.setClickable(false);
-                                tvCash.setClickable(false);
-                                tvWallet.setClickable(false);
+                                System.out.println("********* "+data.getMessage());
+
+
+                                String d[]=data.getMessage().split(",");
+
+                                progressDialog.dismiss();
+
+                                if(d.length==1) {
+
+                                    lBookingLayout.setVisibility(View.VISIBLE);
+
+                                    btBook.setVisibility(View.INVISIBLE);
+                                    // tvBookingid.setText("' "+data.getMessage()+" ' is your Booking Id !");
+                                    // tvBookingid.setVisibility(View.VISIBLE);
+                                    tvBookingid.setText("Booking Id ' " + data.getMessage() + " ' generated");
+                                    ivCab.setClickable(false);
+                                    ivPkg.setClickable(false);
+                                    ivDateTime.setClickable(false);
+                                    btFareEstimate.setClickable(false);
+                                    tvCash.setClickable(false);
+                                    tvWallet.setClickable(false);
+                                    tvCoupon.setClickable(false);
+                                }
+                                else {
+
+                                    tvCoupon.setText("Apply Coupon");
+                                    tvCoupon.setTypeface(null, Typeface.BOLD);
+                                    tvCoupon.setTextSize(12);
+                                    tvCoupon.setTextColor(Color.parseColor("#FF8F00"));
+                                    stCoupon = "-";
+                                    Toast.makeText(getActivity(), "Coupon: "+d[1], Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
 
@@ -354,6 +444,8 @@ public class OutStationFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
 
+                        System.out.println("************* "+mnth);
+
                         Date d=makeDateGMT(yr,mnth-1,day);
                         Date d1=new Date();
 
@@ -364,6 +456,8 @@ public class OutStationFragment extends Fragment {
                             Calendar c = Calendar.getInstance();
                             datetime.set(Calendar.HOUR_OF_DAY, hr);
                             datetime.set(Calendar.MINUTE, min);
+
+                            System.out.println("@@@@@@@ "+datetime.toString()+"::"+c.toString());
 
                             if(datetime.getTimeInMillis() > c.getTimeInMillis()){
 
@@ -585,6 +679,10 @@ public class OutStationFragment extends Fragment {
                                     stKms = stDistDetails[0];
                                     progressDialog.dismiss();
 
+                                    stDuration=String.valueOf((t2.getValue())/60);
+
+                                    //System.out.println("d & t is "+stKms+":"+stDuration);
+
                                     AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
                                     LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -605,6 +703,7 @@ public class OutStationFragment extends Fragment {
                                     v.addProperty("traveltype","outstation");
                                     v.addProperty("vehicle_type","All");
                                     v.addProperty("approxkms",stKms);
+                                    v.addProperty("duration",stDuration);
 
                                     Call<List<OutStationPojo>> call1=REST_CLIENT.getFareEstimate(v);
                                     call1.enqueue(new Callback<List<OutStationPojo>>() {
@@ -629,17 +728,17 @@ public class OutStationFragment extends Fragment {
 
                                                             tvMiniKms.setText(stKms);
                                                             tvMiniKmsRate.setText(data.getOutsidekmsrate());
-                                                            amnt=amnt+(15*amnt)/100;
+                                                            //amnt=amnt+(15*amnt)/100;
                                                             tvMini.setText("Rs. " + String.valueOf(amnt));
                                                             btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
                                                         }
                                                             break;
-                                                      case 2:if(stCab.equals("SUV")) {
+                                                        case 2:if(stCab.equals("SUV")) {
                                                             amnt = (int) Math.round(2 * stPkgNo * Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
 
                                                             tvMiniKms.setText(stKms);
                                                             tvMiniKmsRate.setText(data.getOutsidekmsrate());
-                                                            amnt=amnt+(15*amnt)/100;
+                                                            //amnt=amnt+(15*amnt)/100;
                                                             tvMini.setText("Rs. " + String.valueOf(amnt));
                                                             btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
 
@@ -651,7 +750,7 @@ public class OutStationFragment extends Fragment {
 
                                                             tvMiniKms.setText(stKms);
                                                             tvMiniKmsRate.setText(data.getOutsidekmsrate());
-                                                            amnt=amnt+(15*amnt)/100;
+                                                            //amnt=amnt+(15*amnt)/100;
                                                             tvMini.setText("Rs. " + String.valueOf(amnt));
                                                             btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
 
@@ -726,6 +825,10 @@ public class OutStationFragment extends Fragment {
                             stKms = stDistDetails[0];
                             progressDialog.dismiss();
 
+                            stDuration=String.valueOf((t2.getValue())/60);
+
+                            System.out.println("d & t is "+stKms+":"+stDuration);
+
                            /* AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
                             LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -746,6 +849,7 @@ public class OutStationFragment extends Fragment {
                             v.addProperty("traveltype","outstation");
                             v.addProperty("vehicle_type","All");
                             v.addProperty("approxkms",stKms);
+                            v.addProperty("duration",stDuration);
 
                             Call<List<OutStationPojo>> call1=REST_CLIENT.getFareEstimate(v);
                             call1.enqueue(new Callback<List<OutStationPojo>>() {
@@ -771,20 +875,24 @@ public class OutStationFragment extends Fragment {
                                                     // tvMiniKms.setText(stKms);
                                                     // tvMiniKmsRate.setText(data.getOutsidekmsrate());
                                                     //System.out.println("amnt befor "+amnt);
-                                                    amnt=amnt+(15*amnt)/100;
+
+                                                    //amnt=amnt+(15*amnt)/100;
+
                                                     //System.out.println("amnt after"+amnt);
 
                                                     btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
                                                 }
                                                     break;
-                                               case 2:if(stCab.equals("SUV")) {
+                                                case 2:if(stCab.equals("SUV")) {
                                                     amnt = (int) Math.round(2 * stPkgNo * Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
                                                     // tvMini.setText("Rs. " + String.valueOf(amnt));
                                                     // tvMiniKms.setText(stKms);
                                                     //  tvMiniKmsRate.setText(data.getOutsidekmsrate());
                                                     //System.out.println("amnt befor "+amnt);
-                                                    amnt=amnt+(15*amnt)/100;
-                                                   // System.out.println("amnt after"+amnt);
+
+                                                    //amnt=amnt+(15*amnt)/100;
+
+                                                    // System.out.println("amnt after"+amnt);
 
                                                     btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
 
@@ -797,7 +905,9 @@ public class OutStationFragment extends Fragment {
                                                     //  tvMiniKms.setText(stKms);
                                                     //  tvMiniKmsRate.setText(data.getOutsidekmsrate());
                                                     //System.out.println("amnt befor "+amnt);
-                                                    amnt=amnt+(15*amnt)/100;
+
+                                                    //amnt=amnt+(15*amnt)/100;
+
                                                     //System.out.println("amnt after"+amnt);
 
                                                     btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
@@ -810,7 +920,7 @@ public class OutStationFragment extends Fragment {
 
                                         stWalletAmount=dbAdapter.getWalletAmount();
 
-                                        if(Integer.parseInt(stWalletAmount)<amnt)
+                                        /*if(Integer.parseInt(stWalletAmount)<amnt)
                                         {
                                             Toast.makeText(getActivity(),"Insufficient balance! Please Add Money.",Toast.LENGTH_SHORT).show();
                                             btBook.setAlpha(Float.parseFloat("0.5"));
@@ -823,7 +933,7 @@ public class OutStationFragment extends Fragment {
                                             btBook.setClickable(true);
                                             btBook.setEnabled(true);
 
-                                        }
+                                        }*/
                                     }
                                 }
 
@@ -910,7 +1020,9 @@ public class OutStationFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-               Date d=makeDateGMT(yr,mnth-1,day);
+                //System.out.println("************* "+mnth);
+
+                Date d=makeDateGMT(yr,mnth-1,day);
                 Date d1=new Date();
 
                 if(d.equals(d1))
@@ -1157,6 +1269,8 @@ public class OutStationFragment extends Fragment {
                 tvWallet.setEnabled(true);
                 tvWallet.setClickable(true);
                 tvWallet.setAlpha(1);
+
+                getFareEstimate();
             }
         });
 
@@ -1182,6 +1296,8 @@ public class OutStationFragment extends Fragment {
                 tvWallet.setEnabled(true);
                 tvWallet.setClickable(true);
                 tvWallet.setAlpha(1);
+
+                getFareEstimate();
             }
         });
 
@@ -1207,6 +1323,8 @@ public class OutStationFragment extends Fragment {
                 tvWallet.setEnabled(true);
                 tvWallet.setClickable(true);
                 tvWallet.setAlpha(1);
+
+                getFareEstimate();
             }
         });
 

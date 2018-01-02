@@ -16,8 +16,9 @@ import java.util.ArrayList;
  * Created by hjsoft on 16/11/16.
  */
 public class DBAdapter {
+
     static final String DATABASE_NAME = "cabs.db";
-    static final int DATABASE_VERSION = 36;
+    static final int DATABASE_VERSION = 41;
     public static final int NAME_COLUMN = 1;
 
     public static final String TABLE_USER_STATUS="create table if not exists "+"USER_STATUS"+

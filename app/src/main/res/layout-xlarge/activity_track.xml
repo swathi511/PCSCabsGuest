@@ -1,6 +1,297 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/at_cLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-</LinearLayout>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBg">
+
+        <TextView android:id="@+id/at_tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="@string/load_cabs"
+            android:gravity="center"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:textAllCaps="true"
+            android:background="@drawable/rect_bg" />
+
+        <LinearLayout android:id="@+id/at_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rect_light_bg"
+            android:padding="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="6dp"
+            android:layout_below="@+id/at_tv_title">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+                <TextView
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/round_green"
+                    android:layout_marginLeft="4dp"
+                    android:layout_gravity="center"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pickup_loc"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorTextBlue"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <TextView android:id="@+id/at_tv_pickup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pickup_loc"
+                android:textColor="@color/colorBlack"
+                android:textSize="12sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
+                <TextView
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/round_pink"
+                    android:layout_marginLeft="4dp"
+                    android:layout_gravity="center"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/drop_loc"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorTextBlue"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="center"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
+
+            <TextView android:id="@+id/at_tv_drop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/drop_loc"
+                android:textColor="@color/colorBlack"
+                android:textSize="12sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"/>
+
+        </LinearLayout>
+
+        <TextView android:id="@+id/at_tv_select_cab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select a Cab type"
+            android:background="@drawable/rect_bg"
+            android:textColor="@color/colorWhite"
+            android:layout_below="@+id/at_ll"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textAllCaps="true"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+
+        <LinearLayout android:id="@+id/at_ll3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/at_tv_select_cab"
+            android:background="@drawable/rect_bg"
+            android:visibility="gone">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No response from Driver"
+                android:textColor="@color/colorWhite"
+                android:padding="10dp"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ok"
+                android:textColor="@color/colorWhite"
+                android:padding="10dp"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="16dp"/>
+
+        </LinearLayout>
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_below="@+id/at_ll3"/>
+
+        <TextView android:id="@+id/at_tv_no_cab_found"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="@string/no_cabs"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:layout_centerInParent="true"
+            android:background="@color/colorAsh"
+            android:padding="8dp"
+            android:gravity="center"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/layout_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:behavior_peekHeight="200dp"
+        app:behavior_hideable="true"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        android:elevation="4dp"
+        android:background="#ffffff"
+        android:visibility="gone">
+
+        <ImageButton android:id="@+id/at_ib_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close_circle"
+            android:background="#ffffff"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_above="@+id/at_tv_cab_loc"
+            android:layout_marginRight="10dp" />
+
+        <TextView android:id="@+id/at_tv_cab_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cab_at"
+            android:textSize="12sp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"
+            android:textAllCaps="true"
+            android:textColor="@color/colorTextBlue"
+            android:textStyle="bold"/>
+        <TextView android:id="@+id/at_tv_cab_loc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/at_tv_cab_at"
+            android:text="@string/cab_loc"
+            android:textColor="@color/colorAsh"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="4dp"
+            android:textSize="14sp"/>
+
+        <LinearLayout android:id="@+id/at_ll2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/at_tv_cab_loc"
+            android:gravity="left"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Approximately "
+                android:textSize="14sp"
+                android:textColor="@color/colorAsh"/>
+            <TextView android:id="@+id/at_tv_km_radius"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10 km radius "
+                android:textSize="14sp"
+                android:textColor="@color/colorTextBlue"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="and"
+                android:textSize="14sp"
+                android:textColor="@color/colorAsh"/>
+            <TextView android:id="@+id/at_tv_time_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" 15 mins "
+                android:textSize="14sp"
+                android:textColor="@color/colorTextBlue"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="away"
+                android:textSize="14sp"
+                android:textColor="@color/colorAsh"/>
+
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/at_ll4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/at_ll2"
+            android:gravity="left"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cab_cat"
+                android:textSize="14sp"
+                android:textColor="@color/colorAsh"/>
+            <TextView android:id="@+id/at_tv_cab_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sedan"
+                android:textSize="14sp"
+                android:textColor="@color/colorTextBlue"
+                android:textAllCaps="true"/>
+
+        </LinearLayout>
+
+        <Button android:id="@+id/at_bt_book"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_below="@+id/at_ll4"
+            android:text="@string/book_ride"
+            android:layout_margin="10dp"
+            android:background="@drawable/rect_bg"
+            android:padding="12dp"
+            android:textColor="#ffffff"
+            android:textSize="12sp" />
+
+    </RelativeLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

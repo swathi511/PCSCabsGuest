@@ -7,6 +7,7 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -148,7 +150,9 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
     String stLocalFare;
     String stFare;
     TextView tvClose,tvFareMsg;
-
+    String stTime;
+    TextView tvApplyCoupon;
+    String stCoupon="-";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -217,6 +221,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
         tvRideEstimate=(TextView)rootView.findViewById(R.id.fcr_tv_ride_estimate);
         tvAddMoney=(TextView)rootView.findViewById(R.id.fcr_tv_add_money);
         tvFareMsg=(TextView)rootView.findViewById(R.id.fcr_tv_fare_msg);
+        tvApplyCoupon=(TextView)rootView.findViewById(R.id.fcr_tv_apply_coupon);
 
         pickupLoc=pref.getString("pickup_location",null);
         dropLoc=pref.getString("drop_location",null);
@@ -267,6 +272,53 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
             stWalletAmount = "0";
         }
         tvWallet.setText(getString(R.string.Rs)+" "+stWalletAmount+" WALLET");
+
+        tvApplyCoupon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                /*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.alert_coupon, null);
+                dialogBuilder.setView(dialogView);
+
+                final AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.show();
+
+                final EditText etCoupon=(EditText)dialogView.findViewById(R.id.ac_et_otp);
+                Button btOk=(Button)dialogView.findViewById(R.id.ac_bt_ok);
+
+                btOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        stCoupon=etCoupon.getText().toString().trim();
+
+                        if(stCoupon.equals(""))
+                        {
+                            Toast.makeText(getActivity(),"Please enter coupon code",Toast.LENGTH_SHORT).show();
+                            stCoupon="-";
+                        }
+                        else {
+
+                            tvApplyCoupon.setText(stCoupon);
+                            tvApplyCoupon.setTypeface(null, Typeface.BOLD);
+                            tvApplyCoupon.setTextColor(Color.parseColor("#4CAF50"));
+                            //tvApplyCoupon.setTextColor(Color.parseColor("#FBC02D"));
+                            //tvApplyCoupon.setBackgroundColor(Color.parseColor("#FFF176"));
+
+                            tvApplyCoupon.setTextSize(13);
+                            alertDialog.dismiss();
+                        }
+
+
+
+                        //Promcode Not Applicable
+                    }
+                });*/
+            }
+        });
 
         tvAddMoney.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -330,8 +382,13 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                 progressDialog.setMessage("Getting Fare Estimate ..");
                 progressDialog.show();
 
+//                String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+//                        "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
+
                 String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
-                        "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
+                        "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+
+                System.out.println("url String is  "+urlString);
 
                 Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
                 call.enqueue(new Callback<DurationPojo>() {
@@ -363,8 +420,14 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                     String stDistDetails[]=stDist.split(" ");
                                     stKms=stDistDetails[0];
                                     progressDialog.dismiss();
+
+                                    stTime=String.valueOf((t2.getValue())/60);
+
+                                    //System.out.println("d & t is "+stKms+":"+stTime);
                                 }
                             }
+
+                            System.out.println("distance issss "+stKms);
 
                             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
@@ -390,6 +453,8 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                             v.addProperty("traveltype","local");
                             v.addProperty("vehicle_type",stCategorySelected);
                             v.addProperty("approxkms",stKms);
+                            v.addProperty("duration",stTime);
+
 
                             Call<List<OutStationPojo>> call1=REST_CLIENT.getFareEstimate(v);
 
@@ -421,7 +486,8 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                             tvRideTime.setText(getString(R.string.Rs) + " " + data.getRidetimepermin() + " per min");
                                             tvMinFare.setText(getString(R.string.Rs) + " " + data.getMinimumfare());
 
-                                            f = f + (15 * f) / 100;
+                                            //f = f + (15 * f) / 100;
+
                                             tvRideEstimate.setText(getString(R.string.Rs) + " " + String.valueOf(f));
                                         }
 
@@ -658,7 +724,9 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
             v.addProperty("slabhours",slabHr);
             v.addProperty("slabkms",slabKm);
             v.addProperty("vehiclecategory",stCategorySelected);
-            /*System.out.println("*******************************************");
+            v.addProperty("Promocode",stCoupon);
+
+            System.out.println("*******************************************");
             System.out.println(cda.getProfileId());
             System.out.println(cda.getVehRegNo() + ":" + cda.getCabCat());
             System.out.println("Driver "+cda.getDriverName());
@@ -669,12 +737,18 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
             System.out.println(dropLong);
             System.out.println(pickupLoc);
             System.out.println(dropLoc);
+            System.out.println(companyId);
+            System.out.println(travelType);
+            System.out.println(city);
+            System.out.println(stPaymentMode);
             System.out.println(stFareEstimate);
             System.out.println(travelPackage);
             System.out.println(slabHr);
             System.out.println(slabKm);
             System.out.println(stCategorySelected);
-            System.out.println("****************************************");*/
+            System.out.println(stCoupon);
+
+            System.out.println("****************************************");
 
 
             Call<BookCabPojo> call = REST_CLIENT.sendCabRequest(v);
@@ -686,24 +760,34 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                     if (response.isSuccessful()) {
 
                         msg = response.body();
-                        requestId = msg.getMessage();
 
-                        final JsonObject v1 = new JsonObject();
-                        v1.addProperty("requestid", requestId);
-                        v1.addProperty("companyid",companyId);
-                        //System.out.println("********** Request Id is " + requestId);
+                        System.out.println("********** "+msg.getMessage());
 
-                        handler = new Handler();
-                        r = new Runnable() {
-                            @Override
-                            public void run() {
+                        String d[]=msg.getMessage().split(",");
 
-                                count = count + 5;
+                        System.out.println("********** "+d.length);
 
-                                //previously it was 20 sec
-                                if (count >= 22) {
 
-                                    //remove comments if useing handler code & remopve below API call:getCabRequestStatus
+                        if(d.length==1)
+                        {
+                            requestId = msg.getMessage();
+
+                            final JsonObject v1 = new JsonObject();
+                            v1.addProperty("requestid", requestId);
+                            v1.addProperty("companyid", companyId);
+                            System.out.println("********** Request Id is " + requestId);
+
+                            handler = new Handler();
+                            r = new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    count = count + 5;
+
+                                    //previously it was 20 sec
+                                    if (count >= 22) {
+
+                                        //remove comments if useing handler code & remopve below API call:getCabRequestStatus
                                     /*count = -5;
                                     handler.removeCallbacks(r);
                                     waitingForDriver = false;
@@ -713,98 +797,96 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                     sendRequestCheckAcceptance(h);
                                     */
 
-                                    Call<BookCabPojo> callStatus = REST_CLIENT.getCabRequestStatus(v1);
-                                    callStatus.enqueue(new Callback<BookCabPojo>() {
-                                        @Override
-                                        public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
+                                        Call<BookCabPojo> callStatus = REST_CLIENT.getCabRequestStatus(v1);
+                                        callStatus.enqueue(new Callback<BookCabPojo>() {
+                                            @Override
+                                            public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
 
-                                            BookCabPojo msg;
+                                                BookCabPojo msg;
 
-                                            if (response.isSuccessful()) {
-                                                msg = response.body();
+                                                if (response.isSuccessful()) {
+                                                    msg = response.body();
 
-                                                if (msg.getMessage().equals("1")) {
+                                                    if (msg.getMessage().equals("1")) {
 
-                                                    count = -5;
-                                                    handler.removeCallbacks(r);
-                                                    waitingForDriver = false;
-                                                    isRequestAccepted = false;
-                                                    h = h + 1;
+                                                        count = -5;
+                                                        handler.removeCallbacks(r);
+                                                        waitingForDriver = false;
+                                                        isRequestAccepted = false;
+                                                        h = h + 1;
 
-                                                    JsonObject v = new JsonObject();
-                                                    v.addProperty("profileid", cda.getProfileId());
-                                                    v.addProperty("requestid", requestId);
-                                                    v.addProperty("status", "6");//3 No Response
-                                                    v.addProperty("companyid", companyId);
+                                                        JsonObject v = new JsonObject();
+                                                        v.addProperty("profileid", cda.getProfileId());
+                                                        v.addProperty("requestid", requestId);
+                                                        v.addProperty("status", "6");//3 No Response
+                                                        v.addProperty("companyid", companyId);
 
-                                                    Call<BookCabPojo> call1=REST_CLIENT.sendCabAcceptanceStatus(v);
-                                                    call1.enqueue(new Callback<BookCabPojo>() {
-                                                        @Override
-                                                        public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
-
-
-                                                        }
-
-                                                        @Override
-                                                        public void onFailure(Call<BookCabPojo> call, Throwable t) {
-
-                                                        }
-                                                    });
+                                                        Call<BookCabPojo> call1 = REST_CLIENT.sendCabAcceptanceStatus(v);
+                                                        call1.enqueue(new Callback<BookCabPojo>() {
+                                                            @Override
+                                                            public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
 
 
-                                                    sendRequestCheckAcceptance(h);
+                                                            }
+
+                                                            @Override
+                                                            public void onFailure(Call<BookCabPojo> call, Throwable t) {
+
+                                                            }
+                                                        });
 
 
-                                                } else if (msg.getMessage().equals("3")) {
+                                                        sendRequestCheckAcceptance(h);
 
-                                                    alertDialog.dismiss();
-                                                    handler.removeCallbacks(r);
-                                                    //  Toast.makeText(getContext(), "Cab request accepted by Driver", Toast.LENGTH_LONG).show();
-                                                    count = 0;
-                                                    waitingForDriver = false;
-                                                    isRequestAccepted = true;
-                                                    accepted=true;
-                                                    forPositionAccepted=p;
 
-                                                    CabData cd = cabDataList.get(c.getPosition());
-                                                    //CabData cd = cabDataList.get(forPositionAccepted);
-                                                    ArrayList<CabData> cabAcceptedData = new ArrayList<CabData>();
-                                                    cabAcceptedData.add(new CabData(cd.getProfileId(), cd.getVehRegNo(),
-                                                            cd.getPhoneNumber(), cd.getCabCat(), cd.getLatitude(), cd.getLongitude(),cd.getDriverName(),cd.getDriverPic(),cd.getDutyPerform()));
+                                                    } else if (msg.getMessage().equals("3")) {
 
-                                                    dbAdapter.insertUserRideStatus(requestId,"not arrived");
+                                                        alertDialog.dismiss();
+                                                        handler.removeCallbacks(r);
+                                                        //  Toast.makeText(getContext(), "Cab request accepted by Driver", Toast.LENGTH_LONG).show();
+                                                        count = 0;
+                                                        waitingForDriver = false;
+                                                        isRequestAccepted = true;
+                                                        accepted = true;
+                                                        forPositionAccepted = p;
 
-                                                    Intent i=new Intent(getActivity(),RideInProgressActivity.class);
-                                                    i.putExtra("list",cabAcceptedData);
-                                                    i.putExtra("requestId",requestId);
-                                                    i.putExtra("selectedCategory",stCategorySelected);
-                                                    i.putExtra("localPackage",stLocalPkg);
-                                                    startActivity(i);
-                                                    getActivity().finish();
-                                                }
-                                                else if (msg.getMessage().equals("5")) {
+                                                        CabData cd = cabDataList.get(c.getPosition());
+                                                        //CabData cd = cabDataList.get(forPositionAccepted);
+                                                        ArrayList<CabData> cabAcceptedData = new ArrayList<CabData>();
+                                                        cabAcceptedData.add(new CabData(cd.getProfileId(), cd.getVehRegNo(),
+                                                                cd.getPhoneNumber(), cd.getCabCat(), cd.getLatitude(), cd.getLongitude(), cd.getDriverName(), cd.getDriverPic(), cd.getDutyPerform()));
 
-                                                    handler.removeCallbacks(r);
+                                                        dbAdapter.insertUserRideStatus(requestId, "not arrived");
 
-                                                    count = -5;
-                                                    waitingForDriver = false;
-                                                    isRequestAccepted = false;
+                                                        Intent i = new Intent(getActivity(), RideInProgressActivity.class);
+                                                        i.putExtra("list", cabAcceptedData);
+                                                        i.putExtra("requestId", requestId);
+                                                        i.putExtra("selectedCategory", stCategorySelected);
+                                                        i.putExtra("localPackage", stLocalPkg);
+                                                        startActivity(i);
+                                                        getActivity().finish();
+                                                    } else if (msg.getMessage().equals("5")) {
 
-                                                    h = h + 1;
-                                                    sendRequestCheckAcceptance(h);
-                                                    // alertDialog.dismiss();
-                                                }
-                                                else {
+                                                        handler.removeCallbacks(r);
 
-                                                    handler.removeCallbacks(r);
+                                                        count = -5;
+                                                        waitingForDriver = false;
+                                                        isRequestAccepted = false;
 
-                                                    count = -5;
-                                                    waitingForDriver = false;
-                                                    isRequestAccepted = false;
+                                                        h = h + 1;
+                                                        sendRequestCheckAcceptance(h);
+                                                        // alertDialog.dismiss();
+                                                    } else {
 
-                                                    h = h + 1;
+                                                        handler.removeCallbacks(r);
 
-                                                    //send Noresponse logic..
+                                                        count = -5;
+                                                        waitingForDriver = false;
+                                                        isRequestAccepted = false;
+
+                                                        h = h + 1;
+
+                                                        //send Noresponse logic..
 
                                                    /* JsonObject v = new JsonObject();
                                                     v.addProperty("profileid", cda.getProfileId());
@@ -828,29 +910,28 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                                         }
                                                     });*/
 
-                                                    sendRequestCheckAcceptance(h);
+                                                        sendRequestCheckAcceptance(h);
 
 
+                                                    }
 
                                                 }
-
                                             }
-                                        }
 
-                                        @Override
-                                        public void onFailure(Call<BookCabPojo> call, Throwable t) {
+                                            @Override
+                                            public void onFailure(Call<BookCabPojo> call, Throwable t) {
 
-                                            Toast.makeText(getContext(), "Connectivity Issue! Please check", Toast.LENGTH_LONG).show();
-                                            //alertDialog.dismiss();
-                                            //handler.removeCallbacks(r);
-                                        }
-                                    });
+                                                Toast.makeText(getContext(), "Connectivity Issue! Please check", Toast.LENGTH_LONG).show();
+                                                //alertDialog.dismiss();
+                                                //handler.removeCallbacks(r);
+                                            }
+                                        });
 
-                                } else {
+                                    } else {
 
-                                    handler.postDelayed(this, 5000);
+                                        handler.postDelayed(this, 5000);
 
-                                    //remove comments if handler is used
+                                        //remove comments if handler is used
 
                                     /*
 
@@ -934,16 +1015,45 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                         }
                                     });
                                     */
+                                    }
                                 }
-                            }
-                        };
+                            };
 
-                        handler.post(r);
+                            handler.post(r);
+                        }
+                        else {
+
+                            alertDialog.dismiss();
+                            tvApplyCoupon.setText("Apply Coupon");
+                            tvApplyCoupon.setTypeface(null, Typeface.BOLD);
+                            tvApplyCoupon.setTextSize(12);
+                            tvApplyCoupon.setTextColor(Color.parseColor("#FF8F00"));
+                            stCoupon = "-";
+                            Toast.makeText(getActivity(), "Coupon: "+d[1], Toast.LENGTH_SHORT).show();
+
+                            btConfirmRide.setEnabled(true);
+                            btConfirmRide.setClickable(true);
+
+                        }
+
+                       /* if (msg.getMessage().equals("Promcode Not Applicable")) {
+
+                            alertDialog.dismiss();
+                            tvApplyCoupon.setText("Apply Coupon");
+                            tvApplyCoupon.setTypeface(null, Typeface.NORMAL);
+                            tvApplyCoupon.setTextSize(12);
+                            tvApplyCoupon.setTextColor(Color.parseColor("#000000"));
+                            stCoupon = "-";
+                            Toast.makeText(getActivity(), "Coupon code is not applicable", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            //code here
+                        }*/
                     }
                     else {
 
                         alertDialog.dismiss();
-                        Toast.makeText(getContext(),"Connectivity issue! Please check",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(),response.message()+":"+response.isSuccessful()+":"+response.code(),Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -1674,10 +1784,12 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
                 connectivity=true;
 
-                if(myBottomSheet.isAdded())
-                {
-                    myBottomSheet.dismiss();
+                if(myBottomSheet!=null) {
 
+                    if (myBottomSheet.isAdded()) {
+                        myBottomSheet.dismiss();
+
+                    }
                 }
 
                 List<CabPojo> cabs;
@@ -1754,8 +1866,11 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
         progressDialog.show();
 
         // AIzaSyC4Ccgq_w6OhyF6IVblH3KByt5tKuJNtdM
+//        String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+//                "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyC4Ccgq_w6OhyF6IVblH3KByt5tKuJNtdM";
+
         String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
-                "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyC4Ccgq_w6OhyF6IVblH3KByt5tKuJNtdM";
+                "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
 
         Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
         call.enqueue(new Callback<DurationPojo>() {
@@ -1786,6 +1901,10 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                             String stDist=t1.getText();
                             String stDistDetails[]=stDist.split(" ");
                             stKms=stDistDetails[0];
+
+                            stTime=String.valueOf((t2.getValue())/60);
+
+                            //System.out.println("d & t is "+stKms+":"+stTime);
 
                         }
                     }
@@ -1818,6 +1937,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                     v.addProperty("traveltype","local");
                     v.addProperty("vehicle_type",stCategorySelected);
                     v.addProperty("approxkms",stKms);
+                    v.addProperty("duration",stTime);
 
                     Call<List<OutStationPojo>> call1=REST_CLIENT.getFareEstimate(v);
 
@@ -1843,7 +1963,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                 else {
 
                                     int f = (int) Double.parseDouble(data.getTotalfare());
-                                    f = f + (15 * f) / 100;
+                                    //f = f + (15 * f) / 100;
 
                                     stFareEstimate = String.valueOf(f);
                                     tvRideEstimate.setText("Fare Estimate ~  " + getString(R.string.Rs) + " " + stFareEstimate );

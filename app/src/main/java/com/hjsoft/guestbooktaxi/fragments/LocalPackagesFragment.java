@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -72,8 +74,9 @@ public class LocalPackagesFragment extends Fragment {
     String stCity;
     API REST_CLIENT;
     LinearLayout llVisible;
-    TextView tvBid;
+    TextView tvBid,tvCoupon;
     int hour_cal,min_cal;
+    String stCoupon="-";
 
 
 
@@ -92,6 +95,7 @@ public class LocalPackagesFragment extends Fragment {
         tvWallet=(TextView)rootView.findViewById(R.id.flp_tv_wallet);
         tvAddMoney=(TextView)rootView.findViewById(R.id.flp_tv_add_money);
         tvFare=(TextView)rootView.findViewById(R.id.flp_tv_fare);
+        tvCoupon=(TextView)rootView.findViewById(R.id.flp_tv_coupon);
 
         tvDateTimeText=(TextView)rootView.findViewById(R.id.flp_tv_datetime_text);
         ivDateTime=(ImageView)rootView.findViewById(R.id.flp_iv_datetime);
@@ -215,6 +219,52 @@ public class LocalPackagesFragment extends Fragment {
             }
         });
 
+        tvCoupon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                /*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.alert_coupon, null);
+                dialogBuilder.setView(dialogView);
+
+                final AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.show();
+
+                final EditText etCoupon=(EditText)dialogView.findViewById(R.id.ac_et_otp);
+                Button btOk=(Button)dialogView.findViewById(R.id.ac_bt_ok);
+
+                btOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        stCoupon=etCoupon.getText().toString().trim();
+
+                        if(stCoupon.equals(""))
+                        {
+                            Toast.makeText(getActivity(),"Please enter coupon code",Toast.LENGTH_SHORT).show();
+                            stCoupon="-";
+                        }
+                        else {
+
+                            tvCoupon.setText(stCoupon);
+                            tvCoupon.setTypeface(null, Typeface.BOLD);
+                            tvCoupon.setTextColor(Color.parseColor("#4CAF50"));
+                            //tvCoupon.setTextColor(Color.parseColor("#FBC02D"));
+                            //tvCoupon.setBackgroundColor(Color.parseColor("#FFF176"));
+
+                            tvCoupon.setTextSize(13);
+                            alertDialog.dismiss();
+                        }
+
+                        //Promcode Not Applicable
+                    }
+                });*/
+
+            }
+        });
+
 
         btBook.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -249,9 +299,13 @@ public class LocalPackagesFragment extends Fragment {
                 v.addProperty("fare_estimate",stLocalFare);
                 v.addProperty("slabhours",slabHr);
                 v.addProperty("slabkms",slabKm);
+                v.addProperty("Promocode",stCoupon);
                 //  v.addProperty("Profileid"," ");
 
-             // System.out.println("data"+pickupLat+pickupLong+pickupLoc+dropLat+dropLong+dropLoc+stDate+stTime+stTravelPackage+stCabCategory+stCity+stLocalFare+slabHr+slabKm);
+                System.out.println("promocode is "+stCoupon);
+
+
+                // System.out.println("data"+pickupLat+pickupLong+pickupLoc+dropLat+dropLong+dropLoc+stDate+stTime+stTravelPackage+stCabCategory+stCity+stLocalFare+slabHr+slabKm);
 
                 Call<BookCabPojo> call=REST_CLIENT.sendOutstationDetails(v);
                 call.enqueue(new Callback<BookCabPojo>() {
@@ -262,16 +316,33 @@ public class LocalPackagesFragment extends Fragment {
 
                         if(response.isSuccessful())
                         {
-                            progressDialog.dismiss();
-                            llVisible.setVisibility(View.VISIBLE);
                             data=response.body();
-                            btBook.setVisibility(View.INVISIBLE);
-                            tvCash.setEnabled(false);
-                            tvCash.setClickable(false);
-                            tvWallet.setClickable(false);
-                            tvWallet.setEnabled(false);
-                            tvBid.setText("Booking Id ' "+data.getMessage()+" ' generated");
-                            ivDateTime.setClickable(false);
+                            System.out.println("********* "+data.getMessage());
+                            String d[]=data.getMessage().split(",");
+                            progressDialog.dismiss();
+
+                            if(d.length==1) {
+
+                                llVisible.setVisibility(View.VISIBLE);
+
+                                btBook.setVisibility(View.INVISIBLE);
+                                tvCash.setEnabled(false);
+                                tvCash.setClickable(false);
+                                tvWallet.setClickable(false);
+                                tvWallet.setEnabled(false);
+                                tvCoupon.setClickable(false);
+                                tvBid.setText("Booking Id ' " + data.getMessage() + " ' generated");
+                                ivDateTime.setClickable(false);
+                            }
+                            else {
+
+                                tvCoupon.setText("Apply Coupon");
+                                tvCoupon.setTypeface(null, Typeface.BOLD);
+                                tvCoupon.setTextSize(12);
+                                tvCoupon.setTextColor(Color.parseColor("#FF8F00"));
+                                stCoupon = "-";
+                                Toast.makeText(getActivity(), "Coupon: "+d[1], Toast.LENGTH_SHORT).show();
+                            }
 
                         }
                     }

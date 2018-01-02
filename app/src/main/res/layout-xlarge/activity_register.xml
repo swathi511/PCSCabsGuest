@@ -3,7 +3,7 @@
 <RelativeLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="32dp"
+    android:padding="20dp"
     android:layout_margin="10dp"
     android:background="@drawable/rect_ash_stroke_bg">
 
@@ -16,63 +16,88 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Register Now"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="sans-serif-smallcaps"/>
+
+
+        <TextView android:id="@+id/ar_bt_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NEXT"
+            android:textSize="13sp"
+            android:textColor="@color/colorTextBlue"
+            android:padding="6dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rect_blue_stroke_bg_nc"
+            android:layout_gravity="right"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/mobile_number"
             android:textColor="@color/colorTextBlue"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:gravity="left"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="4dp"/>
         <EditText android:id="@+id/ar_et_mobile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack"
-            android:layout_marginBottom="18dp"
-            android:inputType="number"/>
+            android:layout_marginBottom="4dp"
+            android:inputType="number"
+            android:maxLines="1"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/name"
             android:textColor="@color/colorTextBlue"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:gravity="left"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="4dp"/>
         <EditText android:id="@+id/ar_et_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack"
-            android:layout_marginBottom="18dp" />
-
+            android:layout_marginBottom="4dp"
+            android:maxLines="1"
+            android:inputType="text"/>
         <!--
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/password"
             android:textColor="@color/colorTextBlue"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:gravity="left"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="4dp" />
         <EditText android:id="@+id/ar_et_pwd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack"
-            android:layout_marginBottom="18dp"
+            android:layout_marginBottom="8dp"
             android:inputType="textPassword"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/c_pwd"
             android:textColor="@color/colorTextBlue"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:gravity="left"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="4dp"/>
         <EditText android:id="@+id/ar_et_cpwd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack"
-            android:layout_marginBottom="18dp"
+            android:layout_marginBottom="8dp"
             android:inputType="textPassword"/>
 
             -->
@@ -81,40 +106,44 @@
             android:layout_height="wrap_content"
             android:text="@string/email"
             android:textColor="@color/colorTextBlue"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:gravity="left"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="4dp"/>
         <EditText android:id="@+id/ar_et_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack"
-            android:layout_marginBottom="18dp"
-            android:inputType="textEmailAddress"/>
+            android:layout_marginBottom="4dp"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/city"
             android:textColor="@color/colorTextBlue"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:gravity="left"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="4dp"/>
         <EditText android:id="@+id/ar_et_city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack"
-            android:layout_marginBottom="18dp"/>
+            android:layout_marginBottom="4dp"
+            android:maxLines="1"
+            android:inputType="text"/>
     </LinearLayout>
 
-    <Button android:id="@+id/ar_bt_register"
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/register"
         android:textColor="@color/colorWhite"
         android:background="@drawable/login_bt_bg"
         android:layout_alignParentBottom="true"
-        android:textSize="20sp"
-        android:padding="24dp"/>
+        android:textSize="16sp"
+        android:padding="16dp"
+        android:visibility="gone"/>
 </RelativeLayout>
