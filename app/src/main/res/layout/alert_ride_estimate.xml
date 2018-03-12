@@ -20,21 +20,21 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/colorAshLight"
-        android:layout_margin="16dp"/>
+        android:layout_margin="12dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/base_fare"
-            android:textColor="@color/colorAsh"
-            android:textSize="14sp"
+            android:textColor="#5e5e5e"
+            android:textSize="13sp"
             android:layout_weight="1"
             android:gravity="left"/>
 
@@ -47,19 +47,46 @@
             android:layout_weight="1"
             android:gravity="right"/>
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Slab Km"
+            android:textColor="#5e5e5e"
+            android:textSize="13sp"
+            android:layout_weight="1"
+            android:gravity="left"/>
+
+        <TextView android:id="@+id/are_tv_slab_km"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" - "
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="right"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/bslab"
-            android:textColor="@color/colorAsh"
-            android:textSize="14sp"
+            android:textColor="#5e5e5e"
+            android:textSize="13sp"
             android:layout_weight="1"
             android:gravity="left"/>
 
@@ -76,15 +103,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/aslab"
-            android:textColor="@color/colorAsh"
-            android:textSize="14sp"
+            android:textColor="#5e5e5e"
+            android:textSize="13sp"
             android:layout_weight="1"
             android:gravity="left"/>
 
@@ -101,15 +128,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ride_time_charges"
-            android:textColor="@color/colorAsh"
-            android:textSize="14sp"
+            android:textColor="#5e5e5e"
+            android:textSize="13sp"
             android:layout_weight="1"
             android:gravity="left"/>
 
@@ -127,15 +154,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/min_fare"
-            android:textColor="@color/colorAsh"
-            android:textSize="14sp"
+            android:textColor="#5e5e5e"
+            android:textSize="13sp"
             android:layout_weight="1"
             android:gravity="left"/>
 
@@ -160,9 +187,36 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/approx_fare"
+            android:text="Peak time charge"
+            android:textColor="#5e5e5e"
+            android:textSize="13sp"
+            android:layout_weight="1"
+            android:gravity="left"/>
+
+        <TextView android:id="@+id/are_tv_surge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-"
             android:textColor="@color/colorBlack"
             android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="right"/>
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/approx_fare"
+            android:textColor="@color/colorBlack"
+            android:textSize="13sp"
             android:layout_weight="1"
             android:gravity="left"
             android:textStyle="bold"/>
@@ -176,6 +230,34 @@
             android:layout_weight="1"
             android:gravity="right"/>
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GST"
+            android:textColor="#5e5e5e"
+            android:textSize="12sp"
+            android:layout_weight="1"
+            android:gravity="left"/>
+
+        <TextView android:id="@+id/are_tv_gst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rs. -"
+            android:textColor="@color/colorBlack"
+            android:textSize="12sp"
+            android:layout_weight="1"
+            android:gravity="right"/>
+    </LinearLayout>
+
 
 
 

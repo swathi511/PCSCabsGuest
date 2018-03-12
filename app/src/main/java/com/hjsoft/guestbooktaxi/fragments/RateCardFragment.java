@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -55,6 +56,9 @@ public class RateCardFragment extends Fragment {
     int PRIVATE_MODE = 0;
     private static final String PREF_NAME = "SharedPref";
     int j=0;
+    TextView tvGST;
+    LinearLayout llOs1,llOs2,llOs3,llOs4,llLocal1,llLocal2,llLocal3,llLocal4;
+    TextView tvAllowedhrs,tvAllowedKms,tvRateperMin,tvDriverAllowance,tvSlabKm;
 
 
     @Override
@@ -67,7 +71,7 @@ public class RateCardFragment extends Fragment {
         //getTariffRate();
         city=pref.getString("city",null);
         stCity=city;
-        getFareEstimates();
+
 
     }
 
@@ -90,11 +94,30 @@ public class RateCardFragment extends Fragment {
         myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
         tvLocal=(TextView)rootView.findViewById(R.id.frc_tv_local);
         tvOutstation=(TextView)rootView.findViewById(R.id.frc_tv_outstation);
+        tvGST=(TextView)rootView.findViewById(R.id.frc_tv_gst);
+        tvSlabKm=(TextView)rootView.findViewById(R.id.frc_tv_slab_km);
 
         tvCategory=(TextView)rootView.findViewById(R.id.frc_tv_category);
         tvCity=(TextView)rootView.findViewById(R.id.frc_tv_city);
         tvCity.setText(city);
+
+        llOs1=(LinearLayout)rootView.findViewById(R.id.frc_ll_os1);
+        llOs2=(LinearLayout)rootView.findViewById(R.id.frc_ll_os2);
+        llOs3=(LinearLayout)rootView.findViewById(R.id.frc_ll_os3);
+        llOs4=(LinearLayout)rootView.findViewById(R.id.frc_ll_os4);
+        tvAllowedKms=(TextView)rootView.findViewById(R.id.frc_tv_min_kms);
+        tvAllowedhrs=(TextView)rootView.findViewById(R.id.frc_tv_min_hrs);
+        tvRateperMin=(TextView)rootView.findViewById(R.id.frc_tv_rate_per_min);
+        tvDriverAllowance=(TextView)rootView.findViewById(R.id.frc_tv_driver_allowance);
+
+        llLocal1=(LinearLayout)rootView.findViewById(R.id.frc_ll_local1);
+        llLocal2=(LinearLayout)rootView.findViewById(R.id.frc_ll_local2);
+        llLocal3=(LinearLayout)rootView.findViewById(R.id.frc_ll_local3);
+        llLocal4=(LinearLayout)rootView.findViewById(R.id.frc_ll_local4);
+
         // tvTravelType=(TextView)rootView.findViewById(R.id.frc_tv_travel_type);
+
+        getFareEstimates();
 
         ibCity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -439,6 +462,8 @@ public class RateCardFragment extends Fragment {
 
                     data=dataList.get(0);
 
+
+
                     tvBaseFare.setText(getString(R.string.Rs)+" "+data.getBaseFare());
                     tvBelow.setText(getString(R.string.Rs)+" "+data.getOTo15km()+" per km");
                     tvAbove.setText(getString(R.string.Rs)+" "+data.getAfter15km()+" per km");
@@ -479,6 +504,17 @@ public class RateCardFragment extends Fragment {
 
     public void getFareEstimates()
     {
+        llOs1.setVisibility(View.GONE);
+        llOs2.setVisibility(View.GONE);
+        llOs3.setVisibility(View.GONE);
+        llOs4.setVisibility(View.GONE);
+
+        llLocal1.setVisibility(View.GONE);
+        llLocal2.setVisibility(View.GONE);
+        llLocal3.setVisibility(View.GONE);
+        llLocal4.setVisibility(View.GONE);
+
+
         JsonObject v=new JsonObject();
         v.addProperty("companyid",companyId);
         v.addProperty("location",stCity);
@@ -503,6 +539,7 @@ public class RateCardFragment extends Fragment {
 
                     tvBaseFare.setText(getString(R.string.Rs)+" "+data.getBasefare());
                     tvMinFare.setText(getString(R.string.Rs)+" "+data.getMinimumfare());
+                    tvSlabKm.setText(data.getSlabkm());
 
                     if(data.getSlabkmrate().equals(""))
                     {
@@ -535,8 +572,38 @@ public class RateCardFragment extends Fragment {
                     else {
                         tvPerKmRate.setText(getString(R.string.Rs)+" "+data.getOutsidekmsrate());
                     }
+
+                    if(data.getServicetax().equals(""))
+                    {
+
+                    }
+                    else {
+                        tvGST.setText(data.getServicetax()+"% of the total fare");
+                    }
+
+                    if(stTravelType.equals("OutStation"))
+                    {
+                        llOs1.setVisibility(View.VISIBLE);
+                        llOs2.setVisibility(View.VISIBLE);
+                        llOs3.setVisibility(View.VISIBLE);
+                        llOs4.setVisibility(View.VISIBLE);
+
+                        tvAllowedhrs.setText(data.getAllowedHrs());
+                        tvAllowedKms.setText(data.getMinKms());
+                        tvRateperMin.setText(getString(R.string.Rs)+" "+data.getExtraRatePerMin());
+                        tvDriverAllowance.setText(getString(R.string.Rs)+" "+data.getDriverAllowance());
+                        tvSlabKm.setText("NA");
+                    }
+                    else {
+                        llLocal1.setVisibility(View.VISIBLE);
+                        llLocal2.setVisibility(View.VISIBLE);
+                        llLocal3.setVisibility(View.VISIBLE);
+                        llLocal4.setVisibility(View.VISIBLE);
+                    }
                 }
                 else {
+
+
 
                     tvBaseFare.setText(getString(R.string.Rs)+" "+"-");
                     tvMinFare.setText(getString(R.string.Rs)+" "+"-");

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class DBAdapter {
 
     static final String DATABASE_NAME = "cabs.db";
-    static final int DATABASE_VERSION = 41;
+    static final int DATABASE_VERSION = 48;
     public static final int NAME_COLUMN = 1;
 
     public static final String TABLE_USER_STATUS="create table if not exists "+"USER_STATUS"+
@@ -29,6 +29,11 @@ public class DBAdapter {
 
     public static final String TABLE_WALLET="create table if not exists "+"USER_WALLET"+
             "(BALANCE text,TIME_STAMP text);";
+
+    public static final String TABLE_OS_CITIES="create table if not exists "+"OS_CITIES"+
+            "(CITY text);";
+
+    public static final String DB_CANCEL_OPTIONS="create table if not exists CANCEL_OPTIONS(CANCEL_TEXT text,CANCEL_ID text);";
 
 
     public SQLiteDatabase db;
@@ -451,5 +456,107 @@ public class DBAdapter {
         Cursor cursor=db.rawQuery(sql,null);
 
         return cursor.getCount();
+    }
+
+    public void insertOsCity(String city)
+    {
+        db=dbHelper.getWritableDatabase();
+        ContentValues newValues = new ContentValues();
+        // Assign values for each row.
+        newValues.put("CITY",city);
+
+        // newValues.put("UPDATED_TIME",updatedTime);
+
+        // Insert the row into your table
+        db.insert("OS_CITIES", null, newValues);
+    }
+
+    public ArrayList<String> getOsCities()
+    {
+        ArrayList<String> city=new ArrayList<>();
+        db=dbHelper.getWritableDatabase();
+        String amount="0";
+        String sql="SELECT * FROM OS_CITIES";
+        Cursor cursor=db.rawQuery(sql,null);
+
+        while(cursor.moveToNext())
+        {
+            city.add(cursor.getString(0));
+
+        }
+
+        return city;
+    }
+
+    public void deleteOsCities()
+    {
+        db=dbHelper.getReadableDatabase();
+        db.execSQL("delete from OS_CITIES" );
+        db.close();
+    }
+
+    public void insertCancelOptions(String cancelText,String cancelId)
+    {
+        db=dbHelper.getWritableDatabase();
+        ContentValues newValues = new ContentValues();
+        newValues.put("CANCEL_TEXT",cancelText);
+        newValues.put("CANCEL_ID",cancelId);
+
+        // Assign values for each row.
+
+        // Insert the row into your table
+        db.insert("CANCEL_OPTIONS", null, newValues);
+        //  close();
+        //  System.out.println("Value inserted");
+    }
+
+    public ArrayList<String> getCancelOptions()
+    {
+        ArrayList<String> cancelData=new ArrayList<>();
+
+        db=dbHelper.getReadableDatabase();
+        String sql="SELECT * FROM CANCEL_OPTIONS";
+        Cursor c=db.rawQuery(sql,null);
+
+        if(c.getCount()>0)
+        {
+            for(int i=0;i<c.getCount();i++)
+            {
+                c.moveToNext();
+
+                cancelData.add(c.getString(0));
+            }
+        }
+
+        c.close();
+
+
+        return cancelData;
+    }
+
+    public String getCancelId(String cancelText)
+    {
+        String cancelId="1";
+        db=dbHelper.getReadableDatabase();
+        String sql="SELECT * FROM CANCEL_OPTIONS WHERE CANCEL_TEXT ="+" '"+cancelText+"'" ;
+        Cursor c=db.rawQuery(sql,null);
+
+        if(c.getCount()>0)
+        {
+            c.moveToNext();
+            cancelId=c.getString(1);
+        }
+
+        c.close();
+
+
+        return cancelId;
+    }
+
+    public void deleteCancelData()
+    {
+        db=dbHelper.getReadableDatabase();
+        db.execSQL("delete from CANCEL_OPTIONS");
+        db.close();
     }
 }

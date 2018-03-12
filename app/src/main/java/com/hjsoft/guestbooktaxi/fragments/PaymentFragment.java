@@ -188,13 +188,13 @@ public class PaymentFragment extends Fragment {
     public void navigateToBaseActivity(View view) {
 
         //testing credentials
-//        merchantKey = "gtKFFx";
-//        salt="eCwWELxi";
+       /* merchantKey = "gtKFFx";
+        salt="eCwWELxi";*/
        //unknown credentials
 //        merchantKey="TFuM0bQ1";
 //        salt="UbcHi7gk6A";
 
-        //production credentials
+        //******* production credentials
         merchantKey = "OzqBSo";
         salt="BaEjzGeU";
 
@@ -208,7 +208,9 @@ public class PaymentFragment extends Fragment {
         else
             environment = PayuConstants.PRODUCTION_ENV;
             */
+
         int environment= PayuConstants.PRODUCTION_ENV;
+        //int environment= PayuConstants.STAGING_ENV;
 
         userCredentials = merchantKey + ":" + email;
 
@@ -233,8 +235,8 @@ public class PaymentFragment extends Fragment {
          */
         mPaymentParams.setSurl("http://api.travelsmate.in/PayStatusCheck.aspx?companyid="+companyId);
         mPaymentParams.setFurl("http://api.travelsmate.in/PayStatusCheck.aspx?companyid="+companyId);
-//        mPaymentParams.setSurl("http://192.168.6.19:1533/PayStatusCheck.aspx?companyid="+companyId);
-//        mPaymentParams.setFurl("http://192.168.6.19:1533/PayStatusCheck.aspx?companyid="+companyId);
+//        mPaymentParams.setSurl("http://192.168.1.5:1533/PayStatusCheck.aspx?companyid="+companyId);
+//        mPaymentParams.setFurl("http://192.168.1.5:1533/PayStatusCheck.aspx?companyid="+companyId);
 
         /*
          * udf1 to udf5 are options params where you can pass additional information related to transaction.
@@ -692,10 +694,10 @@ public class PaymentFragment extends Fragment {
                             else { stTxnid="No data"; }
 
                             if(j.has("amount")){ stAmnt=j.getString("amount"); }
-                            else { stAmnt="No data"; }
+                            else { stAmnt="0"; }
 
                             if(j.has("additional_charges")){ stAddChrgs=j.getString("additional_charges"); }
-                            else { stAddChrgs="No data"; }
+                            else { stAddChrgs="0"; }
 
                             if(j.has("addedon")){ stAddedOn=j.getString("addedon"); }
                             else { stAddedOn="No data"; }
@@ -850,10 +852,10 @@ public class PaymentFragment extends Fragment {
                             else { stTxnid="No data"; }
 
                             if(j.has("amount")){ stAmnt=j.getString("amount"); }
-                            else { stAmnt="No data"; }
+                            else { stAmnt="0"; }
 
                             if(j.has("additional_charges")){ stAddChrgs=j.getString("additional_charges"); }
-                            else { stAddChrgs="No data"; }
+                            else { stAddChrgs="0"; }
 
                             if(j.has("addedon")){ stAddedOn=j.getString("addedon"); }
                             else { stAddedOn="No data"; }

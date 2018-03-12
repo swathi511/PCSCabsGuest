@@ -1,6 +1,7 @@
 package com.hjsoft.guestbooktaxi.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.hjsoft.guestbooktaxi.R;
 import com.hjsoft.guestbooktaxi.SessionManager;
@@ -32,6 +35,12 @@ public class RideInProgressActivity extends AppCompatActivity {
     private CharSequence mTitle;
     android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
     DrawerItemCustomAdapter adapter;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
+    int PRIVATE_MODE = 0;
+    private static final String PREF_NAME = "SharedPref";
+    TextView tvName,tvMobile;
+    RelativeLayout rLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,18 +51,32 @@ public class RideInProgressActivity extends AppCompatActivity {
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles= getResources().getStringArray(R.array.navigation_drawer_items_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerList = (ListView) findViewById(R.id.list_view_drawer);
+        tvName=(TextView)findViewById(R.id.ah_tv_name);
+        tvMobile=(TextView)findViewById(R.id.ah_tv_mobile);
+        rLayout=(RelativeLayout)findViewById(R.id.left_drawer);
+
+        pref = getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+        editor = pref.edit();
+
+        String myString=pref.getString("name","xxx");
+
+        String upperString = myString.substring(0,1).toUpperCase() + myString.substring(1);
+
+        tvName.setText(upperString);
+        tvMobile.setText(pref.getString("mobile","91xxxxxxxx"));
 
         setupToolbar();
 
-        NavigationData[] drawerItem = new NavigationData[6];
+        NavigationData[] drawerItem = new NavigationData[7];
 
         drawerItem[0] = new NavigationData(R.drawable.car, "Book a Cab");
         drawerItem[1] = new NavigationData(R.drawable.history, "My Rides");
         drawerItem[2] = new NavigationData(R.drawable.wallet, "Payments");
-        drawerItem[3] = new NavigationData(R.drawable.ratecard,"Rate Card");
-        drawerItem[4] = new NavigationData(R.drawable.support,"Support");
-        drawerItem[5] = new NavigationData(R.drawable.logout,"Logout");
+        drawerItem[3] = new NavigationData(R.drawable.transaction,"Wallet History");
+        drawerItem[4] = new NavigationData(R.drawable.ratecard,"Rate Card");
+        drawerItem[5] = new NavigationData(R.drawable.support,"Support");
+        drawerItem[6] = new NavigationData(R.drawable.logout,"Logout");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -103,23 +126,28 @@ public class RideInProgressActivity extends AppCompatActivity {
                 startActivity(k);
                 finish();
                 break;
-            case 3:
+            case 4:
                 Intent l=new Intent(this,RateCardActivity.class);
                 startActivity(l);
                 finish();
                 break;
-            case 4:
+            case 5:
                 Intent n=new Intent(this,SupportActivity.class);
                 startActivity(n);
                 finish();
                 break;
-            case 5:
+            case 6:
                 SessionManager s=new SessionManager(getApplicationContext());
                 s.logoutUser();
                 Intent m=new Intent(this,MainActivity.class);
                 m.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 m.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(m);
+                break;
+            case 3:
+                Intent p=new Intent(this,WalletHistoryActivity.class);
+                startActivity(p);
+                finish();
                 break;
             default:
                 break;

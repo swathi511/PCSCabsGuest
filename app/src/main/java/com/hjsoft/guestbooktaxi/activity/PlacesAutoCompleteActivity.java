@@ -52,6 +52,7 @@ public class PlacesAutoCompleteActivity extends AppCompatActivity implements Goo
     SharedPreferences.Editor editor;
     int PRIVATE_MODE = 0;
     private static final String PREF_NAME = "SharedPref";
+    Bundle b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +78,26 @@ public class PlacesAutoCompleteActivity extends AppCompatActivity implements Goo
 //        BOUNDS_INDIA =new LatLngBounds(
 //                new LatLng(17.6868,83.2185), new LatLng(17.6868,83.2185));
 
+        b=getIntent().getExtras();
+        String value=b.getString("value","drop");
+
+        System.out.println("data is "+value);
+
         mAutocompleteView = (EditText)findViewById(R.id.ap_et_place);
         ibClear=(ImageButton) findViewById(R.id.ap_ib_close);
         ibLeft=(ImageButton)findViewById(R.id.ap_ib_left);
+
+        if(value.equals("pickup"))
+        {
+            mAutocompleteView.setHint("Enter Pickup location");
+        }
+        else if(value.equals("drop")){
+
+            mAutocompleteView.setHint("Enter Drop location");
+        }
+        else {
+            mAutocompleteView.setHint("Enter Location");
+        }
 
         ibClear.setVisibility(View.GONE);
 
@@ -207,6 +225,7 @@ public class PlacesAutoCompleteActivity extends AppCompatActivity implements Goo
     }
 
     protected synchronized void buildGoogleApiClient() {
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)

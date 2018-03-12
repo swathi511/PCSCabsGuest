@@ -35,6 +35,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,6 +66,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.JsonObject;
 import com.hjsoft.guestbooktaxi.R;
 import com.hjsoft.guestbooktaxi.activity.HomeActivity;
+import com.hjsoft.guestbooktaxi.activity.MyRidesActivity;
 import com.hjsoft.guestbooktaxi.activity.RideCancelActivity;
 import com.hjsoft.guestbooktaxi.activity.RideInProgressActivity;
 import com.hjsoft.guestbooktaxi.activity.RideStopActivity;
@@ -98,7 +101,7 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
     TextView tvCancelRide,tvMyLoc,tvArrivalTime;
     SupportMapFragment mapFragment;
     LinearLayout llCont,llArrivalTime;
-    BottomSheetDialogFragment myBottomSheet;
+    //BottomSheetDialogFragment myBottomSheet;
     ImageButton ibPhone;
     int position;
     ArrayList<FormattedAllRidesData> dataList=new ArrayList<>();
@@ -140,6 +143,8 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
     String stCategorySelected;
     TextView tvRid,tvOTP;
     NotificationManager notificationManager;
+    boolean checked=false;
+    String cancelOption="";
 
 
     @Override
@@ -185,7 +190,7 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
         tvMyLoc=(TextView)rootView.findViewById(R.id.fsro_tv_place);
         ibPhone=(ImageButton)rootView.findViewById(R.id.fsro_ib_phone);
         tvArrivalTime=(TextView)rootView.findViewById(R.id.fsro_tv_arrival_time);
-        myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
+        //myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
         llArrivalTime=(LinearLayout)rootView.findViewById(R.id.fsro_ll_arrival_time);
         //llTrackRide=(LinearLayout)rootView.findViewById(R.id.fsro_ll_track_ride);
         rlCont=(RelativeLayout)rootView.findViewById(R.id.fsro_rl);
@@ -258,6 +263,8 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
 
         driverPic=data.getDriverPic();
 
+        System.out.println("driver Picccccc "+driverPic);
+
         if(driverPic.equals(""))
         {
 
@@ -298,15 +305,47 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                     @Override
                     public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
 
+                        BookCabPojo msg1;
+
                         if(response.isSuccessful())
                         {
-                            BookCabPojo msg1=response.body();
+                            msg1=response.body();
 
-                            String m[]=msg1.getMessage().split("-");
+                            if(msg1.getMessage().equals("cancelled"))
+                            {
 
-                            tvOTP.setVisibility(View.VISIBLE);
+                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
-                            tvOTP.setText(" OTP : "+m[1]);
+                                LayoutInflater inflater = getActivity().getLayoutInflater();
+                                final View dialogView = inflater.inflate(R.layout.alert_ride_cancelled, null);
+                                dialogBuilder.setView(dialogView);
+
+                                final AlertDialog alertDialog = dialogBuilder.create();
+                                alertDialog.show();
+                                alertDialog.setCanceledOnTouchOutside(false);
+                                alertDialog.setCancelable(false);
+
+                                Button ok=(Button) dialogView.findViewById(R.id.arc_bt_ok);
+
+                                ok.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+
+                                        alertDialog.dismiss();
+                                        Intent i=new Intent(getActivity(), MyRidesActivity.class);
+                                        getActivity().startActivity(i);
+                                        getActivity().finish();
+                                    }
+                                });
+                            }
+                            else {
+
+                                String m[] = msg1.getMessage().split("-");
+
+                                tvOTP.setVisibility(View.VISIBLE);
+
+                                tvOTP.setText(" OTP : " + m[1]);
+                            }
                         }
 
 
@@ -438,39 +477,62 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                     @Override
                     public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
 
-                        if(myBottomSheet!=null) {
-
-                            if (myBottomSheet.isAdded()) {
-                                myBottomSheet.dismiss();
-
-                            }
-                        }
+                        BookCabPojo msg1;
 
                         if(response.isSuccessful())
                         {
-                            BookCabPojo msg1=response.body();
+                            msg1=response.body();
 
-                            String m[]=msg1.getMessage().split("-");
-
-                            tvOTP.setVisibility(View.VISIBLE);
-
-                            tvOTP.setText("OTP : "+m[1]);
-
-                            if(m[0].equals("Cab arrived at your pickup location. OTP "))
+                            if(msg1.getMessage().equals("cancelled"))
                             {
-                                //alertDialog.dismiss();
-                                dbAdapter.updateUserRideStatus(requestId,"arrived");
-                                tvArrivalTime.setText("Cab has arrived!");
-                                //tvCancelRide.setVisibility(View.GONE);
-                                // llArrivalTime.setVisibility(View.GONE);
-                                // llTrackRide.setVisibility(View.VISIBLE);
-
                                 h.removeCallbacks(run);
-                                btTrackRide.setVisibility(View.VISIBLE);
-                                btTrackRide.setAlpha(Float.parseFloat("0.5"));
-                                checkOTPstatus();
 
-                                String msgText = driverName+" has arrived, Waiting at your location.";
+                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+                                LayoutInflater inflater = getActivity().getLayoutInflater();
+                                final View dialogView = inflater.inflate(R.layout.alert_ride_cancelled, null);
+                                dialogBuilder.setView(dialogView);
+
+                                final AlertDialog alertDialog = dialogBuilder.create();
+                                alertDialog.show();
+                                alertDialog.setCanceledOnTouchOutside(false);
+                                alertDialog.setCancelable(false);
+
+                                Button ok=(Button) dialogView.findViewById(R.id.arc_bt_ok);
+
+                                ok.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+
+                                        alertDialog.dismiss();
+                                        Intent i=new Intent(getActivity(), MyRidesActivity.class);
+                                        getActivity().startActivity(i);
+                                        getActivity().finish();
+                                    }
+                                });
+                            }
+                            else {
+
+                                String m[]=msg1.getMessage().split("-");
+
+                                tvOTP.setVisibility(View.VISIBLE);
+
+                                tvOTP.setText("OTP : "+m[1]);
+
+                                if(m[0].equals("Cab arrived at your pickup location. OTP ")) {
+                                    //alertDialog.dismiss();
+                                    dbAdapter.updateUserRideStatus(requestId, "arrived");
+                                    tvArrivalTime.setText("Cab has arrived!");
+                                    //tvCancelRide.setVisibility(View.GONE);
+                                    // llArrivalTime.setVisibility(View.GONE);
+                                    // llTrackRide.setVisibility(View.VISIBLE);
+
+                                    h.removeCallbacks(run);
+                                    btTrackRide.setVisibility(View.VISIBLE);
+                                    btTrackRide.setAlpha(Float.parseFloat("0.5"));
+                                    checkOTPstatus();
+
+                                    String msgText = driverName + " has arrived, Waiting at your location.";
 
 
                                /* NotificationCompat.Builder mBuilder =
@@ -487,11 +549,11 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                                 mNotifyMgr.notify(mNotificationId, mBuilder.build());*/
 
 
-                                android.app.Notification.Builder builder = new Notification.Builder(getActivity());
-                                builder.setContentTitle("PCS Cabs")
-                                        .setContentText("Cab has Arrived !")
-                                        .setSmallIcon(R.drawable.car_image).setAutoCancel(true)
-                                        .setStyle(new Notification.BigTextStyle().bigText(msgText));
+                                    android.app.Notification.Builder builder = new Notification.Builder(getActivity());
+                                    builder.setContentTitle("PCS Cabs")
+                                            .setContentText("Cab has Arrived !")
+                                            .setSmallIcon(R.drawable.car_image).setAutoCancel(true)
+                                            .setStyle(new Notification.BigTextStyle().bigText(msgText));
 
                                 /*Intent myIntent = new Intent(getActivity(), RideInProgressActivity.class);
                                 myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -502,9 +564,10 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                                 builder.setContentIntent(pendingIntent);
 */
 
-                                //Notification notification = new Notification.BigTextStyle(builder).bigText(msgText).build();
+                                    //Notification notification = new Notification.BigTextStyle(builder).bigText(msgText).build();
 
-                                notificationManager.notify(0,builder.build());
+                                    notificationManager.notify(0, builder.build());
+                                }
 
 
 
@@ -515,15 +578,7 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                     @Override
                     public void onFailure(Call<BookCabPojo> call, Throwable t) {
 
-                        if(myBottomSheet!=null) {
-
-                            if (myBottomSheet.isAdded()) {
-                                //return;
-
-                            } else {
-                                myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
-                            }
-                        }
+                        Toast.makeText(getActivity(),"Check Interner connection!",Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -794,7 +849,7 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
 
     public void alertCancelRide()
     {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+        /*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.alert_cancel_ride, null);
@@ -805,117 +860,149 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.setCancelable(false);
 
-        Button ok=(Button) dialogView.findViewById(R.id.acr_bt_yes);
+        TextView ok=(TextView) dialogView.findViewById(R.id.acr_bt_yes);*/
+        checked=false;
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.alert_cancel_options, null);
+        dialogBuilder.setView(dialogView);
+
+        final AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+
+        final RadioGroup rg=(RadioGroup)dialogView.findViewById(R.id.aco_rb);
+        TextView ok=(TextView)dialogView.findViewById(R.id.aco_bt_ok);
+
+        ArrayList<String> cancelData=dbAdapter.getCancelOptions();
+
+        for (int i = 0; i < cancelData.size(); i++) {
+            RadioButton radioButton = new RadioButton(getActivity());
+            radioButton.setText(cancelData.get(i));
+            radioButton.setId(i);
+            rg.addView(radioButton);
+        }
+
+        //set listener to radio button group
+        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                System.out.println(rg.getCheckedRadioButtonId()+"::"+checkedId);
+                int checkedRadioButtonId =rg.getCheckedRadioButtonId();
+                RadioButton radioBtn = (RadioButton)dialogView.findViewById(checkedId);
+                //System.out.println("++++"+radioBtn.getText());
+                //System.out.println("++++"+radioBtn.getText().toString());
+
+                cancelOption=radioBtn.getText().toString();
+                checked=true;
+                //radioBtn.getText()
+                //Toast.makeText(ConfigurationActivity.this, radioBtn.getText(), Toast.LENGTH_SHORT).show();
+            }
+        });
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                if(OTPAuthenticated)
-                {
-                    hOtp.removeCallbacks(rOtp);
-                }
+                if(checked) {
+
+                    if (OTPAuthenticated) {
+                        hOtp.removeCallbacks(rOtp);
+                    }
 
 
-                alertDialog.dismiss();
+                    alertDialog.dismiss();
+                    String id = dbAdapter.getCancelId(cancelOption);
 
-                final JsonObject v=new JsonObject();
-                v.addProperty("requestid",requestId);
-                v.addProperty("companyid",companyId);
-                Call<BookCabPojo> call1=REST_CLIENT.doCancel(v);
-                call1.enqueue(new Callback<BookCabPojo>() {
-                    @Override
-                    public void onResponse(Call<BookCabPojo> call1, Response<BookCabPojo> response) {
+                    final JsonObject v = new JsonObject();
+                    v.addProperty("requestid", requestId);
+                    v.addProperty("companyid", companyId);
+                    v.addProperty("reasonid", id);
 
-                        if(response.isSuccessful())
-                        {
-                            Call<List<CancelPojo>> call=REST_CLIENT.sendCancelStatus(v);
-                            call.enqueue(new Callback<List<CancelPojo>>() {
-                                @Override
-                                public void onResponse(Call<List<CancelPojo>> call, Response<List<CancelPojo>> response) {
+                    Call<BookCabPojo> call1 = REST_CLIENT.doCancel(v);
+                    call1.enqueue(new Callback<BookCabPojo>() {
+                        @Override
+                        public void onResponse(Call<BookCabPojo> call1, Response<BookCabPojo> response) {
 
-                                    List<CancelPojo> msgList;
-                                    CancelPojo msg;
+                            if (response.isSuccessful()) {
+                                Call<List<CancelPojo>> call = REST_CLIENT.sendCancelStatus(v);
+                                call.enqueue(new Callback<List<CancelPojo>>() {
+                                    @Override
+                                    public void onResponse(Call<List<CancelPojo>> call, Response<List<CancelPojo>> response) {
 
-                                    if (response.isSuccessful())
-                                    {
-                                        msgList=response.body();
+                                        List<CancelPojo> msgList;
+                                        CancelPojo msg;
 
-                                        for(int j=0;j<msgList.size();j++)
-                                        {
-                                            msg=msgList.get(0);
+                                        if (response.isSuccessful()) {
+                                            msgList = response.body();
 
-                                            String cancelDetails=msg.getCancelmessage();
-                                            String[] cancelFeeDetails=cancelDetails.split("-");
-                                            String cancelFee=cancelFeeDetails[0];
-                                            String paymentMode="none";
+                                            for (int j = 0; j < msgList.size(); j++) {
+                                                msg = msgList.get(0);
 
-                                            if(cancelFee.equals("0"))
-                                            {
+                                                String cancelDetails = msg.getCancelmessage();
+                                                String[] cancelFeeDetails = cancelDetails.split("-");
+                                                String cancelFee = cancelFeeDetails[0];
+                                                String paymentMode = "none";
 
-                                            }
-                                            else
-                                            {
-                                                if(msg.getPaycash().equals("0"))
-                                                {
-                                                    paymentMode="wallet";
-                                                    String walletAmount=msg.getWalletamount();
-                                                    String timeUpdated=java.text.DateFormat.getTimeInstance().format(new Date());
+                                                if (cancelFee.equals("0")) {
 
-                                                    if(dbAdapter.isWalletPresent()>0)
-                                                    {
-                                                        dbAdapter.updateWalletAmount(walletAmount,timeUpdated);
+                                                } else {
+                                                    if (msg.getPaycash().equals("0")) {
+                                                        paymentMode = "wallet";
+                                                        String walletAmount = msg.getWalletamount();
+                                                        String timeUpdated = java.text.DateFormat.getTimeInstance().format(new Date());
 
-                                                    }
-                                                    else {
+                                                        if (dbAdapter.isWalletPresent() > 0) {
+                                                            dbAdapter.updateWalletAmount(walletAmount, timeUpdated);
 
-                                                        dbAdapter.insertWalletAmount(walletAmount,timeUpdated);
+                                                        } else {
+
+                                                            dbAdapter.insertWalletAmount(walletAmount, timeUpdated);
+                                                        }
+                                                    } else {
+
+                                                        paymentMode = "cash";
                                                     }
                                                 }
-                                                else {
 
-                                                    paymentMode="cash";
+                                                ArrayList<CabData> cabAcceptedData = new ArrayList<CabData>();
+                                                cabAcceptedData.add(new CabData(" ", " ",
+                                                        data.getDriverMobile(), data.getVehicleCategory(), " ", " ", data.getDriverName(), data.getDriverPic(), " "));
+
+
+                                                if (h != null) {
+                                                    h.removeCallbacks(run);
                                                 }
+                                                Intent i = new Intent(getActivity(), RideCancelActivity.class);
+                                                i.putExtra("list", cabAcceptedData);
+                                                i.putExtra("cancelFee", cancelFee);
+                                                i.putExtra("requestId", requestId);
+                                                i.putExtra("paymentMode", paymentMode);
+                                                startActivity(i);
+                                                getActivity().finish();
+
                                             }
-
-                                            ArrayList<CabData> cabAcceptedData = new ArrayList<CabData>();
-                                            cabAcceptedData.add(new CabData(" ", " ",
-                                                    data.getDriverMobile(), data.getVehicleCategory()," "," ",data.getDriverName(),data.getDriverPic()," "));
-
-
-                                            if(h!=null) {
-                                                h.removeCallbacks(run);
-                                            }
-                                            Intent i=new Intent(getActivity(), RideCancelActivity.class);
-                                            i.putExtra("list",cabAcceptedData);
-                                            i.putExtra("cancelFee",cancelFee);
-                                            i.putExtra("requestId",requestId);
-                                            i.putExtra("paymentMode",paymentMode);
-                                            startActivity(i);
-                                            getActivity().finish();
-
                                         }
+
                                     }
 
-                                }
+                                    @Override
+                                    public void onFailure(Call<List<CancelPojo>> call, Throwable t) {
 
-                                @Override
-                                public void onFailure(Call<List<CancelPojo>> call, Throwable t) {
+                                    }
+                                });
 
-                                }
-                            });
+                            }
+
 
                         }
 
+                        @Override
+                        public void onFailure(Call<BookCabPojo> call1, Throwable t) {
 
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<BookCabPojo> call1, Throwable t) {
-
-                    }
-                });
-                //checkForArrivalNotification();
+                        }
+                    });
+                    //checkForArrivalNotification();
 //                JsonObject v=new JsonObject();
 //                v.addProperty("requestid",requestId);
 //                v.addProperty("companyid",companyId);
@@ -951,18 +1038,25 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
 
                     }
                 });*/
+                }
+
+                else {
+                    Toast.makeText(getActivity(),"Please select a reason!",Toast.LENGTH_SHORT).show();
+
+                }
+
 
             }
         });
 
-        Button no=(Button) dialogView.findViewById(R.id.acr_bt_no);
+       /* TextView no=(TextView) dialogView.findViewById(R.id.acr_bt_no);
         no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 alertDialog.dismiss();
             }
-        });
+        });*/
 
     }
 
@@ -1002,12 +1096,7 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                         @Override
                         public void onResponse(Call<List<CabLocationPojo>> call, Response<List<CabLocationPojo>> response) {
 
-                            if(myBottomSheet!=null) {
 
-                                if (myBottomSheet.isAdded()) {
-                                    myBottomSheet.dismiss();
-                                }
-                            }
                             CabLocationPojo cl;
                             List<CabLocationPojo> cabLocData;
                             if (response.isSuccessful()) {
@@ -1079,16 +1168,7 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
                         @Override
                         public void onFailure(Call<List<CabLocationPojo>> call, Throwable t) {
 
-                            if(myBottomSheet!=null) {
-
-                                if (myBottomSheet.isAdded()) {
-                                    //return;
-                                } else {
-                                    if (rootView.isShown()) {
-                                        myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
-                                    }
-                                }
-                            }
+                            Toast.makeText(getActivity(),"Check Internet connection!",Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -1253,7 +1333,7 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
 
                 hOtp.postDelayed(this,30000);
 
-                System.out.println("checking OTP status ...."+requestId+":"+companyId);
+                //System.out.println("checking OTP status ...."+requestId+":"+companyId);
 
                 JsonObject v=new JsonObject();
                 v.addProperty("requestid",requestId);
@@ -1266,15 +1346,50 @@ public class SpecificRideOngoingFragment extends Fragment implements OnMapReadyC
 
                         System.out.println("in response .. "+response.isSuccessful()+response.message());
 
+                        BookCabPojo msg;
+
                         if(response.isSuccessful())
                         {
-                            hOtp.removeCallbacks(rOtp);
-                            checkForDutyFinish();
-                            OTPAuthenticated=true;
-                            llArrivalTime.setVisibility(View.GONE);
-                            // ibPhone.setVisibility(View.GONE);
-                            btTrackRide.setVisibility(View.VISIBLE);
-                            btTrackRide.setAlpha(Float.parseFloat("1"));
+                            msg=response.body();
+
+                            if(msg.getMessage().equals("cancelled"))
+                            {
+                                hOtp.removeCallbacks(rOtp);
+
+                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+                                LayoutInflater inflater = getActivity().getLayoutInflater();
+                                final View dialogView = inflater.inflate(R.layout.alert_ride_cancelled, null);
+                                dialogBuilder.setView(dialogView);
+
+                                final AlertDialog alertDialog = dialogBuilder.create();
+                                alertDialog.show();
+                                alertDialog.setCanceledOnTouchOutside(false);
+                                alertDialog.setCancelable(false);
+
+                                Button ok=(Button) dialogView.findViewById(R.id.arc_bt_ok);
+
+                                ok.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+
+                                        alertDialog.dismiss();
+                                        Intent i=new Intent(getActivity(), MyRidesActivity.class);
+                                        getActivity().startActivity(i);
+                                        getActivity().finish();
+                                    }
+                                });
+                            }
+                            else {
+
+                                hOtp.removeCallbacks(rOtp);
+                                checkForDutyFinish();
+                                OTPAuthenticated = true;
+                                llArrivalTime.setVisibility(View.GONE);
+                                // ibPhone.setVisibility(View.GONE);
+                                btTrackRide.setVisibility(View.VISIBLE);
+                                btTrackRide.setAlpha(Float.parseFloat("1"));
+                            }
                         }
                     }
 

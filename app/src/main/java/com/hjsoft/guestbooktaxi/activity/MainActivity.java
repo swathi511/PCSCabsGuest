@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -76,20 +77,22 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences.Editor editor;
     int PRIVATE_MODE = 0;
     private static final String PREF_NAME = "SharedPref";
-    //String version="4.5";
+    String version="4.5";//4.5//5.1
     String city="Visakhapatnam";
-    String version="2";//20
+    FloatingActionButton fabNext;
+    //String version="2";//20
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_new_login);
         REST_CLIENT=RestClient.get();
         btLogin=(Button)findViewById(R.id.al_bt_login);
         btValidateOTP=(Button)findViewById(R.id.al_bt_validate_otp);
         tvSignUp=(TextView)findViewById(R.id.al_tv_signup);
         etEmail=(EditText)findViewById(R.id.al_et_email);
+        fabNext=(FloatingActionButton)findViewById(R.id.al_fab_next);
         // etPwd=(EditText)findViewById(R.id.al_et_pwd);
         session=new SessionManager(getApplicationContext());
         user=session.getUserDetails();
@@ -103,15 +106,6 @@ public class MainActivity extends AppCompatActivity {
         btValidateOTP.setVisibility(View.GONE);
         dbAdapter=new DBAdapter(getApplicationContext());
         dbAdapter=dbAdapter.open();
-
-        if (!isTaskRoot()) {
-            final Intent intent = getIntent();
-            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(intent.getAction())) {
-                Log.w("data", "Main Activity is not the root.  Finishing Main Activity instead of launching.");
-                finish();
-                return;
-            }
-        }
 
 
         if(session.checkLogin())
@@ -159,6 +153,13 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
 
+                        //System.out.println("@@@@@@@@@@@@@@@@@@@@@@"+stData[2]);
+
+                        editor.putString("name",stData[2]);
+                        editor.putString("mobile",stMobileNumber);
+                        editor.commit();
+
+
                         progressDialog.dismiss();
                         getCityCenterCoordinates();
 
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                                     alertDialog.dismiss();
                                     finish();
 
-                                    openAppRating(getApplicationContext());
+                                    //openAppRating(getApplicationContext());
                                 }
                             });
 
@@ -214,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+
         tvSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -221,6 +223,140 @@ public class MainActivity extends AppCompatActivity {
                 Intent i=new Intent(MainActivity.this,RegisterActivity.class);
                 startActivity(i);
                 finish();
+            }
+        });
+
+
+        fabNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                btValidateOTP.setVisibility(View.GONE);
+
+                stEmail = etEmail.getText().toString().trim();
+                //stPwd = etPwd.getText().toString().trim();
+
+                if (stEmail.equals("")||stEmail.length()!=10) {
+
+                    Toast.makeText(MainActivity.this, "Enter Valid Mobile Number !", Toast.LENGTH_SHORT).show();
+                    etEmail.setText("");
+                }
+                else {
+
+                    final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+                    progressDialog.setIndeterminate(true);
+                    progressDialog.setMessage("Please Wait...");
+                    progressDialog.show();
+
+                    JsonObject v = new JsonObject();
+                    v.addProperty("mobile",stEmail);
+                    v.addProperty("companyid",companyId);
+                    v.addProperty("login","yes");
+                    v.addProperty("version",version);
+
+                    Call<BookCabPojo> call=REST_CLIENT.loginForOTP(v);
+                    call.enqueue(new Callback<BookCabPojo>() {
+                        @Override
+                        public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
+
+
+                            progressDialog.dismiss();
+
+                            BookCabPojo data;
+
+                            if (response.isSuccessful()) {
+
+                                data=response.body();
+
+                                String stData[]=data.getMessage().split("-");
+
+                                if(stData.length==0)
+                                {
+
+                                }
+                                else {
+
+                                    String walletAmount=stData[1];
+                                    String timeUpdated=java.text.DateFormat.getTimeInstance().format(new Date());
+
+                                    if(dbAdapter.isWalletPresent()>0)
+                                    {
+                                        dbAdapter.updateWalletAmount(walletAmount,timeUpdated);
+                                    }
+                                    else {
+
+                                        dbAdapter.insertWalletAmount(walletAmount,timeUpdated);
+                                    }
+                                }
+
+                                Intent i=new Intent(MainActivity.this,LoginOTPActivity.class);
+                                i.putExtra("stMobile",stEmail);
+                                startActivity(i);
+                                finish();
+                            }
+                            else
+                            {
+                                if(response.message().equals("Version mismatched"))
+                                {
+
+                                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+
+                                    LayoutInflater inflater = getLayoutInflater();
+                                    final View dialogView = inflater.inflate(R.layout.alert_update, null);
+
+                                    dialogBuilder.setView(dialogView);
+
+                                    final AlertDialog alertDialog = dialogBuilder.create();
+                                    alertDialog.show();
+
+                                    TextView tvOk=(TextView)dialogView.findViewById(R.id.au_bt_ok);
+                                    tvOk.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+
+                                            alertDialog.dismiss();
+                                            finish();
+
+                                           openAppRating(getApplicationContext());
+                                        }
+                                    });
+                                }
+                                else {
+                                    Toast.makeText(MainActivity.this, "New User!\n Please Signup!", Toast.LENGTH_SHORT).show();
+
+                                    Intent i=new Intent(MainActivity.this,RegisterActivity.class);
+                                    i.putExtra("mobile",stEmail);
+                                    startActivity(i);
+                                    finish();
+
+                                }
+
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<BookCabPojo> call, Throwable t) {
+
+                            progressDialog.dismiss();
+
+                            Toast.makeText(MainActivity.this,"Please check Internet connection!",Toast.LENGTH_SHORT).show();
+
+                            /*if(myBottomSheet!=null) {
+
+                                if (myBottomSheet.isAdded()) {
+                                    //return;
+
+                                } else {
+
+                                    myBottomSheet.show(getSupportFragmentManager(), myBottomSheet.getTag());
+                                }
+                            }*/
+                        }
+                    });
+                }
+
+
             }
         });
 
@@ -319,9 +455,10 @@ public class MainActivity extends AppCompatActivity {
                                     });
                                 }
                                 else {
-                                    Toast.makeText(MainActivity.this, "Mobile Number doesn't exist!\n Please Signup!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.this, "New User!\n Please Signup!", Toast.LENGTH_SHORT).show();
 
                                     Intent i=new Intent(MainActivity.this,RegisterActivity.class);
+                                    i.putExtra("mobile",stEmail);
                                     startActivity(i);
                                     finish();
 

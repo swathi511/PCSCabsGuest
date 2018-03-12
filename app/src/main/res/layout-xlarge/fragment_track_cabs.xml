@@ -10,89 +10,12 @@
         android:layout_height="match_parent"
         android:background="@color/colorAshLight">
 
-        <LinearLayout android:id="@+id/ftc_ll"
+        <View android:id="@+id/ftc_vw2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/rect_light_bg"
-            android:padding="4dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginBottom="6dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="4dp">
-                <TextView
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:background="@drawable/round_green"
-                    android:layout_marginLeft="4dp"
-                    android:layout_gravity="center"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pickup_loc"
-                    android:textColor="@color/colorTextBlue"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:layout_marginLeft="10dp"
-                    android:layout_gravity="center"
-                    android:gravity="center"/>
-            </LinearLayout>
-
-            <TextView android:id="@+id/ftc_tv_pickup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="Enter pickup location"
-                android:textColorHint="@color/colorAshLight"
-                android:textColor="@color/colorBlack"
-                android:textSize="12sp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="1dp">
-                <TextView
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:background="@drawable/round_pink"
-                    android:layout_marginLeft="4dp"
-                    android:layout_gravity="center"/>
-                <TextView android:id="@+id/ftc_tv_drop_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/drop_loc"
-                    android:textColor="@color/colorTextBlue"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:layout_marginLeft="10dp"
-                    android:gravity="center"
-                    android:layout_gravity="center"/>
-            </LinearLayout>
-
-            <TextView android:id="@+id/ftc_tv_drop"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter drop location"
-                android:textColorHint="@color/colorAshLight"
-                android:textSize="12sp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="2dp"
-                android:textColor="@color/colorBlack"
-                android:gravity="left"/>
-
-        </LinearLayout>
-
-
+            android:layout_height="4dp"
+            android:background="#abc9f2"
+            android:layout_below="@+id/ftc_ll"
+            android:visibility="gone" />
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
@@ -100,8 +23,106 @@
             android:layout_height="match_parent"
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_below="@+id/ftc_ll"
-            android:layout_above="@+id/ftc_hsv"/>
+            android:layout_above="@+id/ftc_hsv"
+            />
+
+        <LinearLayout android:id="@+id/ftc_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rect_ash_stroke_pickup_drop_bg"
+            android:padding="2dp"
+            android:layout_margin="8dp"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
+                <TextView
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:background="@drawable/round_green"
+                    android:layout_marginLeft="4dp"
+                    android:layout_gravity="center"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pickup"
+                    android:textColor="@color/colorTextBlue"
+                    android:textSize="9sp"
+                    android:layout_marginLeft="6dp"
+                    android:layout_gravity="center"
+                    android:gravity="left"
+                    android:layout_weight="1"
+                    android:textAllCaps="false"/>
+                <ImageView android:id="@+id/ftc_iv_pickup"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/m_edit"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="12dp"/>
+            </LinearLayout>
+
+            <TextView android:id="@+id/ftc_tv_pickup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Fetching pickup location..."
+                android:textColorHint="#9e9e9e"
+                android:textColor="@color/colorBlack"
+                android:textSize="12sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="4dp"
+                android:maxLines="2" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:background="@drawable/round_pink"
+                    android:layout_marginLeft="4dp"
+                    android:layout_gravity="center"/>
+                <TextView android:id="@+id/ftc_tv_drop_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Drop"
+                    android:textColor="@color/colorTextBlue"
+                    android:textSize="9sp"
+                    android:layout_marginLeft="6dp"
+                    android:gravity="left"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:textAllCaps="false"
+                    />
+
+                <ImageView android:id="@+id/ftc_iv_drop"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/m_edit"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="12dp"/>
+            </LinearLayout>
+
+            <TextView android:id="@+id/ftc_tv_drop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter drop location"
+                android:textColorHint="#9e9e9e"
+                android:textSize="12sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="4dp"
+                android:textColor="@color/colorBlack"
+                android:gravity="left"/>
+
+        </LinearLayout>
+
+
+
+
 
         <TextView android:id="@+id/ftc_tv_my_loc"
             android:layout_width="wrap_content"
@@ -197,7 +218,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@drawable/round_bg_cabs"
+                    android:background="@drawable/round_bg_white_cabs"
                     android:paddingTop="2dp"
                     android:paddingBottom="2dp"
                     android:paddingLeft="6dp"
@@ -221,12 +242,16 @@
                         android:layout_height="wrap_content"
                         android:text="@string/mini"
                         android:textColor="@color/colorTextBlue"
-                        android:textSize="13sp" />
+                        android:textSize="11sp"
+                        android:layout_marginBottom="2dp"/>
 
-                    <ImageView
-                        android:layout_width="35dp"
+                    <ImageView android:id="@+id/ftc_iv_mini"
+                        android:layout_width="36dp"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/mini_sv"/>
+                        android:src="@drawable/mini_sv"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:background="@drawable/round_bg_cabs"/>
 
                     <TextView android:id="@+id/ftc_tv_mini_nocab"
                         android:layout_width="wrap_content"
@@ -309,12 +334,14 @@
                         android:layout_height="wrap_content"
                         android:text="@string/sedan"
                         android:textColor="@color/colorAsh"
-                        android:textSize="13sp" />
+                        android:textSize="11sp" />
 
-                    <ImageView
+                    <ImageView android:id="@+id/ftc_iv_sedan"
                         android:layout_width="38dp"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/prime_sv"/>
+                        android:src="@drawable/prime_sv"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"/>
 
                     <TextView android:id="@+id/ftc_tv_sedan_nocab"
                         android:layout_width="wrap_content"
@@ -353,12 +380,14 @@
                         android:layout_height="wrap_content"
                         android:text="SUV"
                         android:textColor="@color/colorAsh"
-                        android:textSize="12sp" />
+                        android:textSize="11sp" />
 
-                    <ImageView
+                    <ImageView android:id="@+id/ftc_iv_suv"
                         android:layout_width="38dp"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/prime_sv"/>
+                        android:src="@drawable/prime_sv"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"/>
 
                     <TextView android:id="@+id/ftc_tv_suv_nocab"
                         android:layout_width="wrap_content"
@@ -442,7 +471,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/out_station"
                         android:textColor="@color/colorAsh"
-                        android:textSize="13sp"
+                        android:textSize="11sp"
                         android:textAllCaps="false" />
 
                     <!--
@@ -461,12 +490,14 @@
                         </LinearLayout>
 
                         -->
-                    <ImageView
-                        android:layout_width="40dp"
+                    <ImageView android:id="@+id/ftc_iv_os"
+                        android:layout_width="42dp"
                         android:layout_height="wrap_content"
                         android:src="@drawable/os_sv"
                         android:layout_marginTop="3dp"
-                        android:layout_marginBottom="3dp"/>
+                        android:layout_marginBottom="3dp"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"/>
 
                     <TextView android:id="@+id/ftc_tv_outstation_nocab"
                         android:layout_width="wrap_content"
@@ -506,14 +537,16 @@
                         android:layout_height="wrap_content"
                         android:text="12-40 seater"
                         android:textColor="@color/colorAsh"
-                        android:textSize="13sp" />
+                        android:textSize="11sp" />
 
                     <ImageView
                         android:layout_width="38dp"
                         android:layout_height="wrap_content"
                         android:src="@drawable/bus"
                         android:layout_marginTop="3dp"
-                        android:layout_marginBottom="3dp"/>
+                        android:layout_marginBottom="3dp"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"

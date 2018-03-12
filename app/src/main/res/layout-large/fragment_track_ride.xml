@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="@color/colorAshLight"
+            android:background="@color/colorPrimary"
             android:layout_below="@+id/container_toolbar"
             android:gravity="center">
             <LinearLayout
@@ -114,7 +114,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/container_toolbar"
-            android:background="@color/colorAshLight">
+            android:background="@color/colorPrimary">
             <LinearLayout
                 android:id="@+id/ftr_ll_cont"
                 android:layout_width="match_parent"
@@ -230,17 +230,17 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="16dp"
             android:layout_marginRight="8dp"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:textStyle="bold"
             android:textColor="@color/colorBlack"/>
         <TextView android:id="@+id/ftr_tv_creq_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cab_details"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="6dp"
+            android:layout_marginBottom="4dp"
             android:textAllCaps="true"
             android:textColor="@color/colorTextBlue"
             android:textStyle="bold"/>
@@ -279,8 +279,8 @@
                     android:text="@string/d_name"
                     android:textColor="#6e6e6e"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginBottom="4dp"
-                    android:textSize="12sp"/>
+                    android:layout_marginBottom="2dp"
+                    android:textSize="10sp"/>
                 <TextView android:id="@+id/ftr_tv_dname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -288,8 +288,8 @@
                     android:text="@string/xxx"
                     android:textColor="@color/colorAsh"
                     android:layout_marginLeft="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:textSize="12sp"
+                    android:layout_marginBottom="2dp"
+                    android:textSize="11sp"
                     android:textStyle="bold"/>
                 <TextView android:id="@+id/ftr_tv_gmobile_title"
                     android:layout_below="@+id/ftr_tv_dname"
@@ -298,8 +298,8 @@
                     android:text="@string/d_mobile"
                     android:textColor="#6e6e6e"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginBottom="4dp"
-                    android:textSize="12sp"/>
+                    android:layout_marginBottom="2dp"
+                    android:textSize="10sp"/>
                 <TextView android:id="@+id/ftr_tv_gmobile"
                     android:layout_below="@+id/ftr_tv_dname"
                     android:layout_width="wrap_content"
@@ -308,8 +308,8 @@
                     android:text="@string/xxx"
                     android:textColor="@color/colorAsh"
                     android:layout_marginLeft="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:textSize="12sp"
+                    android:layout_marginBottom="2dp"
+                    android:textSize="11sp"
                     android:textStyle="bold"/>
                 <TextView android:id="@+id/ftr_tv_gveh_title"
                     android:layout_width="wrap_content"
@@ -319,7 +319,7 @@
                     android:textColor="#6e6e6e"
                     android:layout_marginLeft="8dp"
                     android:layout_marginBottom="2dp"
-                    android:textSize="12sp"/>
+                    android:textSize="10sp"/>
                 <TextView android:id="@+id/ftr_tv_veh_regno"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -329,7 +329,7 @@
                     android:textColor="@color/colorAsh"
                     android:layout_marginLeft="4dp"
                     android:layout_marginBottom="2dp"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textStyle="bold"/>
 
             </RelativeLayout>
@@ -346,8 +346,8 @@
             android:layout_marginTop="2dp">
 
             <TextView
-                android:layout_width="10dp"
-                android:layout_height="10dp"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
                 android:background="@drawable/round_green"
                 android:layout_marginRight="4dp"
                 android:gravity="center"
@@ -361,13 +361,14 @@
                 android:textSize="12sp"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_marginRight="4dp"/>
+                android:layout_marginRight="4dp"
+                android:visibility="gone"/>
             <TextView android:id="@+id/ftr_tv_ploc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/xxx"
                 android:textColor="@color/colorBlack"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:gravity="left"
                 android:layout_gravity="center"/>
         </LinearLayout>
@@ -375,13 +376,13 @@
         <LinearLayout android:id="@+id/ftr_ll2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="6dp"
             android:orientation="horizontal"
             android:layout_below="@+id/ftr_ll1">
 
             <TextView
-                android:layout_width="10dp"
-                android:layout_height="10dp"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
                 android:background="@drawable/round_pink"
                 android:layout_marginRight="6dp"
                 android:gravity="center"
@@ -396,13 +397,14 @@
                 android:layout_marginRight="6dp"
                 android:textSize="12sp"
                 android:layout_gravity="center"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:visibility="gone"/>
             <TextView android:id="@+id/ftr_tv_dloc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/xxx"
                 android:textColor="@color/colorBlack"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:layout_gravity="center"
                 android:gravity="left" />
 
@@ -420,6 +422,7 @@
             android:textSize="12sp"
             android:textColor="#ffd600"
             android:alpha="0.5"
+
             android:textAllCaps="false"/>
 
 

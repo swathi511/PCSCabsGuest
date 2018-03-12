@@ -17,6 +17,9 @@ public class CityCenterPojo {
     @SerializedName("CutOfRadius")
     @Expose
     private String cutOfRadius;
+    @SerializedName("localities")
+    @Expose
+    private String localities;
 
     public String getLatitude() {
         return latitude;
@@ -42,4 +45,11 @@ public class CityCenterPojo {
         this.cutOfRadius = cutOfRadius;
     }
 
+    public String getLocalities() {
+        return localities;
+    }
+
+    public void setLocalities(String localities) {
+        this.localities = localities;
+    }
 }

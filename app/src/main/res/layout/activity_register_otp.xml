@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
     android:layout_margin="10dp"
@@ -14,7 +16,6 @@
         android:textSize="12sp"
         android:gravity="left"
         android:layout_marginBottom="4dp"
-        android:background="@drawable/rect_blue_stroke_bg_nc"
         android:layout_gravity="left"
         android:padding="4dp"/>
 
@@ -38,20 +39,81 @@
         android:layout_marginBottom="4dp"
         android:layout_marginTop="32dp"
         android:paddingLeft="40dp"
-        android:paddingRight="40dp"/>
+        android:paddingRight="40dp"
+        android:visibility="gone"/>
 
     <EditText android:id="@+id/aro_et_otp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:textColor="@color/colorBlack"
         android:layout_marginBottom="4dp"
         android:inputType="number"
         android:maxLines="1"
-        android:hint="@string/xxx"
+        android:hint=" xxxx "
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
+        android:background="@drawable/rect_ash_stroke_bg_single_line"
+        android:padding="12dp"
+        android:layout_gravity="center"
+        android:maxLength="4"
+        android:textColorHint="#cacaca"
+        android:visibility="gone"
         />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+        <EditText android:id="@+id/aro_et_otp1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="1"
+            android:textColor="@color/colorBlack"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_weight="1"
+            android:inputType="number"
+
+            android:textColorHint="#c0c0c0"/>
+        <EditText android:id="@+id/aro_et_otp2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="1"
+            android:textColor="@color/colorBlack"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_weight="1"
+            android:inputType="number"
+
+            android:textColorHint="#c0c0c0"/>
+        <EditText android:id="@+id/aro_et_otp3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="1"
+            android:textColor="@color/colorBlack"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_weight="1"
+            android:inputType="number"
+
+            android:textColorHint="#c0c0c0"/>
+        <EditText android:id="@+id/aro_et_otp4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="1"
+            android:textColor="@color/colorBlack"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_weight="1"
+            android:inputType="number"
+
+            android:textColorHint="#c0c0c0"/>
+
+    </LinearLayout>
 
     <Button android:id="@+id/aro_bt_ok"
         android:layout_width="wrap_content"
@@ -62,6 +124,17 @@
         android:layout_gravity="center"
         android:layout_margin="16dp"
         android:paddingLeft="40dp"
-        android:paddingRight="40dp"/>
+        android:paddingRight="40dp"
+        android:visibility="gone"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/aro_fab_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginTop="64dp"
+        android:src="@drawable/right_arrow"
+        app:backgroundTint="@color/colorPrimary"
+        android:tint="#f4c405"/>
 
 </LinearLayout>

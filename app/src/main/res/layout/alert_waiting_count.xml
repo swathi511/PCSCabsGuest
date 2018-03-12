@@ -16,12 +16,13 @@
     <TextView android:id="@+id/awc_tv_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Waiting for driver to accept..."
+        android:text="Please wait!\nContacting nearby drivers..."
         android:gravity="center"
         android:textSize="14sp"
-        android:layout_margin="16dp"
         android:textColor="@color/colorBlack"
-        android:textAllCaps="true"/>
+        android:textAllCaps="false"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"/>
 
     <!--
 
@@ -50,16 +51,18 @@
             android:text=" Left"
             android:textSize="20sp"
             android:textColor="#414040"/>
-    </LinearLayout>-->
+    </LinearLayout>
+
+    android:indeterminateDrawable="@drawable/progress_circle"
+    -->
 
     <ProgressBar
         android:id="@+id/abs_progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="220dp"
-        android:layout_height="220dp"
-        android:indeterminateDrawable="@drawable/progress_circle"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone">
+        >
     </ProgressBar>
 
     <Button android:id="@+id/awc_bt_cancel_ride"

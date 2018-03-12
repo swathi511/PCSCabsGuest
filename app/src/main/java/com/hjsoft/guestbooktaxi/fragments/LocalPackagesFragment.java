@@ -28,13 +28,18 @@ import com.hjsoft.guestbooktaxi.activity.PaymentActivity;
 import com.hjsoft.guestbooktaxi.adapter.DBAdapter;
 import com.hjsoft.guestbooktaxi.model.AllRidesPojo;
 import com.hjsoft.guestbooktaxi.model.BookCabPojo;
+import com.hjsoft.guestbooktaxi.model.OutStationPojo;
 import com.hjsoft.guestbooktaxi.webservices.API;
 import com.hjsoft.guestbooktaxi.webservices.RestClient;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -77,6 +82,11 @@ public class LocalPackagesFragment extends Fragment {
     TextView tvBid,tvCoupon;
     int hour_cal,min_cal;
     String stCoupon="-";
+    String city;
+    double surgeValue=0.0;
+    double surgeRatio=0.0;
+    TextView tvSurgeValue;
+    String stTimeForFare="00:00:00";
 
 
 
@@ -96,6 +106,8 @@ public class LocalPackagesFragment extends Fragment {
         tvAddMoney=(TextView)rootView.findViewById(R.id.flp_tv_add_money);
         tvFare=(TextView)rootView.findViewById(R.id.flp_tv_fare);
         tvCoupon=(TextView)rootView.findViewById(R.id.flp_tv_coupon);
+        tvSurgeValue=(TextView)rootView.findViewById(R.id.flp_tv_peak_time);
+        tvSurgeValue.setVisibility(View.GONE);
 
         tvDateTimeText=(TextView)rootView.findViewById(R.id.flp_tv_datetime_text);
         ivDateTime=(ImageView)rootView.findViewById(R.id.flp_iv_datetime);
@@ -130,6 +142,7 @@ public class LocalPackagesFragment extends Fragment {
 
         if(b!=null)
         {
+            city= b.getString("city");
             stTime=b.getString("time");
 
             showDateTimeSettings();
@@ -154,10 +167,12 @@ public class LocalPackagesFragment extends Fragment {
 
             tvPackage.setText(stTravelPackage);
             tvCategory.setText(stCabCategory);
-            tvFare.setText(stFare);
+            //tvFare.setText(stFare);
 
             String stFareLocal[]=stFare.split(" ");
             stLocalFare=stFareLocal[1];
+
+            //checkingForSurgeValue();
         }
 
 
@@ -193,7 +208,7 @@ public class LocalPackagesFragment extends Fragment {
                 stWalletAmount=dbAdapter.getWalletAmount();
                 tvWallet.setText(getString(R.string.Rs)+" "+stWalletAmount+" WALLET");
 
-                if(Integer.parseInt(stWalletAmount)<Integer.parseInt(stLocalFare))
+                if(Double.parseDouble(stWalletAmount)<Double.parseDouble(stLocalFare))
                 {
                     Toast.makeText(getActivity(),"Insufficient balance! Please Add Money.",Toast.LENGTH_SHORT).show();
                     tvAddMoney.setVisibility(View.VISIBLE);
@@ -223,7 +238,7 @@ public class LocalPackagesFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                /*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.alert_coupon, null);
@@ -250,7 +265,7 @@ public class LocalPackagesFragment extends Fragment {
 
                             tvCoupon.setText(stCoupon);
                             tvCoupon.setTypeface(null, Typeface.BOLD);
-                            tvCoupon.setTextColor(Color.parseColor("#4CAF50"));
+                            tvCoupon.setTextColor(Color.parseColor("#FF6F00"));
                             //tvCoupon.setTextColor(Color.parseColor("#FBC02D"));
                             //tvCoupon.setBackgroundColor(Color.parseColor("#FFF176"));
 
@@ -260,7 +275,7 @@ public class LocalPackagesFragment extends Fragment {
 
                         //Promcode Not Applicable
                     }
-                });*/
+                });
 
             }
         });
@@ -431,6 +446,14 @@ public class LocalPackagesFragment extends Fragment {
 
                         stDate=yr+"-"+mnth+"-"+day;
                         stTime = hr + ":" + min;
+                        DecimalFormat f=new DecimalFormat("00");
+                        String hr1,min1;
+                        hr1=f.format(hr);
+                        min1=f.format(min);
+                        stTimeForFare=hr1+":"+min1+":"+"00";
+
+                        System.out.println("*** Time for fare "+stTimeForFare);
+
 
                         stTime=convert24To12System(hr,min);
 
@@ -438,6 +461,8 @@ public class LocalPackagesFragment extends Fragment {
                         tvDateTime.setText(stDate + " " + stTime);
                         alertDialog.dismiss();
                         //showPackageDetails();
+
+                        checkingForSurgeValue();
 
                     } else {
                         Toast.makeText(getActivity(), "Please Choose Time ahead of current time", Toast.LENGTH_SHORT).show();
@@ -447,6 +472,13 @@ public class LocalPackagesFragment extends Fragment {
                     //stDate = day+"-"+mnth+"-"+yr;
                     stDate=yr+"-"+mnth+"-"+day;
                     stTime = hr + ":" + min;
+                    DecimalFormat f=new DecimalFormat("00");
+                    String hr1,min1;
+                    hr1=f.format(hr);
+                    min1=f.format(min);
+                    stTimeForFare=hr1+":"+min1+":"+"00";
+
+                    System.out.println("*** Time for fare "+stTimeForFare);
 
                     //System.out.println("time before issssssssssssssssssssssssssssss "+stTime);
 
@@ -457,6 +489,7 @@ public class LocalPackagesFragment extends Fragment {
                     tvDateTime.setTextColor(Color.parseColor("#000000"));
                     alertDialog.dismiss();
 
+                    checkingForSurgeValue();
                     //  showPackageDetails();
                 }
             }
@@ -548,6 +581,377 @@ public class LocalPackagesFragment extends Fragment {
         if(m.length() == 1) m = "0"+m;
         time = h+":"+m+" "+am_pm;
         return time;
+    }
+
+    public void checkingForSurgeValue()
+    {
+
+        tvFare.setVisibility(View.GONE);
+
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Getting Fare Estimate ...");
+        progressDialog.show();
+
+        JsonObject v=new JsonObject();
+        v.addProperty("companyid",companyId);
+        v.addProperty("location",city);
+        v.addProperty("traveltype","local");
+        v.addProperty("vehicle_type","All");
+        v.addProperty("approxkms",0);
+        v.addProperty("duration",0);
+
+        Call<List<OutStationPojo>> call=REST_CLIENT.getFareEstimate(v);
+        call.enqueue(new Callback<List<OutStationPojo>>() {
+            @Override
+            public void onResponse(Call<List<OutStationPojo>> call, Response<List<OutStationPojo>> response) {
+
+                List<OutStationPojo> dataList;
+                OutStationPojo data;
+
+                if(response.isSuccessful())
+                {
+                    dataList=response.body();
+                    for(int i=0;i<dataList.size();i++) {
+
+                        data=dataList.get(i);
+
+                        System.out.println("cab caregory issssss "+data.getVehicleType());
+
+                        switch (i) {
+
+                            case 0:if(stCabCategory.equals("Mini")) {
+
+                                String stFareLocal[] = stFare.split(" ");
+                                stLocalFare = stFareLocal[1];
+                                surgeValue=0.0;
+                                tvSurgeValue.setVisibility(View.GONE);
+
+                                System.out.println("****"+surgeValue+":"+stLocalFare);
+
+                                if (data.getPeakhoursdata().equals("")) {
+
+                                    tvFare.setText(stFare);
+
+                                  /*  tvFare.setText(stFare);
+
+                                    String stFareLocal[] = stFare.split(" ");
+                                    stLocalFare = stFareLocal[1];
+                                    surgeValue=0.0;*/
+
+                                } else {
+
+                                    System.out.println("^^^^^ " + data.getPeakhoursdata());
+
+                                    String v[] = data.getPeakhoursdata().split(",");
+
+                                    outerloop:
+
+                                    for (int l = 0; l < v.length; l++) {
+                                        String w = v[l];
+                                        String y[] = w.split("-");
+
+                                        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                        try {
+
+                                            System.out.println("Time for fare"+stTimeForFare);
+
+                                            Date d1 = format.parse(stTimeForFare);
+                                            Date d2 = format.parse(y[0]);
+                                            Date d3 = format.parse(y[1]);
+
+                                            System.out.println("y[4]" + y[4]);
+
+                                            String z[] = y[4].split("\\|");
+
+                                            System.out.println("z.lenght" + z.length);
+
+                                            if (z.length != 0) {
+                                                for (int k = 0; k < z.length; k++) {
+
+                                                    System.out.println("z[k]" + z[k]);
+
+                                                    if (z[k].equals("Packages")) {
+
+                                                        System.out.println("iswithinrange "+isWithinRange(d1, d2, d3));
+
+                                                        if (isWithinRange(d1, d2, d3)) {
+
+                                                            double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                            double b = a / Integer.parseInt(y[3]);
+
+                                                            surgeValue = b;
+                                                            surgeRatio = (Double.parseDouble(y[2]) + Double.parseDouble(y[3])) / 100;
+
+                                                            tvSurgeValue.setVisibility(View.VISIBLE);
+
+                                                           break outerloop;
+                                                        }
+
+                                                       // break;
+                                                    }
+                                                }
+                                            } else {
+
+                                                if (y[4].equals("Packages")) {
+                                                    if (isWithinRange(d1, d2, d3)) {
+
+                                                        System.out.println("inside eeeeeeeeee");
+
+
+                                                        double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                        double b = a / Integer.parseInt(y[3]);
+
+                                                        surgeValue = b;
+                                                        surgeRatio = Double.parseDouble(y[2]) / Double.parseDouble(y[3]) / 100;
+
+                                                        tvSurgeValue.setVisibility(View.VISIBLE);
+
+                                                        break outerloop;
+                                                    }
+                                                    //break;
+                                                }
+                                            }
+
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+
+                                stLocalFare = String.valueOf(Double.parseDouble(stLocalFare) + surgeValue);
+
+                                int b = (int) (Double.parseDouble(data.getServicetax()) * (Double.parseDouble(stLocalFare))) / 100;
+
+                                tvFare.setVisibility(View.VISIBLE);
+                                tvFare.setText(getString(R.string.Rs) + " " + stLocalFare + " + " +getString(R.string.Rs) + " " + b + " GST");
+
+                                progressDialog.dismiss();
+
+                                break;
+                            }
+                            case 1:if(stCabCategory.equals("Sedan")) {
+
+                                String stFareLocal[] = stFare.split(" ");
+                                stLocalFare = stFareLocal[1];
+                                surgeValue=0.0;
+                                tvSurgeValue.setVisibility(View.GONE);
+
+                                if (data.getPeakhoursdata().equals("")) {
+
+                                    tvFare.setText(stFare);
+
+                                } else {
+
+                                    System.out.println("^^^^^ " + data.getPeakhoursdata());
+
+                                    String v[] = data.getPeakhoursdata().split(",");
+
+                                    outerloop:
+
+                                    for (int l = 0; l < v.length; l++) {
+                                        String w = v[l];
+                                        String y[] = w.split("-");
+
+                                        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                        try {
+                                            Date d1 = format.parse(stTimeForFare);
+                                            Date d2 = format.parse(y[0]);
+                                            Date d3 = format.parse(y[1]);
+
+                                            System.out.println("y[4]" + y[4]);
+
+                                            String z[] = y[4].split("\\|");
+
+                                            System.out.println("z.lenght" + z.length);
+
+                                            if (z.length != 0) {
+                                                for (int k = 0; k < z.length; k++) {
+
+                                                    System.out.println("z[k]" + z[k]);
+
+                                                    if (z[k].equals("Packages")) {
+
+                                                        if (isWithinRange(d1, d2, d3)) {
+
+                                                            double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                            double b = a / Integer.parseInt(y[3]);
+
+                                                            surgeValue = b;
+                                                            surgeRatio = (Double.parseDouble(y[2]) + Double.parseDouble(y[3])) / 100;
+
+                                                            tvSurgeValue.setVisibility(View.VISIBLE);
+
+                                                            break outerloop;
+                                                        }
+
+                                                    }
+                                                }
+                                            } else {
+
+                                                if (y[4].equals("Packages")) {
+                                                    if (isWithinRange(d1, d2, d3)) {
+
+                                                        System.out.println("inside eeeeeeeeee");
+
+
+                                                        double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                        double b = a / Integer.parseInt(y[3]);
+
+                                                        surgeValue = b;
+                                                        surgeRatio = Double.parseDouble(y[2]) / Double.parseDouble(y[3]) / 100;
+
+                                                        tvSurgeValue.setVisibility(View.VISIBLE);
+
+                                                        break outerloop;
+                                                    }
+                                                }
+
+                                            }
+
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+
+                                }
+
+                                stLocalFare = String.valueOf(Double.parseDouble(stLocalFare) + surgeValue);
+
+                                int b = (int) (Double.parseDouble(data.getServicetax()) * (Double.parseDouble(stLocalFare))) / 100;
+
+                                tvFare.setVisibility(View.VISIBLE);
+                                tvFare.setText(getString(R.string.Rs) + " " + stLocalFare + " + " +getString(R.string.Rs) + " " + b + " GST");
+
+                                progressDialog.dismiss();
+
+                                break;
+                            }
+                            case 2:if(stCabCategory.equals("SUV")) {
+
+                                String stFareLocal[] = stFare.split(" ");
+                                stLocalFare = stFareLocal[1];
+                                surgeValue=0.0;
+                                tvSurgeValue.setVisibility(View.GONE);
+
+                                if (data.getPeakhoursdata().equals("")) {
+
+                                    tvFare.setText(stFare);
+
+                                } else {
+
+                                    System.out.println("^^^^^ " + data.getPeakhoursdata());
+
+                                    String v[] = data.getPeakhoursdata().split(",");
+
+                                    outerloop:
+
+                                    for (int l = 0; l < v.length; l++) {
+                                        String w = v[l];
+                                        String y[] = w.split("-");
+
+                                        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                        try {
+                                            Date d1 = format.parse(stTimeForFare);
+                                            Date d2 = format.parse(y[0]);
+                                            Date d3 = format.parse(y[1]);
+
+                                            System.out.println("y[4]" + y[4]);
+
+                                            String z[] = y[4].split("\\|");
+
+                                            System.out.println("z.lenght" + z.length);
+
+                                            if (z.length != 0) {
+                                                for (int k = 0; k < z.length; k++) {
+
+                                                    System.out.println("z[k]" + z[k]);
+
+                                                    if (z[k].equals("Packages")) {
+
+                                                        if (isWithinRange(d1, d2, d3)) {
+
+                                                            double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                            double b = a / Integer.parseInt(y[3]);
+
+                                                            surgeValue = b;
+                                                            surgeRatio = (Double.parseDouble(y[2]) + Double.parseDouble(y[3])) / 100;
+
+                                                            tvSurgeValue.setVisibility(View.VISIBLE);
+
+                                                            break outerloop;
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+
+                                                if (y[4].equals("Packages")) {
+                                                    if (isWithinRange(d1, d2, d3)) {
+
+                                                        System.out.println("inside eeeeeeeeee");
+
+
+                                                        double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                        double b = a / Integer.parseInt(y[3]);
+
+                                                        surgeValue = b;
+                                                        surgeRatio = Double.parseDouble(y[2]) / Double.parseDouble(y[3]) / 100;
+
+                                                        tvSurgeValue.setVisibility(View.VISIBLE);
+
+                                                        break outerloop;
+                                                    }
+                                                }
+
+                                            }
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+
+
+                                }
+
+                                stLocalFare = String.valueOf(Double.parseDouble(stLocalFare) + surgeValue);
+
+                                int b = (int) (Double.parseDouble(data.getServicetax()) * (Double.parseDouble(stLocalFare))) / 100;
+
+                                tvFare.setVisibility(View.VISIBLE);
+                                tvFare.setText(getString(R.string.Rs) + " " + stLocalFare + " + " + getString(R.string.Rs) + " " + b + " GST");
+
+                                progressDialog.dismiss();
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<OutStationPojo>> call, Throwable t) {
+
+                progressDialog.dismiss();
+
+                Toast.makeText(getActivity(),"Connectivity Issue..Please try again!",Toast.LENGTH_LONG).show();
+
+                showDateTimeSettings();
+
+            }
+        });
+    }
+
+    public static String getCurrentTime() {
+        //date output format
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        return dateFormat.format(cal.getTime());
+    }
+
+    boolean isWithinRange(Date testDate, Date startDate, Date endDate) {
+        return !(testDate.before(startDate) || testDate.after(endDate));
     }
 
 

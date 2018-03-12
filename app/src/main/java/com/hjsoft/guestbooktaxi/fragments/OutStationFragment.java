@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,9 @@ import com.hjsoft.guestbooktaxi.model.Row;
 import com.hjsoft.guestbooktaxi.webservices.API;
 import com.hjsoft.guestbooktaxi.webservices.RestClient;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -83,9 +87,14 @@ public class OutStationFragment extends Fragment {
     TextView tvCash,tvWallet;
     DBAdapter dbAdapter;
     String stWalletAmount;
-    TextView tvAddMoney,tvCoupon;
-    String stDuration;
+    TextView tvAddMoney,tvCoupon,tvSurgeMsg;
+    String stDuration,stHrs;
     String stCoupon="-";
+    double surgeValue;
+    int gst;
+    List<OutStationPojo> dataList;
+    OutStationPojo data;
+    String stTimeForFare="00:00:00";
 
     @Nullable
     @Override
@@ -112,6 +121,8 @@ public class OutStationFragment extends Fragment {
         tvWallet=(TextView)v.findViewById(R.id.fos_tv_wallet);
         pref = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         tvAddMoney=(TextView)v.findViewById(R.id.fos_tv_add_money);
+        tvSurgeMsg=(TextView)v.findViewById(R.id.fos_tv_surge_msg);
+        tvSurgeMsg.setVisibility(View.GONE);
         tvCoupon=(TextView)v.findViewById(R.id.fos_tv_coupon);
         tvAddMoney.setVisibility(View.GONE);
 
@@ -230,7 +241,7 @@ public class OutStationFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                /*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.alert_coupon, null);
@@ -257,7 +268,7 @@ public class OutStationFragment extends Fragment {
 
                             tvCoupon.setText(stCoupon);
                             tvCoupon.setTypeface(null, Typeface.BOLD);
-                            tvCoupon.setTextColor(Color.parseColor("#4CAF50"));
+                            tvCoupon.setTextColor(Color.parseColor("#FF6F00"));
                             //tvCoupon.setTextColor(Color.parseColor("#FBC02D"));
                             //tvCoupon.setBackgroundColor(Color.parseColor("#FFF176"));
 
@@ -267,7 +278,7 @@ public class OutStationFragment extends Fragment {
 
                         //Promcode Not Applicable
                     }
-                });*/
+                });
 
             }
         });
@@ -464,6 +475,11 @@ public class OutStationFragment extends Fragment {
                                 // stDate=day+"/"+mnth+"/"+yr;
                                 stDate=yr+"-"+mnth+"-"+day;
                                 stTime=hr+":"+min;
+                                DecimalFormat f=new DecimalFormat("00");
+                                String hr1,min1;
+                                hr1=f.format(hr);
+                                min1=f.format(min);
+                                stTimeForFare=hr1+":"+min1+":"+"00";
 
                                 stTime=convert24To12System(hr,min);
 
@@ -471,6 +487,8 @@ public class OutStationFragment extends Fragment {
                                 tvDateTime.setText(stDate+" "+stTime);
                                 tvDateTime.setTextColor(Color.parseColor("#000000"));
                                 alertDialog.dismiss();
+
+                                getFareEstimate();
 
                             }else{
                                 Toast.makeText(getActivity(),"Please Choose Time ahead of current time!",Toast.LENGTH_SHORT).show();
@@ -480,6 +498,11 @@ public class OutStationFragment extends Fragment {
                             // stDate=day+"/"+mnth+"/"+yr;
                             stDate=yr+"-"+mnth+"-"+day;
                             stTime=hr+":"+min;
+                            DecimalFormat f=new DecimalFormat("00");
+                            String hr1,min1;
+                            hr1=f.format(hr);
+                            min1=f.format(min);
+                            stTimeForFare=hr1+":"+min1+":"+"00";
 
                             stTime=convert24To12System(hr,min);
 
@@ -488,6 +511,8 @@ public class OutStationFragment extends Fragment {
                             tvDateTime.setText(stDate+" "+stTime);
                             tvDateTime.setTextColor(Color.parseColor("#000000"));
                             alertDialog.dismiss();
+
+                            getFareEstimate();
                         }
                     }
                 });
@@ -528,6 +553,7 @@ public class OutStationFragment extends Fragment {
                         tvPkg.setText(stPkg);
                         tvPkg.setTextColor(Color.parseColor("#000000"));
                         //  btBook.setAlpha(1);
+                        getFareEstimate();
                     }
                 });
 
@@ -544,6 +570,7 @@ public class OutStationFragment extends Fragment {
                         tvPkg.setText(stPkg);
                         tvPkg.setTextColor(Color.parseColor("#000000"));
                         //   btBook.setAlpha(1);
+                        getFareEstimate();
                     }
                 });
                 tv2rnd.setOnClickListener(new View.OnClickListener() {
@@ -559,6 +586,7 @@ public class OutStationFragment extends Fragment {
                         tvPkg.setText(stPkg);
                         tvPkg.setTextColor(Color.parseColor("#000000"));
                         //  btBook.setAlpha(1);
+                        getFareEstimate();
                     }
                 });
                 tv3rnd.setOnClickListener(new View.OnClickListener() {
@@ -575,6 +603,7 @@ public class OutStationFragment extends Fragment {
                         tvPkg.setTextColor(Color.parseColor("#000000"));
 
                         //    btBook.setAlpha(1);
+                        getFareEstimate();
                     }
                 });
                 tv4rnd.setOnClickListener(new View.OnClickListener() {
@@ -591,6 +620,7 @@ public class OutStationFragment extends Fragment {
                         tvPkg.setTextColor(Color.parseColor("#000000"));
 
                         //  btBook.setAlpha(1);
+                        getFareEstimate();
                     }
                 });
                 tv5rnd.setOnClickListener(new View.OnClickListener() {
@@ -607,6 +637,7 @@ public class OutStationFragment extends Fragment {
                         tvPkg.setTextColor(Color.parseColor("#000000"));
 
                         //  btBook.setAlpha(1);
+                        getFareEstimate();
                     }
                 });
                 tv6rnd.setOnClickListener(new View.OnClickListener() {
@@ -623,6 +654,7 @@ public class OutStationFragment extends Fragment {
                         tvPkg.setTextColor(Color.parseColor("#000000"));
 
                         //   btBook.setAlpha(1);
+                        getFareEstimate();
                     }
                 });
 
@@ -677,9 +709,11 @@ public class OutStationFragment extends Fragment {
                                     String stDist = t1.getText();
                                     String stDistDetails[] = stDist.split(" ");
                                     stKms = stDistDetails[0];
-                                    progressDialog.dismiss();
+
 
                                     stDuration=String.valueOf((t2.getValue())/60);
+                                    //stHrs=String.valueOf(t2.getValue());
+                                    stHrs=String.valueOf(Double.parseDouble(stDuration)/60);
 
                                     //System.out.println("d & t is "+stKms+":"+stDuration);
 
@@ -695,6 +729,12 @@ public class OutStationFragment extends Fragment {
                                     final TextView tvMini=(TextView)dialogView.findViewById(R.id.aocd_tv_mini);
                                     final TextView tvMiniKms=(TextView)dialogView.findViewById(R.id.aocd_tv_mini_kms);
                                     final TextView tvMiniKmsRate=(TextView)dialogView.findViewById(R.id.aocd_tv_mini_kms_rate);
+                                    final  TextView tvMinmKms=(TextView)dialogView.findViewById(R.id.aocd_tv_min_kms);
+                                    final TextView tvAllowedhrs=(TextView)dialogView.findViewById(R.id.aocd_tv_allowed_hrs);
+                                    final TextView tvExtraRate=(TextView)dialogView.findViewById(R.id.aocd_tv_extra_rate);
+                                    final TextView tvDriverAllowance=(TextView)dialogView.findViewById(R.id.aocd_tv_driver_allowance);
+                                    final TextView tvSurgecharge=(TextView)dialogView.findViewById(R.id.aocd_tv_surge);
+                                    final TextView tvGST=(TextView)dialogView.findViewById(R.id.aocd_tv_gst);
 
 
                                     JsonObject v=new JsonObject();
@@ -710,9 +750,6 @@ public class OutStationFragment extends Fragment {
                                         @Override
                                         public void onResponse(Call<List<OutStationPojo>> call, Response<List<OutStationPojo>> response) {
 
-                                            List<OutStationPojo> dataList;
-                                            OutStationPojo data;
-
                                             if(response.isSuccessful())
                                             {
                                                 dataList=response.body();
@@ -721,38 +758,437 @@ public class OutStationFragment extends Fragment {
                                                 {
                                                     data=dataList.get(i);
 
+                                                    //tvSurgeMsg.setVisibility(View.GONE);
+
                                                     switch (i)
                                                     {
                                                         case 0:if(stCab.equals("Mini")) {
-                                                            amnt = (int) Math.round(2 * stPkgNo * Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
 
-                                                            tvMiniKms.setText(stKms);
-                                                            tvMiniKmsRate.setText(data.getOutsidekmsrate());
+                                                            if (data.getPeakhoursdata().equals("")) {
+
+                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                }
+                                                                else {
+                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                }
+
+                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                tvSurgeMsg.setVisibility(View.GONE);
+
+
+                                                            } else {
+
+                                                                //start--new logic
+
+                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                }
+                                                                else {
+                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                }
+
+                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                tvSurgeMsg.setVisibility(View.GONE);
+
+                                                                //end--new logic
+
+                                                                System.out.println("^^^^^ "+data.getPeakhoursdata());
+
+                                                                String v[] = data.getPeakhoursdata().split(",");
+
+                                                                outerloop:
+
+                                                                for (int l = 0; l < v.length; l++) {
+                                                                    String w = v[l];
+                                                                    String y[] = w.split("-");
+
+                                                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                                    try {
+                                                                        Date d1 = format.parse(stTimeForFare);
+                                                                        Date d2 = format.parse(y[0]);
+                                                                        Date d3 = format.parse(y[1]);
+
+                                                                        String z[] = y[4].split("\\|");
+
+                                                                        System.out.println("z.lenght" + z.length);
+
+                                                                        if (z.length != 0) {
+                                                                            for (int k = 0; k < z.length; k++) {
+
+                                                                                if (z[k].equals("outstation")) {
+
+                                                                                    if (isWithinRange(d1, d2, d3)) {
+
+                                                                                        if(stPkg.equals("1 way trip")) {
+
+                                                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                        }
+                                                                                        else {
+                                                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                        }
+
+                                                                                        int a = Integer.parseInt(y[2]) * amnt;
+                                                                                        int b = a / Integer.parseInt(y[3]);
+
+                                                                                        System.out.println("Surge value issss "+b);
+
+                                                                                        surgeValue = b;
+                                                                                        amnt=amnt+(int)surgeValue;
+                                                                                        tvSurgeMsg.setVisibility(View.VISIBLE);
+
+                                                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                                        tvSurgecharge.setText(y[2]+" - "+y[3]);
+                                                                                        break outerloop;
+
+                                                                                    }
+                                                                                    else {
+
+                                                                                        if(stPkg.equals("1 way trip")) {
+
+                                                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                        }
+                                                                                        else {
+                                                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                        }
+
+                                                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+
+                                                                                        tvSurgecharge.setText("-");
+                                                                                        tvSurgeMsg.setVisibility(View.GONE);
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                        //System.out.println(date);
+                                                                    } catch (ParseException e) {
+                                                                        e.printStackTrace();
+                                                                    }
+                                                                }
+                                                            }
+                                                            //int f = (int) Double.parseDouble(data.getTotalfare());
+
+                                                            if(stPkg.equals("1 way trip"))
+                                                            {
+                                                                tvMiniKms.setText(stKms);
+                                                                tvMiniKmsRate.setText(getString(R.string.Rs)+" "+2*Double.parseDouble(data.getOutsidekmsrate()));
+                                                            }
+                                                            else {
+                                                                tvMiniKms.setText(String.valueOf(2*Double.parseDouble(stKms)));
+                                                                tvMiniKmsRate.setText(getString(R.string.Rs)+" "+(data.getOutsidekmsrate()));
+
+                                                            }
                                                             //amnt=amnt+(15*amnt)/100;
-                                                            tvMini.setText("Rs. " + String.valueOf(amnt));
-                                                            btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
+                                                            tvMini.setText(getString(R.string.Rs)+" " + String.valueOf(amnt));
+                                                            tvMinmKms.setText(data.getMinKms());
+                                                            tvAllowedhrs.setText(data.getAllowedHrs());
+                                                            tvExtraRate.setText(getString(R.string.Rs)+" "+data.getExtraRatePerMin());
+                                                            tvDriverAllowance.setText(getString(R.string.Rs)+" "+data.getDriverAllowance());
+                                                            tvGST.setText(getString(R.string.Rs)+" "+gst);
+
+
+                                                            btFareEstimate.setText("Approx. Fare "+getString(R.string.Rs)+" " + String.valueOf(amnt)+" + "+getString(R.string.Rs)+" "+gst+" GST");
+
+                                                            progressDialog.dismiss();
                                                         }
                                                             break;
                                                         case 2:if(stCab.equals("SUV")) {
-                                                            amnt = (int) Math.round(2 * stPkgNo * Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
 
-                                                            tvMiniKms.setText(stKms);
-                                                            tvMiniKmsRate.setText(data.getOutsidekmsrate());
+                                                            if (data.getPeakhoursdata().equals("")) {
+
+                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                }
+                                                                else {
+                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                }
+
+                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                tvSurgeMsg.setVisibility(View.GONE);
+                                                            } else {
+
+                                                                //start--new logic
+
+                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                }
+                                                                else {
+                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                }
+
+                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                tvSurgeMsg.setVisibility(View.GONE);
+
+                                                                //end--new logic
+
+                                                                System.out.println("^^^^^ "+data.getPeakhoursdata());
+
+                                                                String v[] = data.getPeakhoursdata().split(",");
+
+                                                                outerloop:
+
+                                                                for (int l = 0; l < v.length; l++) {
+                                                                    String w = v[l];
+                                                                    String y[] = w.split("-");
+
+                                                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                                    try {
+                                                                        Date d1 = format.parse(stTimeForFare);
+                                                                        Date d2 = format.parse(y[0]);
+                                                                        Date d3 = format.parse(y[1]);
+
+                                                                        String z[] = y[4].split("\\|");
+
+                                                                        System.out.println("z.lenght" + z.length);
+
+                                                                        if (z.length != 0) {
+                                                                            for (int k = 0; k < z.length; k++) {
+
+                                                                                if (z[k].equals("outstation")) {
+
+                                                                                    if (isWithinRange(d1, d2, d3)) {
+
+                                                                                        if(stPkg.equals("1 way trip")) {
+
+                                                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                        }
+                                                                                        else {
+                                                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                        }
+
+                                                                                        int a = Integer.parseInt(y[2]) * amnt;
+                                                                                        int b = a / Integer.parseInt(y[3]);
+
+                                                                                        System.out.println("Surge value issss "+b);
+
+                                                                                        surgeValue = b;
+                                                                                        amnt=amnt+(int)surgeValue;
+                                                                                        tvSurgeMsg.setVisibility(View.VISIBLE);
+
+                                                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                                        tvSurgecharge.setText(y[2]+" - "+y[3]);
+                                                                                        break outerloop;
+
+                                                                                    }
+                                                                                    else {
+
+                                                                                        if(stPkg.equals("1 way trip")) {
+
+                                                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                        }
+                                                                                        else {
+                                                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                        }
+
+                                                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+
+                                                                                        tvSurgecharge.setText("-");
+                                                                                        tvSurgeMsg.setVisibility(View.GONE);
+                                                                                    }
+
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                        //System.out.println(date);
+                                                                    } catch (ParseException e) {
+                                                                        e.printStackTrace();
+                                                                    }
+                                                                }
+                                                            }
+                                                            //int f = (int) Double.parseDouble(data.getTotalfare());
+
+                                                            if(stPkg.equals("1 way trip"))
+                                                            {
+                                                                tvMiniKms.setText(stKms);
+                                                                tvMiniKmsRate.setText(getString(R.string.Rs)+" "+2*Double.parseDouble(data.getOutsidekmsrate()));
+                                                            }
+                                                            else {
+                                                                tvMiniKms.setText(String.valueOf(2*Double.parseDouble(stKms)));
+                                                                tvMiniKmsRate.setText(getString(R.string.Rs)+" "+(data.getOutsidekmsrate()));
+
+                                                            }
+                                                            //amnt=amnt+(15*amnt)/100;
+                                                            tvMini.setText(getString(R.string.Rs)+" " + String.valueOf(amnt));
+                                                            tvMinmKms.setText(data.getMinKms());
+                                                            tvAllowedhrs.setText(data.getAllowedHrs());
+                                                            tvExtraRate.setText(getString(R.string.Rs)+" "+data.getExtraRatePerMin());
+                                                            tvDriverAllowance.setText(getString(R.string.Rs)+" "+data.getDriverAllowance());
+                                                            tvGST.setText(getString(R.string.Rs)+" "+gst);
+
+
+                                                            btFareEstimate.setText("Approx. Fare "+getString(R.string.Rs)+" " + String.valueOf(amnt)+" + "+getString(R.string.Rs)+" "+gst+" GST");
+
+
+
+                                                            /*if(stPkg.equals("1 way trip"))
+                                                            {
+                                                                tvMiniKms.setText(stKms);
+                                                                tvMiniKmsRate.setText("Rs. "+2*Double.parseDouble(data.getOutsidekmsrate()));
+                                                            }
+                                                            else {
+                                                                tvMiniKms.setText(String.valueOf(2*Double.parseDouble(stKms)));
+                                                                tvMiniKmsRate.setText("Rs. "+(data.getOutsidekmsrate()));
+
+                                                            }
                                                             //amnt=amnt+(15*amnt)/100;
                                                             tvMini.setText("Rs. " + String.valueOf(amnt));
-                                                            btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
+                                                            tvMinmKms.setText(data.getMinKms());
+                                                            tvAllowedhrs.setText(data.getAllowedHrs());
+                                                            tvExtraRate.setText("Rs. "+data.getExtraRatePerMin());
+                                                            tvDriverAllowance.setText("Rs. "+data.getDriverAllowance());
+                                                            tvGST.setText("Rs. "+gst);
+                                                            //tvSurgecharge.setText("Applied");
 
+                                                            btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt)+" + Rs."+gst+" GST");*/
+                                                            progressDialog.dismiss();
                                                         }
                                                             break;
 
                                                         case 1: if(stCab.equals("Sedan")) {
-                                                            amnt = (int) Math.round(2 * stPkgNo * Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
 
-                                                            tvMiniKms.setText(stKms);
-                                                            tvMiniKmsRate.setText(data.getOutsidekmsrate());
+                                                            if (data.getPeakhoursdata().equals("")) {
+
+                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                }
+                                                                else {
+                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                }
+
+                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                tvSurgeMsg.setVisibility(View.GONE);
+
+                                                            } else {
+
+                                                                //start--new logic
+
+                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                }
+                                                                else {
+                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                }
+
+                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                tvSurgeMsg.setVisibility(View.GONE);
+
+                                                                //end--new logic
+
+                                                                System.out.println("^^^^^ "+data.getPeakhoursdata());
+
+                                                                String v[] = data.getPeakhoursdata().split(",");
+
+                                                                outerloop:
+
+                                                                for (int l = 0; l < v.length; l++) {
+                                                                    String w = v[l];
+                                                                    String y[] = w.split("-");
+
+                                                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                                    try {
+                                                                        Date d1 = format.parse(stTimeForFare);
+                                                                        Date d2 = format.parse(y[0]);
+                                                                        Date d3 = format.parse(y[1]);
+
+                                                                        String z[] = y[4].split("\\|");
+
+                                                                        System.out.println("z.lenght" + z.length);
+
+                                                                        if (z.length != 0) {
+                                                                            for (int k = 0; k < z.length; k++) {
+
+                                                                                if (z[k].equals("outstation")) {
+
+                                                                                    if (isWithinRange(d1, d2, d3)) {
+
+                                                                                        if(stPkg.equals("1 way trip")) {
+
+                                                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                        }
+                                                                                        else {
+                                                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                        }
+
+                                                                                        int a = Integer.parseInt(y[2]) * amnt;
+                                                                                        int b = a / Integer.parseInt(y[3]);
+
+                                                                                        System.out.println("Surge value issss "+b);
+
+                                                                                        surgeValue = b;
+                                                                                        amnt=amnt+(int)surgeValue;
+                                                                                        tvSurgeMsg.setVisibility(View.VISIBLE);
+
+                                                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                                        tvSurgecharge.setText(y[2]+" - "+y[3]);
+                                                                                        break outerloop;
+
+                                                                                    }
+                                                                                    else {
+
+                                                                                        if(stPkg.equals("1 way trip")) {
+
+                                                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                        }
+                                                                                        else {
+                                                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                        }
+
+                                                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+
+                                                                                        tvSurgecharge.setText("-");
+                                                                                        tvSurgeMsg.setVisibility(View.GONE);
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                        //System.out.println(date);
+                                                                    } catch (ParseException e) {
+                                                                        e.printStackTrace();
+                                                                    }
+                                                                }
+                                                            }
+                                                            //int f = (int) Double.parseDouble(data.getTotalfare());
+
+                                                            if(stPkg.equals("1 way trip"))
+                                                            {
+                                                                tvMiniKms.setText(stKms);
+                                                                tvMiniKmsRate.setText(getString(R.string.Rs)+" "+2*Double.parseDouble(data.getOutsidekmsrate()));
+                                                            }
+                                                            else {
+                                                                tvMiniKms.setText(String.valueOf(2*Double.parseDouble(stKms)));
+                                                                tvMiniKmsRate.setText(getString(R.string.Rs)+" "+(data.getOutsidekmsrate()));
+
+                                                            }
                                                             //amnt=amnt+(15*amnt)/100;
-                                                            tvMini.setText("Rs. " + String.valueOf(amnt));
-                                                            btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
+                                                            tvMini.setText(getString(R.string.Rs)+" " + String.valueOf(amnt));
+                                                            tvMinmKms.setText(data.getMinKms());
+                                                            tvAllowedhrs.setText(data.getAllowedHrs());
+                                                            tvExtraRate.setText(getString(R.string.Rs)+" "+data.getExtraRatePerMin());
+                                                            tvDriverAllowance.setText(getString(R.string.Rs)+" "+data.getDriverAllowance());
+                                                            tvGST.setText(getString(R.string.Rs)+" "+gst);
+
+
+                                                            btFareEstimate.setText("Approx. Fare "+getString(R.string.Rs)+" " + String.valueOf(amnt)+" + "+getString(R.string.Rs)+" "+gst+" GST");
+
+                                                            progressDialog.dismiss();
 
                                                         }
                                                             break;
@@ -797,6 +1233,8 @@ public class OutStationFragment extends Fragment {
         String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
                 "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyC4Ccgq_w6OhyF6IVblH3KByt5tKuJNtdM";
 
+       Log.i("os url",urlString);
+
         Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
         call.enqueue(new Callback<DurationPojo>() {
             @Override
@@ -823,9 +1261,10 @@ public class OutStationFragment extends Fragment {
                             String stDist = t1.getText();
                             String stDistDetails[] = stDist.split(" ");
                             stKms = stDistDetails[0];
-                            progressDialog.dismiss();
+
 
                             stDuration=String.valueOf((t2.getValue())/60);
+                            stHrs=String.valueOf(Double.parseDouble(stDuration)/60);
 
                             System.out.println("d & t is "+stKms+":"+stDuration);
 
@@ -867,73 +1306,357 @@ public class OutStationFragment extends Fragment {
                                         {
                                             data=dataList.get(i);
 
+                                            //tvSurgeMsg.setVisibility(View.GONE);
+
                                             switch (i)
                                             {
                                                 case 0:if(stCab.equals("Mini")) {
-                                                    amnt = (int) Math.round(2 * stPkgNo * Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
-                                                    // tvMini.setText("Rs. " + String.valueOf(amnt));
-                                                    // tvMiniKms.setText(stKms);
-                                                    // tvMiniKmsRate.setText(data.getOutsidekmsrate());
-                                                    //System.out.println("amnt befor "+amnt);
 
-                                                    //amnt=amnt+(15*amnt)/100;
+                                                    if (data.getPeakhoursdata().equals("")) {
 
-                                                    //System.out.println("amnt after"+amnt);
+                                                        if(stPkg.equals("1 way trip")) {
 
-                                                    btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
+                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                        }
+                                                        else {
+                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                        }
+
+                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                        tvSurgeMsg.setVisibility(View.GONE);
+
+                                                    } else {
+
+                                                        //start--new logic
+
+                                                        if(stPkg.equals("1 way trip")) {
+
+                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                        }
+                                                        else {
+                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                        }
+
+                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                        tvSurgeMsg.setVisibility(View.GONE);
+
+                                                        //end--new logic
+
+                                                        System.out.println("^^^^^ "+data.getPeakhoursdata());
+
+                                                        String v[] = data.getPeakhoursdata().split(",");
+
+                                                        outerloop:
+
+                                                        for (int l = 0; l < v.length; l++) {
+                                                            String w = v[l];
+                                                            String y[] = w.split("-");
+
+                                                            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                            try {
+                                                                System.out.println("stTimefor fare "+stTimeForFare);
+                                                                Date d1 = format.parse(stTimeForFare);
+                                                                Date d2 = format.parse(y[0]);
+                                                                Date d3 = format.parse(y[1]);
+
+                                                                String z[] = y[4].split("\\|");
+
+                                                                System.out.println("z.lenght" + z.length);
+
+                                                                if (z.length != 0) {
+                                                                    for (int k = 0; k < z.length; k++) {
+
+                                                                        if (z[k].equals("outstation")) {
+
+                                                                            if (isWithinRange(d1, d2, d3)) {
+
+                                                                                System.out.println("within range");
+
+                                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                }
+                                                                                else {
+                                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                }
+
+                                                                                int a = Integer.parseInt(y[2]) * amnt;
+                                                                                int b = a / Integer.parseInt(y[3]);
+
+                                                                                System.out.println("Surge value issss "+b);
+
+                                                                                surgeValue = b;
+                                                                                amnt=amnt+(int)surgeValue;
+                                                                                tvSurgeMsg.setVisibility(View.VISIBLE);
+
+                                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                                break outerloop;
+
+                                                                            }
+
+                                                                            else {
+
+                                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                }
+                                                                                else {
+                                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                }
+
+                                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                                tvSurgeMsg.setVisibility(View.GONE);
+
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                //System.out.println(date);
+                                                            } catch (ParseException e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        }
+                                                    }
+                                                    //int f = (int) Double.parseDouble(data.getTotalfare());
+
+                                                    btFareEstimate.setText("Approx. Fare " +getString(R.string.Rs) +" "+ String.valueOf(amnt)+" + "+getString(R.string.Rs) +" "+gst+" GST");
+                                                    progressDialog.dismiss();
+
                                                 }
                                                     break;
                                                 case 2:if(stCab.equals("SUV")) {
-                                                    amnt = (int) Math.round(2 * stPkgNo * Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
-                                                    // tvMini.setText("Rs. " + String.valueOf(amnt));
-                                                    // tvMiniKms.setText(stKms);
-                                                    //  tvMiniKmsRate.setText(data.getOutsidekmsrate());
-                                                    //System.out.println("amnt befor "+amnt);
 
-                                                    //amnt=amnt+(15*amnt)/100;
+                                                    if (data.getPeakhoursdata().equals("")) {
 
-                                                    // System.out.println("amnt after"+amnt);
+                                                        if(stPkg.equals("1 way trip")) {
 
-                                                    btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
+                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                        }
+                                                        else {
+                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                        }
 
+                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+                                                        tvSurgeMsg.setVisibility(View.GONE);
+
+                                                    } else {
+
+                                                        //start--new logic
+
+                                                        if(stPkg.equals("1 way trip")) {
+
+                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                        }
+                                                        else {
+                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                        }
+
+                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                        tvSurgeMsg.setVisibility(View.GONE);
+
+                                                        //end--new logic
+
+                                                        System.out.println("^^^^^ "+data.getPeakhoursdata());
+
+                                                        String v[] = data.getPeakhoursdata().split(",");
+
+                                                        outerloop:
+
+                                                        for (int l = 0; l < v.length; l++) {
+                                                            String w = v[l];
+                                                            String y[] = w.split("-");
+
+                                                            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                            try {
+                                                                Date d1 = format.parse(stTimeForFare);
+                                                                Date d2 = format.parse(y[0]);
+                                                                Date d3 = format.parse(y[1]);
+
+                                                                String z[] = y[4].split("\\|");
+
+                                                                System.out.println("z.lenght" + z.length);
+
+                                                                if (z.length != 0) {
+                                                                    for (int k = 0; k < z.length; k++) {
+
+                                                                        if (z[k].equals("outstation")) {
+
+                                                                            if (isWithinRange(d1, d2, d3)) {
+
+                                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                }
+                                                                                else {
+                                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                }
+
+                                                                                int a = Integer.parseInt(y[2]) * amnt;
+                                                                                int b = a / Integer.parseInt(y[3]);
+
+                                                                                System.out.println("Surge value issss "+b);
+
+                                                                                surgeValue = b;
+                                                                                amnt=amnt+(int)surgeValue;
+                                                                                tvSurgeMsg.setVisibility(View.VISIBLE);
+
+                                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                                break outerloop;
+
+                                                                            }
+                                                                            else {
+
+                                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                }
+                                                                                else {
+                                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                }
+
+                                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+                                                                                tvSurgeMsg.setVisibility(View.GONE);
+
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                //System.out.println(date);
+                                                            } catch (ParseException e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        }
+                                                    }
+                                                    //int f = (int) Double.parseDouble(data.getTotalfare());
+
+                                                    //btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt)+" + Rs."+gst+" GST");
+                                                    btFareEstimate.setText("Approx. Fare " +getString(R.string.Rs) +" "+ String.valueOf(amnt)+" + "+getString(R.string.Rs) +" "+gst+" GST");
+                                                    progressDialog.dismiss();
                                                 }
                                                     break;
 
                                                 case 1: if(stCab.equals("Sedan")) {
-                                                    amnt = (int) Math.round(2 * stPkgNo * Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
-                                                    //  tvMini.setText("Rs. " + String.valueOf(amnt));
-                                                    //  tvMiniKms.setText(stKms);
-                                                    //  tvMiniKmsRate.setText(data.getOutsidekmsrate());
-                                                    //System.out.println("amnt befor "+amnt);
 
-                                                    //amnt=amnt+(15*amnt)/100;
+                                                    if (data.getPeakhoursdata().equals("")) {
 
-                                                    //System.out.println("amnt after"+amnt);
+                                                        if(stPkg.equals("1 way trip")) {
 
-                                                    btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt));
+                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                        }
+                                                        else {
+                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                        }
 
+                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
 
+                                                        tvSurgeMsg.setVisibility(View.GONE);
+                                                    } else {
+
+                                                        //start--new logic
+
+                                                        if(stPkg.equals("1 way trip")) {
+
+                                                            amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                        }
+                                                        else {
+                                                            amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                        }
+
+                                                        gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                        tvSurgeMsg.setVisibility(View.GONE);
+
+                                                        //end--new logic
+
+                                                        System.out.println("^^^^^ "+data.getPeakhoursdata());
+
+                                                        String v[] = data.getPeakhoursdata().split(",");
+
+                                                        outerloop:
+
+                                                        for (int l = 0; l < v.length; l++) {
+                                                            String w = v[l];
+                                                            String y[] = w.split("-");
+
+                                                            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                            try {
+                                                                Date d1 = format.parse(stTimeForFare);
+                                                                Date d2 = format.parse(y[0]);
+                                                                Date d3 = format.parse(y[1]);
+
+                                                                String z[] = y[4].split("\\|");
+
+                                                                System.out.println("z.lenght" + z.length);
+
+                                                                if (z.length != 0) {
+                                                                    for (int k = 0; k < z.length; k++) {
+
+                                                                        if (z[k].equals("outstation")) {
+
+                                                                            if (isWithinRange(d1, d2, d3)) {
+
+                                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                }
+                                                                                else {
+                                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                }
+
+                                                                                int a = Integer.parseInt(y[2]) * amnt;
+                                                                                int b = a / Integer.parseInt(y[3]);
+
+                                                                                System.out.println("Surge value issss "+b);
+
+                                                                                surgeValue = b;
+                                                                                amnt=amnt+(int)surgeValue;
+                                                                                tvSurgeMsg.setVisibility(View.VISIBLE);
+
+                                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                                break outerloop;
+
+                                                                            }
+                                                                            else {
+
+                                                                                if(stPkg.equals("1 way trip")) {
+
+                                                                                    amnt = getAmntOneWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin());
+                                                                                }
+                                                                                else {
+                                                                                    amnt=getAmntTwoWay(data.getOutsidekmsrate(),data.getBasefare(),data.getDriverAllowance(),data.getExtraRatePerMin(),data.getMinKms(),data.getAllowedHrs());
+                                                                                }
+
+                                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+                                                                                tvSurgeMsg.setVisibility(View.GONE);
+
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                //System.out.println(date);
+                                                            } catch (ParseException e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        }
+                                                    }
+                                                    //int f = (int) Double.parseDouble(data.getTotalfare());
+
+                                                    //btFareEstimate.setText("Approx. Fare Rs. " + String.valueOf(amnt)+" + Rs."+gst+" GST");
+                                                    btFareEstimate.setText("Approx. Fare " +getString(R.string.Rs) +" "+ String.valueOf(amnt)+" + "+getString(R.string.Rs) +" "+gst+" GST");
+                                                    progressDialog.dismiss();
                                                 }
                                                     break;
                                             }
+
+
                                         }
-
-                                        stWalletAmount=dbAdapter.getWalletAmount();
-
-                                        /*if(Integer.parseInt(stWalletAmount)<amnt)
-                                        {
-                                            Toast.makeText(getActivity(),"Insufficient balance! Please Add Money.",Toast.LENGTH_SHORT).show();
-                                            btBook.setAlpha(Float.parseFloat("0.5"));
-                                            btBook.setClickable(false);
-                                            btBook.setEnabled(false);
-                                            tvAddMoney.setVisibility(View.VISIBLE);
-                                        }
-                                        else {
-                                            btBook.setAlpha(1);
-                                            btBook.setClickable(true);
-                                            btBook.setEnabled(true);
-
-                                        }*/
                                     }
                                 }
 
@@ -1037,6 +1760,11 @@ public class OutStationFragment extends Fragment {
 
                         stDate=yr+"-"+mnth+"-"+day;
                         stTime=hr+":"+min;
+                        DecimalFormat f=new DecimalFormat("00");
+                        String hr1,min1;
+                        hr1=f.format(hr);
+                        min1=f.format(min);
+                        stTimeForFare=hr1+":"+min1+":"+"00";
 
                         stTime=convert24To12System(hr,min);
 
@@ -1054,6 +1782,11 @@ public class OutStationFragment extends Fragment {
                 else {
                     stDate=yr+"-"+mnth+"-"+day;
                     stTime=hr+":"+min;
+                    DecimalFormat f=new DecimalFormat("00");
+                    String hr1,min1;
+                    hr1=f.format(hr);
+                    min1=f.format(min);
+                    stTimeForFare=hr1+":"+min1+":"+"00";
 
                     stTime=convert24To12System(hr,min);
 
@@ -1368,6 +2101,172 @@ public class OutStationFragment extends Fragment {
         if(m.length() == 1) m = "0"+m;
         time = h+":"+m+" "+am_pm;
         return time;
+    }
+
+    public static String getCurrentTime() {
+        //date output format
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        return dateFormat.format(cal.getTime());
+    }
+
+    boolean isWithinRange(Date testDate, Date startDate, Date endDate) {
+        return !(testDate.before(startDate) || testDate.after(endDate));
+    }
+
+    public int getAmntOneWay(String oskr,String bf,String da,String rtpm)
+    {
+
+        System.out.println("stKKKKKKKMMMMMMMMMSSSSSSSSSS"+stKms+":"+stDuration+":"+stHrs);
+
+        if(Double.parseDouble(stKms)<100) {
+
+            amnt = (int) Math.round(stPkgNo * Double.parseDouble(stKms) * 2 * Double.parseDouble(oskr));
+            System.out.println("amnt1 "+amnt);
+            amnt = (int) Math.round(amnt+Double.parseDouble(bf)+((Double.parseDouble(stDuration))*(Double.parseDouble(rtpm))));
+            System.out.println("amnt2 "+amnt);
+        }
+        else //if(Double.parseDouble(stKms)>100)
+        {
+            amnt = (int) Math.round(stPkgNo * Double.parseDouble(stKms) * 2 * Double.parseDouble(oskr));
+            amnt = (int) Math.round(amnt+Double.parseDouble(bf)+((Double.parseDouble(stDuration))*(Double.parseDouble(rtpm))));
+            amnt = (int) Math.round(amnt+Integer.parseInt(da));
+        }
+        /*else if(Double.parseDouble(stKms)>100&&Integer.parseInt(stKms)<=250)
+        {
+            stKms="250";
+            amnt = (int) Math.round(Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
+
+        }
+        else {
+            amnt = (int) Math.round(Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
+
+        }*/
+        return amnt;
+    }
+
+    public int getAmntTwoWay(String oskr,String bf,String da,String rtpm,String mk,String ah)
+    {
+
+        System.out.println("stKKKKKKKMMMMMMMMMSSSSSSSSSS  "+stKms+":"+stDuration+":"+stHrs);
+
+        System.out.println("Minkms "+mk+":"+"Allowe hrs "+ah);
+        
+        if((2*Double.parseDouble(stKms))<=200) {
+
+            amnt = (int) Math.round(stPkgNo * 2 * Double.parseDouble(stKms) * Double.parseDouble(oskr));
+            amnt = (int) Math.round(amnt+Double.parseDouble(bf)+((Double.parseDouble(stDuration))*(Double.parseDouble(rtpm))));
+        }
+        else if(((2*Double.parseDouble(stKms))>200)&&((2*Double.parseDouble(stKms))<=Double.parseDouble(mk)))
+        {
+            amnt = (int) Math.round(stPkgNo * Double.parseDouble(mk) * Double.parseDouble(oskr));
+
+            System.out.println("Allowed hrs "+ah+"Hrs are "+stHrs);
+
+            if(Double.parseDouble(ah)>Double.parseDouble(stHrs)) {
+
+                amnt = (int) Math.round(amnt + Double.parseDouble(bf));
+                amnt = Math.round(amnt + Integer.parseInt(da));
+            }
+            else {
+                double v= (Double.parseDouble(stHrs)-(Double.parseDouble(ah)))*60;
+                v=v*(Double.parseDouble(rtpm));
+                amnt =(int) Math.round(amnt+v+Integer.parseInt(da));
+            }
+
+
+        }
+        else {
+
+            System.out.println("stKms in else "+stKms);
+
+            amnt = (int) Math.round(stPkgNo * 2*Double.parseDouble(stKms) * Double.parseDouble(oskr));
+
+            System.out.println("Allowed hrs "+ah+"Hrs are "+stHrs);
+
+            if(Double.parseDouble(ah)>Double.parseDouble(stHrs)) {
+
+                amnt = (int) Math.round(amnt + Double.parseDouble(bf));
+                amnt = Math.round(amnt + Integer.parseInt(da));
+            }
+            else {
+                double v= (Double.parseDouble(stHrs)-(Double.parseDouble(ah)))*60;
+                v=v*(Double.parseDouble(rtpm));
+                amnt =(int) Math.round(amnt+v+Integer.parseInt(da));
+            }
+
+
+        }
+
+        System.out.println("amnt after all "+amnt);
+
+
+        /*else if(Double.parseDouble(stKms)>100&&Integer.parseInt(stKms)<=250)
+        {
+            stKms="250";
+            amnt = (int) Math.round(Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
+
+        }
+        else {
+            amnt = (int) Math.round(Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
+
+        }*/
+        return amnt;
+    }
+
+
+    public void oscode()
+    {
+        /*
+
+                                                                            if(Double.parseDouble(stKms)<100) {
+
+                                                                                amnt = (int) Math.round(2 * stPkgNo * Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
+
+                                                                                int a = Integer.parseInt(y[2]) * amnt;
+                                                                                int b = a / Integer.parseInt(y[3]);
+
+                                                                                System.out.println("Surge value issss "+b);
+
+                                                                                surgeValue = b;
+                                                                                amnt=amnt+(int)surgeValue;
+
+                                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                            }
+                                                                            else if(Double.parseDouble(stKms)>100&&Integer.parseInt(stKms)<=250)
+                                                                            {
+                                                                                stKms="250";
+                                                                                amnt = (int) Math.round(Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
+                                                                                int a = Integer.parseInt(y[2]) * amnt;
+                                                                                int b = a / Integer.parseInt(y[3]);
+
+                                                                                System.out.println("Surge value issss "+b);
+
+                                                                                surgeValue = b;
+
+                                                                                amnt=amnt+(int)surgeValue;
+
+                                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+
+                                                                            }
+                                                                            else {
+                                                                                amnt = (int) Math.round(Double.parseDouble(stKms) * Double.parseDouble(data.getOutsidekmsrate()));
+
+                                                                                int a = Integer.parseInt(y[2]) * amnt;
+                                                                                int b = a / Integer.parseInt(y[3]);
+
+                                                                                System.out.println("Surge value issss "+b);
+
+                                                                                surgeValue = b;
+                                                                                amnt=amnt+(int)surgeValue;
+
+                                                                                gst = (int) (amnt * Double.parseDouble(data.getServicetax())) / 100;
+                                                                            }
+
+                                                                            //tvSurgeCharges.setVisibility(View.VISIBLE);
+
+                                                                            break;*/
     }
 }
 

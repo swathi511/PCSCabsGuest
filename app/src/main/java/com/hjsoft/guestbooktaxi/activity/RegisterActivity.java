@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -45,11 +46,13 @@ public class RegisterActivity extends AppCompatActivity {
     SharedPreferences.Editor editor;
     int PRIVATE_MODE = 0;
     private static final String PREF_NAME = "SharedPref";
+    Bundle b;
+    FloatingActionButton fabNext;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_new_register);
 
         REST_CLIENT= RestClient.get();
 
@@ -58,6 +61,11 @@ public class RegisterActivity extends AppCompatActivity {
 
         session=new SessionManager(getApplicationContext());
 
+        b=getIntent().getExtras();
+
+        String mobile=b.getString("mobile","");
+
+
         etEmail=(EditText)findViewById(R.id.ar_et_email);
         etName=(EditText)findViewById(R.id.ar_et_name);
         //etPwd=(EditText)findViewById(R.id.ar_et_pwd);
@@ -65,8 +73,11 @@ public class RegisterActivity extends AppCompatActivity {
         etCity=(EditText)findViewById(R.id.ar_et_city);
         etMobile=(EditText)findViewById(R.id.ar_et_mobile);
         btRegister=(TextView) findViewById(R.id.ar_bt_register);
+        fabNext=(FloatingActionButton)findViewById(R.id.ar_fab_next);
 
-        btRegister.setOnClickListener(new View.OnClickListener() {
+        etMobile.setText(mobile);
+
+        fabNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 

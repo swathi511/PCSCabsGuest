@@ -1,6 +1,7 @@
 package com.hjsoft.guestbooktaxi.fragments;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -11,10 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.hjsoft.guestbooktaxi.R;
+import com.hjsoft.guestbooktaxi.SessionManager;
+import com.hjsoft.guestbooktaxi.activity.RatingActivity;
 import com.hjsoft.guestbooktaxi.adapter.DBAdapter;
+import com.hjsoft.guestbooktaxi.model.BookCabPojo;
 import com.hjsoft.guestbooktaxi.model.RideStopPojo;
 import com.hjsoft.guestbooktaxi.webservices.API;
 import com.hjsoft.guestbooktaxi.webservices.RestClient;
@@ -23,6 +30,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -46,13 +54,19 @@ public class RideStopFragment extends Fragment {
     long diff=0;
     Button btPay;
     String companyId="CMP00001";
-    TextView tvWalletAmnt,tvCash,tvOtherCharges;
-    LinearLayout llWallet,llCash,llCashInfo,llWalletInfo,llOtherCharges;
+    TextView tvWalletAmnt,tvCash,tvOtherCharges,tvCancelCharges,tvCancelText,tvSubmit,tvRetry;
+    LinearLayout llWallet,llCash,llCashInfo,llWalletInfo,llOtherCharges,llCancelCharges;
     DBAdapter dbAdapter;
     LinearLayout llMain;
     String osbatta;
     double totalBill;
     double otherCharges=0;
+    RatingBar rbStars;
+    String guestProfileId;
+    HashMap<String, String> user;
+    SessionManager session;
+    int rating=0;
+    LinearLayout llStars;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,6 +111,17 @@ public class RideStopFragment extends Fragment {
         tvOtherCharges=(TextView)rootView.findViewById(R.id.frs_tv_charges);
         llOtherCharges=(LinearLayout)rootView.findViewById(R.id.frs_ll_other_charges);
         llOtherCharges.setVisibility(View.GONE);
+        tvCancelCharges=(TextView)rootView.findViewById(R.id.frs_tv_cancel_charges);
+        llCancelCharges=(LinearLayout)rootView.findViewById(R.id.frs_ll_cancel_charges);
+        llCancelCharges.setVisibility(View.GONE);
+        tvCancelText=(TextView)rootView.findViewById(R.id.frs_tv_cancel_text);
+        tvCancelText.setVisibility(View.GONE);
+        tvSubmit=(TextView)rootView.findViewById(R.id.frs_tv_submit);
+        llStars=(LinearLayout)rootView.findViewById(R.id.frs_ll_rating);
+
+
+        rbStars=(RatingBar)rootView.findViewById(R.id.frs_rb_stars);
+        tvRetry=(TextView)rootView.findViewById(R.id.frs_tv_retry);
 
         requestId=getActivity().getIntent().getStringExtra("requestId");
         driverName=getActivity().getIntent().getStringExtra("driverName");
@@ -109,12 +134,97 @@ public class RideStopFragment extends Fragment {
         dbAdapter=new DBAdapter(getContext());
         dbAdapter=dbAdapter.open();
 
+        session=new SessionManager(getActivity());
+
+        user=session.getUserDetails();
+
+        guestProfileId=user.get(SessionManager.KEY_PROFILE_ID);
+
+        getRideFinishDetails();
+
+        tvSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                System.out.println("***"+guestProfileId+":"+requestId+":"+rating+":"+companyId);
+
+
+                JsonObject v1=new JsonObject();
+                v1.addProperty("profileid",guestProfileId);
+                v1.addProperty("reqid",requestId);
+                v1.addProperty("rating",rating);
+                v1.addProperty("companyid",companyId);
+
+                Call<BookCabPojo> call=REST_CLIENT.sendRating(v1);
+                call.enqueue(new Callback<BookCabPojo>() {
+                    @Override
+                    public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
+
+                        if(response.isSuccessful())
+                        {
+                            rbStars.setClickable(false);
+                            rbStars.setEnabled(false);
+                            Toast.makeText(getActivity(),"Thanks for the rating!",Toast.LENGTH_SHORT).show();
+                            tvSubmit.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BookCabPojo> call, Throwable t) {
+
+                    }
+                });
+
+
+            }
+        });
+
+        rbStars.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
+
+                rating=(int)v;
+            }
+        });
+
         btPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
             }
         });
+
+        tvRetry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                getRideFinishDetails();
+            }
+        });
+
+        llStars.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i=new Intent(getActivity(), RatingActivity.class);
+                i.putExtra("requestId",requestId);
+                startActivity(i);
+                getActivity().finish();
+            }
+        });
+
+        return rootView;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    public void getRideFinishDetails()
+    {
+
+        tvRetry.setVisibility(View.GONE);
 
         final ProgressDialog progressDialog = new ProgressDialog(getActivity());
         progressDialog.setIndeterminate(true);
@@ -126,8 +236,7 @@ public class RideStopFragment extends Fragment {
             @Override
             public void run() {
 
-                 handler.removeCallbacks(this);
-
+                handler.removeCallbacks(this);
 
                 Call<List<RideStopPojo>> call=REST_CLIENT.getRideStopData(requestId,companyId,"guest");
                 call.enqueue(new Callback<List<RideStopPojo>>() {
@@ -147,8 +256,8 @@ public class RideStopFragment extends Fragment {
 
                             tvVehCat.setText(data.getVehicleCategory());
                             tvVehType.setText(data.getVehicleType());
-                            tvRideStartTime.setText(data.getRidestarttime());
-                            tvRideStopTime.setText(data.getRidestoptime());
+                            tvRideStartTime.setText(data.getRidestarttime().split(" ")[0]+"\n"+"\n"+data.getRidestarttime().split(" ")[1]);
+                            tvRideStopTime.setText(data.getRidestoptime().split(" ")[0]+"\n"+"\n"+data.getRidestoptime().split(" ")[1]);
                             tvPickupLoc.setText(data.getFromlocation());
                             tvDropLoc.setText(data.getTolocation());
                    /* tvFare.setText("Rs. "+data.getTotalfare());
@@ -172,6 +281,17 @@ public class RideStopFragment extends Fragment {
                                 tvOsBattaTitle.setVisibility(View.VISIBLE);
                                 tvOutstationBatta.setText(getString(R.string.Rs)+" "+data.getDriverBattaAmt());
                                 osbatta=data.getDriverBattaAmt();
+                            }
+
+
+                            if(data.getCancelPrevRideAmount().equals("0"))
+                            {
+
+                            }
+                            else {
+                                llCancelCharges.setVisibility(View.VISIBLE);
+                                tvCancelCharges.setText(data.getCancelPrevRideAmount());
+                                tvCancelText.setVisibility(View.VISIBLE);
                             }
 
                             if(data.getTotalfare().equals("")) {
@@ -210,7 +330,7 @@ public class RideStopFragment extends Fragment {
 //                                    tvFare.setText(getString(R.string.Rs)+" "+ fare);
 //                                    tvTotalFare.setText(getString(R.string.Rs)+" "+ fare);
                                     tvTaxes.setText(getString(R.string.Rs)+" "+ tax);
-                                    totalBill = Double.parseDouble(fare)+Double.parseDouble(tax);
+                                    totalBill = Double.parseDouble(fare)+Double.parseDouble(tax)+Double.parseDouble(data.getCancelPrevRideAmount());
                                     tvTotalBill.setText(getString(R.string.Rs)+" "+ String.valueOf(totalBill));
                                 }
                         /*
@@ -232,7 +352,7 @@ public class RideStopFragment extends Fragment {
                                 String time =data.getRidestarttime().substring(0, data.getRidestarttime().length() - 4);
                                 //System.out.println(time);
                                 String timePick = data.getRidestarttime().substring(data.getRidestarttime().length() - 4, data.getRidestarttime().length());
-                               // System.out.println(timePick);
+                                // System.out.println(timePick);
                                 if (timePick.equals("p.m.")) {
                                     time += "PM";
                                 } else if (timePick.equals("a.m.")) {
@@ -265,7 +385,7 @@ public class RideStopFragment extends Fragment {
 
                             }
 
-                            if(data.getTravelType().equals("local")||data.getTravelType().equals("Packages")) {
+                            /*if(data.getTravelType().equals("local")||data.getTravelType().equals("Packages")) {
 
                                 SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a", Locale.ENGLISH);
                                 timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -293,33 +413,33 @@ public class RideStopFragment extends Fragment {
                                 tvTime.setText(time);
                             }
                             else {
+*/
+                            SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH);
+                            timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-                                SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a", Locale.ENGLISH);
-                                timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            try {
+                                Date date1 = timeFormat.parse(data.getRidestarttime());
+                                Date date2 = timeFormat.parse(data.getRidestoptime());
 
-                                try {
-                                    Date date1 = timeFormat.parse(data.getRidestarttime());
-                                    Date date2 = timeFormat.parse(data.getRidestoptime());
+                                diff = (date2.getTime() - date1.getTime());
 
-                                    diff = (date2.getTime() - date1.getTime());
-
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-
-                                int Hours = (int) (diff / (1000 * 60 * 60));
-                                int Mins = (int) (diff / (1000 * 60)) % 60;
-                                long Secs = (int) (diff / 1000) % 60;
-
-                                DecimalFormat formatter = new DecimalFormat("00");
-                                String hFormatted = formatter.format(Hours);
-                                String mFormatted = formatter.format(Mins);
-                                String sFormatted = formatter.format(Secs);
-                                String time = hFormatted + ":" + mFormatted + ":" + sFormatted;
-
-                                tvTime.setText(time);
-
+                            } catch (ParseException e) {
+                                e.printStackTrace();
                             }
+
+                            int Hours = (int) (diff / (1000 * 60 * 60));
+                            int Mins = (int) (diff / (1000 * 60)) % 60;
+                            long Secs = (int) (diff / 1000) % 60;
+
+                            DecimalFormat formatter = new DecimalFormat("00");
+                            String hFormatted = formatter.format(Hours);
+                            String mFormatted = formatter.format(Mins);
+                            String sFormatted = formatter.format(Secs);
+                            String time = hFormatted + ":" + mFormatted + ":" + sFormatted;
+
+                            tvTime.setText(time);
+
+                            //}
 
                             if(data.getPaymentMode().equals("cash"))
                             {
@@ -369,6 +489,8 @@ public class RideStopFragment extends Fragment {
                             }
 
 
+
+
                         }
                         else {
                             progressDialog.dismiss();
@@ -379,26 +501,13 @@ public class RideStopFragment extends Fragment {
                     public void onFailure(Call<List<RideStopPojo>> call, Throwable t) {
 
                         progressDialog.dismiss();
+                        tvRetry.setVisibility(View.VISIBLE);
 
-                        if(myBottomSheet.isAdded())
-                        {
-                            //return;
-                        }
-                        else
-                        {
-                            myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
-                        }
+                        Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
 
                     }
                 });
             }
         }, 8000);
-
-        return rootView;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 }

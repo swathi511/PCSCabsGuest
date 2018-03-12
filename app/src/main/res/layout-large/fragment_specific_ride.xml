@@ -15,7 +15,7 @@
         <TextView android:id="@+id/fsr_tv_trip_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textColor="@color/colorTextBlue"
             android:text="TRIP ID"
             android:gravity="center"
@@ -220,7 +220,8 @@
                 android:text="@string/xxx"
                 android:textColor="@color/colorAsh"
                 android:layout_weight="1"
-                android:layout_marginLeft="8dp"/>
+                android:layout_marginLeft="8dp"
+                android:textSize="13sp"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -253,7 +254,8 @@
                 android:text="@string/xxx"
                 android:textColor="@color/colorAsh"
                 android:layout_weight="1"
-                android:layout_marginLeft="8dp"/>
+                android:layout_marginLeft="8dp"
+                android:textSize="13sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -262,7 +264,10 @@
             android:orientation="horizontal"
             android:gravity="center"
             android:layout_gravity="center"
-            android:layout_margin="16dp">
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp">
 
             <View android:layout_width="wrap_content"
                 android:layout_height="1dp"
@@ -273,7 +278,7 @@
                 android:layout_height="wrap_content"
                 android:text="Bill Details"
                 android:textAllCaps="true"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:textColor="@color/colorBlack"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"/>
@@ -298,14 +303,14 @@
                 android:orientation="horizontal"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="12dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/total_fare"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:gravity="left"
                     android:textColor="@color/colorAsh"/>
 
@@ -327,14 +332,14 @@
                 android:orientation="horizontal"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="12dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Other Charges"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:gravity="left"
                     android:textColor="@color/colorAsh"/>
 
@@ -355,14 +360,14 @@
                 android:orientation="horizontal"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="12dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Outstation Batta"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:gravity="left"
                     android:textColor="@color/colorAsh"/>
 
@@ -384,14 +389,14 @@
                 android:orientation="horizontal"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="12dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/taxes"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:gravity="left"
                     android:textColor="@color/colorAsh"/>
 
@@ -409,107 +414,106 @@
 
 
 
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/total_bill"
-                android:textSize="16sp"
-                android:gravity="left"
-                android:textColor="@color/colorAsh"
-                android:textAllCaps="true"
-                android:textStyle="bold"/>
+                android:orientation="horizontal"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="8dp">
 
-            <TextView android:id="@+id/fsr_tv_total_bill"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/total_bill"
+                    android:textSize="13sp"
+                    android:gravity="left"
+                    android:textColor="@color/colorAsh"
+                    android:textAllCaps="true"
+                    android:textStyle="bold"/>
+
+                <TextView android:id="@+id/fsr_tv_total_bill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/xxx"
+                    android:textSize="16sp"
+                    android:gravity="right"
+                    android:textColor="@color/colorTextBlue"
+                    android:textStyle="bold"/>
+
+
+            </LinearLayout>
+
+
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/xxx"
-                android:textSize="16sp"
-                android:gravity="right"
-                android:textColor="@color/colorTextBlue"
-                android:textStyle="bold"/>
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp">
+
+                <View android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:background="@color/colorAshLight"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Payment Details"
+                    android:textAllCaps="true"
+                    android:textSize="13sp"
+                    android:textColor="@color/colorBlack"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"/>
+                <View android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:background="@color/colorAshLight"
+                    android:layout_weight="1"/>
 
 
-        </LinearLayout>
 
 
+            </LinearLayout>
 
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp">
-
-            <View android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="@color/colorAshLight"
-                android:layout_weight="1"/>
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Payment Details"
-                android:textAllCaps="true"
-                android:textSize="14sp"
-                android:textColor="@color/colorBlack"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"/>
-            <View android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="@color/colorAshLight"
-                android:layout_weight="1"/>
+                android:orientation="horizontal"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Payment"
+                    android:textSize="13sp"
+                    android:gravity="left"
+                    android:textColor="@color/colorAsh"/>
+
+                <TextView android:id="@+id/fsr_tv_payment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/xxx"
+                    android:textSize="14sp"
+                    android:gravity="right"
+                    android:textColor="@color/colorLoginBlue"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"/>
 
 
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Payment"
-                android:textSize="14sp"
-                android:gravity="left"
-                android:textColor="@color/colorAsh"/>
-
-            <TextView android:id="@+id/fsr_tv_payment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/xxx"
-                android:textSize="14sp"
-                android:gravity="right"
-                android:textColor="@color/colorLoginBlue"
-                android:textStyle="bold"
-                android:textAllCaps="true"/>
-
+            </LinearLayout>
 
         </LinearLayout>
 

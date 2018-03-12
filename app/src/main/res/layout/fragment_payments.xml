@@ -58,7 +58,8 @@
             android:hint=""
             android:textColorHint="#d0d0d0"
            android:layout_gravity="center"
-            android:paddingRight="8dp" />
+            android:paddingRight="8dp"
+            android:maxLines="1"/>
 
         <LinearLayout android:layout_width="wrap_content"
             android:layout_height="wrap_content"

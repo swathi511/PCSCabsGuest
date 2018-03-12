@@ -121,8 +121,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                 holder.tvStatus.setText(data.getRideStatus());
                 holder.tvStatus.setTextColor(Color.parseColor("#f44336"));
             }
-            else
+            else if(data.getRideStatus().equals("COMPLETED"))
             {
+                holder.tvStatus.setText(data.getRideStatus());
+                holder.tvStatus.setTextColor(Color.parseColor("#068924"));
+            }
+            else {
                 holder.tvStatus.setText(data.getRideStatus());
                 holder.tvStatus.setTextColor(Color.parseColor("#0067de"));
             }

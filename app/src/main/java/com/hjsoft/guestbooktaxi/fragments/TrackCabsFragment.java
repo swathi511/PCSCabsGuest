@@ -1,5 +1,6 @@
 package com.hjsoft.guestbooktaxi.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -25,8 +26,10 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -50,6 +53,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hjsoft.guestbooktaxi.R;
@@ -152,6 +156,10 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
     String stKms;
     double localDistance = 0;
     double outstationDistance = 0;
+    ImageView ivPickup,ivDrop;
+    ImageView ivMini,ivSedan,ivSuv,ivOs;
+    ArrayList<String> osCities=new ArrayList<>();
+    boolean flagOs=true;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -175,6 +183,33 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
         mRequestingLocationUpdates=false;
 
         REST_CLIENT= RestClient.get();
+
+        /*osCities.add("Bheemili");
+        osCities.add("Thagarapuvalasa");
+        osCities.add("Kothavalasa");
+        osCities.add("Sabbavaram");
+        osCities.add("Anandapuram");
+        osCities.add("Paravada");
+        osCities.add("Anakapalle");
+
+        osCities.add("BHEEMILI");
+        osCities.add("THAGARAPUVALASA");
+        osCities.add("KOTHAVALASA");
+        osCities.add("SABBAVARAM");
+        osCities.add("ANANDAPURAM");
+        osCities.add("PARAVADA");
+        osCities.add("ANAKAPALLE");
+
+        osCities.add("bheemili");
+        osCities.add("thagarapuvalasa");
+        osCities.add("kothavalasa");
+        osCities.add("sabbavaram");
+        osCities.add("anandapuram");
+        osCities.add("paravada");
+        osCities.add("anakapalle");*/
+
+        osCities=dbAdapter.getOsCities();
+        //System.out.println("@@@@@@@@@@@@@@@@@@@@*********"+osCities.size());
 
         if(Build.VERSION.SDK_INT<23)
         {
@@ -239,6 +274,14 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
         tvCity=(TextView)rootView.findViewById(R.id.ftc_tv_my_loc);
         tvCity.setText(city);
+
+        ivPickup=(ImageView)rootView.findViewById(R.id.ftc_iv_pickup);
+        ivDrop=(ImageView)rootView.findViewById(R.id.ftc_iv_drop);
+
+        ivMini=(ImageView)rootView.findViewById(R.id.ftc_iv_mini);
+        ivSedan=(ImageView)rootView.findViewById(R.id.ftc_iv_sedan);
+        ivSuv=(ImageView)rootView.findViewById(R.id.ftc_iv_suv);
+        ivOs=(ImageView)rootView.findViewById(R.id.ftc_iv_os);
 
         /*
 
@@ -334,13 +377,19 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                 tvSuv.setTextColor(Color.parseColor("#414040"));
                 //tvLocalPkg.setTextColor(Color.parseColor("#414040"));
 
-                llOutStation.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                llOutStation.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+                //llOutStation.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
                 llMicra.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llMini.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llSedan.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 //llLocalPackages.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 // llLocalPackages.setVisibility(View.GONE);
+
+                ivOs.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                ivMini.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+                ivSedan.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+                ivSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
 
                 btBookCab.setText("CONTINUE BOOKING");
                 btRideLater.setVisibility(View.GONE);
@@ -354,6 +403,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                 //h.removeCallbacks(r);
                 btBookCab.setEnabled(true);
+                btBookCab.setAlpha(1);
                 mMap.clear();
 
                 if(!pickupChanged) {
@@ -533,9 +583,23 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                 pickupChanged=true;
                 Intent i=new Intent(getContext(),PlacesAutoCompleteActivity.class);
+                i.putExtra("value","pickup");
                 startActivityForResult(i,2);
                 stClicked="pickup";
 
+
+            }
+        });
+
+        ivPickup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                pickupChanged=true;
+                Intent i=new Intent(getContext(),PlacesAutoCompleteActivity.class);
+                i.putExtra("value","pickup");
+                startActivityForResult(i,2);
+                stClicked="pickup";
 
             }
         });
@@ -545,6 +609,18 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
             public void onClick(View view) {
 
                 Intent i=new Intent(getContext(),PlacesAutoCompleteActivity.class);
+                i.putExtra("value","drop");
+                startActivityForResult(i,2);
+                stClicked="drop";
+            }
+        });
+
+        ivDrop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i=new Intent(getContext(),PlacesAutoCompleteActivity.class);
+                i.putExtra("value","drop");
                 startActivityForResult(i,2);
                 stClicked="drop";
             }
@@ -555,6 +631,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
             public void onClick(View view) {
 
                 Intent i=new Intent(getContext(),PlacesAutoCompleteActivity.class);
+                i.putExtra("value","drop");
                 startActivityForResult(i,2);
                 stClicked="drop";
             }
@@ -574,11 +651,17 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                 llLocalPackages.setVisibility(View.VISIBLE);
 
-                llMini.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                //llMini.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                llMini.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llMicra.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llSedan.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llOutStation.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+
+                ivMini.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                ivSedan.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+                ivSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+                ivOs.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
 
                 tvMini.setTextColor(Color.parseColor("#0067de"));
                 tvMicro.setTextColor(Color.parseColor("#414040"));
@@ -624,7 +707,14 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                 llMicra.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llSedan.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llOutStation.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
-                llSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                //llSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                llSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+
+                ivSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                ivSedan.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+                ivMini.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+                ivOs.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+
 
                 tvSuv.setTextColor(Color.parseColor("#0067de"));
                 tvMini.setTextColor(Color.parseColor("#414040"));
@@ -653,7 +743,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 //                getCabs();
 //                getCabTimes();
 
-                btBookCab.setText("Ride Now");
+                /*btBookCab.setText("Ride Now");
                 tvLocalPkg.setText("Package");
                 tvLocalPkg.setTextColor(Color.parseColor("#0067de"));
                 tvLocalOneWay.setTextColor(Color.parseColor("#9e9e9e"));
@@ -668,7 +758,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                 Intent i=new Intent(getActivity(), PackagesActivity.class);
                 i.putExtra("cabCat",stCategorySelected);
                 i.putExtra("city",city);
-                startActivityForResult(i,3);
+                startActivityForResult(i,3);*/
             }
         });
 
@@ -740,11 +830,18 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                 llLocalPackages.setVisibility(View.VISIBLE);
 
-                llSedan.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                //llSedan.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                llSedan.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llMicra.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llMini.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llOutStation.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
                 llSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+
+                ivSedan.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                ivMini.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+                ivSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+                ivOs.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+
 
                 tvSedan.setTextColor(Color.parseColor("#0067de"));
                 tvMicro.setTextColor(Color.parseColor("#414040"));
@@ -780,6 +877,8 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public void onClick(View view) {
 
+                flagOs=true;
+
                 if (connectivity) {
 
                     if (tvDrop.getText().toString().trim().equals("")) {
@@ -795,6 +894,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                             Toast.makeText(getContext(), "Please enter drop location!", Toast.LENGTH_SHORT).show();
                             Intent i = new Intent(getContext(), PlacesAutoCompleteActivity.class);
+                            i.putExtra("value","drop");
                             startActivityForResult(i, 2);
                             stClicked = "drop";
 
@@ -804,6 +904,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                             tvPickup.getText().toString().trim().equals("-") || tvPickup.getText().toString().trim().equals("")) {
                         Toast.makeText(getContext(), "Please enter pickup location !", Toast.LENGTH_SHORT).show();
                         Intent i = new Intent(getContext(), PlacesAutoCompleteActivity.class);
+                        i.putExtra("value","pickup");
                         startActivityForResult(i, 2);
                         stClicked = "pickup";
                         pickupChanged = true;
@@ -817,23 +918,36 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                     // **Location.distanceBetween(cityCenterLat, cityCenterLong, Double.parseDouble(pickupLat), Double.parseDouble(pickupLong), results);
 
 
-
-//                                    localDistance = localDistance + (long) results[0];
+//                               localDistance = localDistance + (long) results[0];
 //                                    localDistance = localDistance / 1000;
                                     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+                                    for (int o = 0; o < osCities.size(); o++) {
+                                        if (tvPickup.getText().toString().trim().contains(osCities.get(o))||tvDrop.getText().toString().trim().contains(osCities.get(o))) {
+                                            flagOs = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if(!flagOs)
+                                    {
+                                        Toast.makeText(getActivity(),"Pickup/Drop point outside city limits.",Toast.LENGTH_SHORT).show();
+                                    }
+                                    else{
 
                                     final ProgressDialog progressDialog = new ProgressDialog(getContext());
                                     progressDialog.setIndeterminate(true);
                                     progressDialog.setMessage("Please wait...");
                                     progressDialog.show();
 
-//                                    String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
-//                                            "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+pickupLat+","+pickupLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
-
+                                   /* String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                            "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+pickupLat+","+pickupLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
+*/
                                     String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
                                             "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+pickupLat+","+pickupLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
 
-                                    //System.out.println("url String is  "+urlString);
+                                        System.out.println("url String is  "+urlString);
 
                                     Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
                                     call.enqueue(new Callback<DurationPojo>() {
@@ -861,6 +975,8 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                                                         Duration t2=e1.getDuration();
 
+                                                        System.out.println("t1.getText "+t1.getText());
+
                                                         String stDist=t1.getText();
                                                         String stDistDetails[]=stDist.split(" ");
                                                         localDistance=Double.parseDouble(stDistDetails[0]);
@@ -869,7 +985,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 //                            stTime=String.valueOf((t2.getValue())/60);
                                                         //System.out.println("d & t is "+stKms+":"+stTime);
 
-                                                        //System.out.println("************ "+localDistance+":"+radius);
+                                                        System.out.println("************ "+localDistance+":"+radius);
 
                                                         if (localDistance < radius) {
 
@@ -975,7 +1091,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                                             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
                                                         } else {
-                                                            Toast.makeText(getActivity(), "Invalid Drop! Location outside city limits.", Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(getActivity(), "Invalid Pickup! Location outside city limits.", Toast.LENGTH_LONG).show();
                                                             progressDialog.dismiss();
                                                         }
 
@@ -983,6 +1099,10 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
 
                                                 }
+                                            }
+                                            else {
+
+                                                System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^ "+response.message()+":"+response.code()+":"+response.isSuccessful());
                                             }
 
                                         }
@@ -1054,30 +1174,46 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                     } else {
                                         Toast.makeText(getActivity(), "Invalid Local Booking! Change location.", Toast.LENGTH_LONG).show();
                                     }*/
+                                }
                                 } else {
 
                                     Toast.makeText(getContext(), "Please enter drop location!", Toast.LENGTH_SHORT).show();
                                     Intent i = new Intent(getContext(), PlacesAutoCompleteActivity.class);
+                                    i.putExtra("value","drop");
                                     startActivityForResult(i, 2);
                                     stClicked = "drop";
                                 }
                             } else {
 
-                                Fragment frag = new ConfirmRideFragment();
-                                Bundle args = new Bundle();
-                                args.putString("CategorySelected", stCategorySelected);
-                                args.putDouble("latitude", Double.parseDouble(locLat));
-                                args.putDouble("longitude", Double.parseDouble(locLong));
-                                args.putString("city", city);
-                                args.putString("localPackage", stLocalPkg);
-                                args.putString("travelType", stTravelType);
-                                args.putString("fare", stFare);
-                                frag.setArguments(args);
-                                FragmentManager fragmentManager = getFragmentManager();
-                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                fragmentTransaction.add(R.id.content_frame, frag, "confirm_ride");
-                                fragmentTransaction.addToBackStack(null);
-                                fragmentTransaction.commit();
+                                for (int o = 0; o < osCities.size(); o++) {
+                                    if (tvPickup.getText().toString().trim().contains(osCities.get(o))||tvDrop.getText().toString().trim().contains(osCities.get(o))) {
+                                        flagOs = false;
+                                        break;
+                                    }
+                                }
+
+                                if(!flagOs)
+                                {
+                                    Toast.makeText(getActivity(),"Pickup/Drop point outside city limits.",Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+
+                                    Fragment frag = new ConfirmRideFragment();
+                                    Bundle args = new Bundle();
+                                    args.putString("CategorySelected", stCategorySelected);
+                                    args.putDouble("latitude", Double.parseDouble(locLat));
+                                    args.putDouble("longitude", Double.parseDouble(locLong));
+                                    args.putString("city", city);
+                                    args.putString("localPackage", stLocalPkg);
+                                    args.putString("travelType", stTravelType);
+                                    args.putString("fare", stFare);
+                                    frag.setArguments(args);
+                                    FragmentManager fragmentManager = getFragmentManager();
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction.add(R.id.content_frame, frag, "confirm_ride");
+                                    fragmentTransaction.addToBackStack(null);
+                                    fragmentTransaction.commit();
+                                }
                             }
                         } else {
 
@@ -1086,55 +1222,70 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                 if (tvDrop.getText().toString().trim().equals("-")) {
                                     Toast.makeText(getContext(), "Please enter drop location!", Toast.LENGTH_SHORT).show();
                                     Intent i = new Intent(getContext(), PlacesAutoCompleteActivity.class);
+                                    i.putExtra("value","drop");
                                     startActivityForResult(i, 2);
                                     stClicked = "drop";
                                 } else {
+
+
+                                    for (int o = 0; o < osCities.size(); o++) {
+                                        if (tvPickup.getText().toString().trim().contains(osCities.get(o)) || tvDrop.getText().toString().trim().contains(osCities.get(o))) {
+                                            flagOs = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if(!flagOs)
+                                    {
+                                        Intent i = new Intent(getActivity(), OutStationActivity.class);
+                                        i.putExtra("city", city);
+                                        startActivity(i);
+
+                                    }
+                                    else {
 
 
                                     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
                                     final ProgressDialog progressDialog = new ProgressDialog(getContext());
                                     progressDialog.setIndeterminate(true);
-                                    progressDialog.setMessage("Confirming...Please wait!");
+                                    progressDialog.setMessage("Please wait...!");
                                     progressDialog.show();
 
                                     /*String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
                                             "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
 */
-                                    String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
-                                            "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+                                    String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                            "origins=" + cityCenterLat + "," + cityCenterLong + "&destinations=" + dropLat + "," + dropLong + "&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
 
-                                    System.out.println("url String is  "+urlString);
+                                    System.out.println("url String is  " + urlString);
 
-                                    Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
+                                    Call<DurationPojo> call = REST_CLIENT.getDistanceDetails(urlString);
                                     call.enqueue(new Callback<DurationPojo>() {
                                         @Override
                                         public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
 
                                             DurationPojo d;
 
-                                            if(response.isSuccessful())
-                                            {
-                                                d=response.body();
-                                                List<Row> r=d.getRows();
+                                            if (response.isSuccessful()) {
+                                                d = response.body();
+                                                List<Row> r = d.getRows();
                                                 Row r1;
-                                                for(int a=0;a<r.size();a++)
-                                                {
-                                                    r1=r.get(a);
-                                                    List<Element> e=r1.getElements();
+                                                for (int a = 0; a < r.size(); a++) {
+                                                    r1 = r.get(a);
+                                                    List<Element> e = r1.getElements();
 
                                                     Element e1;
 
-                                                    for(int b=0;b<e.size();b++)
-                                                    {
-                                                        e1=e.get(b);
-                                                        Distance t1=e1.getDistance();
+                                                    for (int b = 0; b < e.size(); b++) {
+                                                        e1 = e.get(b);
+                                                        Distance t1 = e1.getDistance();
 
-                                                        Duration t2=e1.getDuration();
+                                                        Duration t2 = e1.getDuration();
 
-                                                        String stDist=t1.getText();
-                                                        String stDistDetails[]=stDist.split(" ");
-                                                        localDistance=Double.parseDouble(stDistDetails[0]);
+                                                        String stDist = t1.getText();
+                                                        String stDistDetails[] = stDist.split(" ");
+                                                        localDistance = Double.parseDouble(stDistDetails[0]);
                                                         //progressDialog.dismiss();
 
 //                            stTime=String.valueOf((t2.getValue())/60);
@@ -1149,41 +1300,38 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 //                                                            String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
 //                                                                    "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
 
-                                                            String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
-                                                                    "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+                                                            String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                                                    "origins=" + pickupLat + "," + pickupLong + "&destinations=" + dropLat + "," + dropLong + "&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
 
 
-                                                            System.out.println("url String is  "+urlString);
+                                                            System.out.println("url String is  " + urlString);
 
-                                                            Call<DurationPojo> call1=REST_CLIENT.getDistanceDetails(urlString);
+                                                            Call<DurationPojo> call1 = REST_CLIENT.getDistanceDetails(urlString);
                                                             call1.enqueue(new Callback<DurationPojo>() {
                                                                 @Override
                                                                 public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
 
                                                                     DurationPojo d;
 
-                                                                    if(response.isSuccessful())
-                                                                    {
-                                                                        d=response.body();
-                                                                        List<Row> r=d.getRows();
+                                                                    if (response.isSuccessful()) {
+                                                                        d = response.body();
+                                                                        List<Row> r = d.getRows();
                                                                         Row r1;
-                                                                        for(int a=0;a<r.size();a++)
-                                                                        {
-                                                                            r1=r.get(a);
-                                                                            List<Element> e=r1.getElements();
+                                                                        for (int a = 0; a < r.size(); a++) {
+                                                                            r1 = r.get(a);
+                                                                            List<Element> e = r1.getElements();
 
                                                                             Element e1;
 
-                                                                            for(int b=0;b<e.size();b++)
-                                                                            {
-                                                                                e1=e.get(b);
-                                                                                Distance t1=e1.getDistance();
+                                                                            for (int b = 0; b < e.size(); b++) {
+                                                                                e1 = e.get(b);
+                                                                                Distance t1 = e1.getDistance();
 
-                                                                                Duration t2=e1.getDuration();
+                                                                                Duration t2 = e1.getDuration();
 
-                                                                                String stDist=t1.getText();
-                                                                                String stDistDetails[]=stDist.split(" ");
-                                                                                outstationDistance=Double.parseDouble(stDistDetails[0]);
+                                                                                String stDist = t1.getText();
+                                                                                String stDistDetails[] = stDist.split(" ");
+                                                                                outstationDistance = Double.parseDouble(stDistDetails[0]);
                                                                                 // progressDialog.dismiss();
 
 //                            stTime=String.valueOf((t2.getValue())/60);
@@ -1219,11 +1367,10 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                                                 public void onFailure(Call<DurationPojo> call, Throwable t) {
 
                                                                     progressDialog.dismiss();
-                                                                    Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
+                                                                    Toast.makeText(getActivity(), "Please check Internet connection!", Toast.LENGTH_SHORT).show();
 
                                                                 }
                                                             });
-
 
 
                                                             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -1249,25 +1396,13 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                         public void onFailure(Call<DurationPojo> call, Throwable t) {
 
                                             progressDialog.dismiss();
-                                            Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getActivity(), "Please check Internet connection!", Toast.LENGTH_SHORT).show();
 
                                         }
                                     });
 
 
-
-
-
-
-
-
-
-
-
-
-
                                     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
 
 
 //
@@ -1336,6 +1471,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 //                                        i.putExtra("city", city);
 //                                        startActivity(i);
 //                                    }
+                                }
 
                                 }
 
@@ -1399,13 +1535,16 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
+        //If the request is cancelled, result arrays are empty so grantResults.length>0 check
+
         if(requestCode==REQUEST_LOCATION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 establishConnection();
 
             } else {
                 Toast.makeText(getActivity(), "Permission not granted", Toast.LENGTH_LONG).show();
+                getActivity().finish();
             }
         }
         else {
@@ -1760,12 +1899,13 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                                     cabDataList.add(new CabData(cabData.getProfileid(), cabData.getVehichleregno(), cabData.getPhonenumber(), cabData.getVehicleCategory(), cabData.getLatitude(), cabData.getLongitude(), cabData.getDriverName(), cabData.getDriverPic(), cabData.getDutyPerform()));
 
-                                    // System.out.println("duty perform is "+cabData.getDutyPerform());
+                                    System.out.println("duty perform is "+cabData.getDriverName());
                                 }
 
                                 if(!btBookCab.isEnabled())
                                 {
                                     btBookCab.setEnabled(true);
+                                    btBookCab.setAlpha(1);
                                 }
                             }
                             showCabsOnMap();
@@ -1797,6 +1937,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                     tvMiniNoCab.setText("No Cabs");
 
                                     btBookCab.setEnabled(false);
+                                    btBookCab.setAlpha(Float.parseFloat("0.5"));
                                     if(locLat!=null&&locLong!=null) {
                                         LatLng pLatLng1 = new LatLng(Double.parseDouble(locLat), Double.parseDouble(locLong));
                                         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
@@ -1811,6 +1952,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                     tvMicraNoCab.setText("No Cabs");
 
                                     btBookCab.setEnabled(false);
+                                    btBookCab.setAlpha(Float.parseFloat("0.5"));
                                     if(locLat!=null&&locLong!=null) {
                                         LatLng pLatLng2 = new LatLng(Double.parseDouble(locLat), Double.parseDouble(locLong));
                                         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
@@ -1825,6 +1967,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                     tvSedanNoCab.setText("No Cabs");
 
                                     btBookCab.setEnabled(false);
+                                    btBookCab.setAlpha(Float.parseFloat("0.5"));
                                     if(locLat!=null&&locLong!=null) {
                                         LatLng pLatLng3 = new LatLng(Double.parseDouble(locLat), Double.parseDouble(locLong));
                                         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
@@ -1839,6 +1982,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                     tvSuvNoCab.setText("No Cabs");
 
                                     btBookCab.setEnabled(false);
+                                    btBookCab.setAlpha(Float.parseFloat("0.5"));
                                     if(locLat!=null&&locLong!=null) {
                                         LatLng pLatLng3 = new LatLng(Double.parseDouble(locLat), Double.parseDouble(locLong));
                                         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
@@ -2066,6 +2210,8 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
             if (curntloc != null) {
                 mMap.addMarker(new MarkerOptions().position(curntloc)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+
+
             } else if (lastLoc.latitude!=0.0&&lastLoc.longitude!=0.0) {
                 mMap.addMarker(new MarkerOptions().position(lastLoc)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
@@ -2112,6 +2258,50 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                 }
                 // mMap.addMarker(new MarkerOptions().position(cabLoc).icon(BitmapDescriptorFactory.fromResource(R.drawable.car_image)));
             }
+
+            // **************************************
+
+
+            /*if (mapFragment != null) {
+                final View mapView = mapFragment.getView();
+
+                if (mapView != null) {
+
+                    if (mapView.getViewTreeObserver().isAlive()) {
+                        mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @SuppressLint("NewApi")
+                            @Override
+                            public void onGlobalLayout() {
+
+                                LatLngBounds.Builder bld = new LatLngBounds.Builder();
+
+                                for(int i=0;i<cabDataList.size();i++) {
+
+                                    CabData c = cabDataList.get(i);
+                                    LatLng ll2 = new LatLng(Double.parseDouble(c.getLatitude()), Double.parseDouble(c.getLongitude()));
+
+                                    bld.include(ll2);
+
+
+                                }
+
+                                LatLng ll = new LatLng(Double.parseDouble(locLat), Double.parseDouble(locLong));
+                                bld.include(ll);
+
+                                LatLngBounds bounds = bld.build();
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, mapView.getWidth(), mapView.getHeight(), 120));
+                                mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+
+                            }
+
+                        });
+                    }
+                }
+            }*/
+
+
+             //  **************************************
         }
         else {
 
@@ -2123,6 +2313,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                     tvMiniNoCab.setText("No Cabs");
 
                     btBookCab.setEnabled(false);
+                    btBookCab.setAlpha(Float.parseFloat("0.5"));
                     if(locLat!=null&&locLong!=null) {
                         LatLng pLatLng1 = new LatLng(Double.parseDouble(locLat), Double.parseDouble(locLong));
                         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
@@ -2136,6 +2327,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                     tvMicraNoCab.setText("No Cabs");
 
                     btBookCab.setEnabled(false);
+                    btBookCab.setAlpha(Float.parseFloat("0.5"));
                     if(locLat!=null&&locLong!=null) {
                         LatLng pLatLng2 = new LatLng(Double.parseDouble(locLat), Double.parseDouble(locLong));
                         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
@@ -2149,6 +2341,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                     tvSedanNoCab.setText("No Cabs");
 
                     btBookCab.setEnabled(false);
+                    btBookCab.setAlpha(Float.parseFloat("0.5"));
                     if(locLat!=null&&locLong!=null) {
                         LatLng pLatLng3 = new LatLng(Double.parseDouble(locLat), Double.parseDouble(locLong));
                         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
@@ -2162,6 +2355,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                     tvSuvNoCab.setText("No Cabs");
 
                     btBookCab.setEnabled(false);
+                    btBookCab.setAlpha(Float.parseFloat("0.5"));
                     if(locLat!=null&&locLong!=null) {
                         LatLng pLatLng3 = new LatLng(Double.parseDouble(locLat), Double.parseDouble(locLong));
                         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
@@ -2342,11 +2536,16 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
     protected void startLocationUpdates() {
 
-        try {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,this);
-            mRequestingLocationUpdates=true;
-        } catch (SecurityException e) {
-            e.printStackTrace();
+        //System.out.println("*****************GoogleAPICLIENT "+mGoogleApiClient.isConnected());
+
+        if (mGoogleApiClient.isConnected()) {
+
+            try {
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+                mRequestingLocationUpdates = true;
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -2443,6 +2642,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
                 if(!pickupChanged)
                 {
+
                     locLat=String.valueOf(current_lat);
                     locLong= String.valueOf(current_long);
                     pickupLat=locLat;
@@ -2541,6 +2741,14 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                     editor.commit();
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curntloc, Float.parseFloat("12.8")));
                     cab.setPosition(curntloc);
+
+                    try {
+                        mMap.setMyLocationEnabled(false);
+                    }
+                    catch (SecurityException e)
+                    {
+                        e.printStackTrace();
+                    }
 //                    getCabs();
 //                    getCabTimes();
                 }
@@ -2549,16 +2757,18 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                 //   .icon(BitmapDescriptorFactory.fromResource(R.drawable.car_image)));
                 //
                 mMap.getUiSettings().setMapToolbarEnabled(false);
+
+                if(first) {
+
+                    getCabs();
+                    getCabTimes();
+                    first=false;
+
+                }
             }
         }
 
-        if(first) {
 
-            getCabs();
-            getCabTimes();
-            first=false;
-
-        }
 
         mLastLocation=location;
 
@@ -2699,6 +2909,14 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
                             }
 
+                            try{
+                                mMap.setMyLocationEnabled(true);
+                            }
+                            catch (SecurityException e)
+                            {
+                                e.printStackTrace();
+                            }
+
                             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
                                     .target(pLatLng)
                                     .zoom(Float.parseFloat("12.7"))
@@ -2759,12 +2977,15 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                     if(stLocalPkg.equals(""))
                     {
 
-                        if(stCategorySelected.equals("SUV"))
+                       /* if(stCategorySelected.equals("SUV"))
                         {
 
                             tvLocalOneWay.setVisibility(View.VISIBLE);
-                            llMini.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
-                            llSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+//                            llMini.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+//                            llSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+
+                            ivMini.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                            ivSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
 
                             tvMini.setTextColor(Color.parseColor("#0067de"));
                             tvSuv.setTextColor(Color.parseColor("#414040"));
@@ -2776,7 +2997,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                             //remove comments if handlers are used
 //                            hStart.removeCallbacks(rStart);
 //                            hStart.post(rStart);
-                        }
+                        }*/
 
                         tvLocalOneWay.setTextColor(Color.parseColor("#0067de"));
                         tvLocalPkg.setTextColor(Color.parseColor("#9e9e9e"));
@@ -2803,11 +3024,13 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                 }
                 else {
 
-                    if(stCategorySelected.equals("SUV"))
+                   /* if(stCategorySelected.equals("SUV"))
                     {
 
-                        llMini.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
-                        llSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+//                        llMini.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+//                        llSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
+                        ivMini.setBackground(getResources().getDrawable(R.drawable.round_bg_cabs));
+                        ivSuv.setBackground(getResources().getDrawable(R.drawable.round_bg_white_cabs));
 
                         tvMini.setTextColor(Color.parseColor("#0067de"));
                         tvSuv.setTextColor(Color.parseColor("#414040"));
@@ -2823,7 +3046,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                     }
                     else {
 
-                    }
+                    }*/
 
 
                     tvLocalOneWay.setVisibility(View.VISIBLE);

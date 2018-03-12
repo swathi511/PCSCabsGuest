@@ -1,5 +1,6 @@
 package com.hjsoft.guestbooktaxi.fragments;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -14,8 +15,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hjsoft.guestbooktaxi.R;
 import com.hjsoft.guestbooktaxi.SessionManager;
@@ -30,6 +33,7 @@ import com.hjsoft.guestbooktaxi.webservices.RestClient;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -55,7 +59,7 @@ public class MyRidesFragment extends Fragment implements RecyclerAdapter.Adapter
     AllRidesPojo allRidesData;
     API REST_CLIENT;
     View rootView;
-    BottomSheetDialogFragment myBottomSheet;
+   // BottomSheetDialogFragment myBottomSheet;
     ArrayList<FormattedAllRidesData> dataList=new ArrayList<>();
     Date date1;
     String guestProfileId;
@@ -63,6 +67,10 @@ public class MyRidesFragment extends Fragment implements RecyclerAdapter.Adapter
     SessionManager session;
     ImageView ivRetry;
     String companyId="CMP00001";
+    TextView tvFromDate,tvToDate,tvOk;
+    ImageView ivFrom,ivTo;
+    String fromdate,todate;
+    DatePickerDialog datePickerDialog;
 
 
     @Override
@@ -78,21 +86,42 @@ public class MyRidesFragment extends Fragment implements RecyclerAdapter.Adapter
         user=session.getUserDetails();
 
         guestProfileId=user.get(SessionManager.KEY_PROFILE_ID);
+
+        System.out.println("profileid "+guestProfileId);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.fragment_my_rides, container, false);
+        rootView = inflater.inflate(R.layout.activity_all_rides, container, false);
         rView = (RecyclerView) rootView.findViewById(R.id.fmr_rview);
 
         tvNoRides = (TextView) rootView.findViewById(R.id.fmr_tv_no_rides);
-        myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
+        //myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
         ivRetry=(ImageView)rootView.findViewById(R.id.fmr_iv_retry);
+        tvFromDate=(TextView)rootView.findViewById(R.id.fmr_tv_from);
+        tvToDate=(TextView)rootView.findViewById(R.id.fmr_tv_to);
+        ivFrom=(ImageView)rootView.findViewById(R.id.fmr_iv_from);
+        ivTo=(ImageView)rootView.findViewById(R.id.fmr_iv_to);
+        tvOk=(TextView)rootView.findViewById(R.id.fmr_tv_ok);
+
+        mAdapter = new RecyclerAdapter(getActivity(), dataList, rView);
 
         tvNoRides.setVisibility(View.GONE);
         ivRetry.setVisibility(View.GONE);
+
+
+        final Calendar c = Calendar.getInstance();
+        final int mYear = c.get(Calendar.YEAR);
+        final int mMonth = c.get(Calendar.MONTH);
+        final int mDay = c.get(Calendar.DAY_OF_MONTH);
+
+        fromdate=mYear+"-"+(mMonth+1)+"-"+mDay;
+        todate=mYear+"-"+(mMonth+1)+"-"+mDay;
+        SimpleDateFormat sdf = new SimpleDateFormat( "dd/MM/yyyy" );
+        tvFromDate.setText(mDay+"/"+(mMonth+1)+"/"+mYear);
+        tvToDate.setText(mDay+"/"+(mMonth+1)+"/"+mYear);
 
         //mAdapter.notifyDataSetChanged();
         //  if (rideData.size() == 0) {
@@ -110,6 +139,59 @@ public class MyRidesFragment extends Fragment implements RecyclerAdapter.Adapter
                 getAllRideDetails();
             }
         });
+
+        ivFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog = new DatePickerDialog(getContext(),
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                tvFromDate.setText(dayOfMonth + "/"
+                                        + (monthOfYear + 1) + "/" + year);
+                                fromdate=year+"-"+(monthOfYear+1)+"-"+dayOfMonth;
+
+                            }
+                        }, mYear, mMonth, mDay);
+                datePickerDialog.show();
+
+            }
+
+
+        });
+
+        ivTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                datePickerDialog = new DatePickerDialog(getContext(),
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                tvToDate.setText(dayOfMonth + "/"
+                                        +(monthOfYear + 1)+ "/" + year);
+
+                                todate=year+"-"+(monthOfYear+1)+"-"+dayOfMonth;
+
+                            }
+                        }, mYear, mMonth, mDay);
+                datePickerDialog.show();
+
+            }
+        });
+
+        tvOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                getAllRideDetails();
+            }
+        });
+
         return rootView;
     }
 
@@ -130,12 +212,14 @@ public class MyRidesFragment extends Fragment implements RecyclerAdapter.Adapter
 
     public void getAllRideDetails()
     {
+        tvNoRides.setVisibility(View.GONE);
+        dataList.clear();
         final ProgressDialog progressDialog = new ProgressDialog(getActivity());
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Please Wait ...");
         progressDialog.show();
 
-        Call<ArrayList<AllRidesPojo>> call=REST_CLIENT.getUserRides(guestProfileId,"guest",companyId);
+        Call<ArrayList<AllRidesPojo>> call=REST_CLIENT.getRideHistory(guestProfileId,"guest",companyId,fromdate,todate);
         call.enqueue(new Callback<ArrayList<AllRidesPojo>>() {
             @Override
             public void onResponse(Call<ArrayList<AllRidesPojo>> call, Response<ArrayList<AllRidesPojo>> response) {
@@ -195,7 +279,7 @@ public class MyRidesFragment extends Fragment implements RecyclerAdapter.Adapter
                     });
 
                     Collections.reverse(dataList);
-                    mAdapter = new RecyclerAdapter(getActivity(), dataList, rView);
+
 
                     RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
                     rView.setLayoutManager(mLayoutManager);
@@ -205,6 +289,7 @@ public class MyRidesFragment extends Fragment implements RecyclerAdapter.Adapter
                 }else
                 {
                     tvNoRides.setVisibility(View.VISIBLE);
+                    mAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -214,7 +299,9 @@ public class MyRidesFragment extends Fragment implements RecyclerAdapter.Adapter
                 progressDialog.dismiss();
                 ivRetry.setVisibility(View.VISIBLE);
 
-                if(myBottomSheet.isAdded())
+                Toast.makeText(getActivity(),"Check Internet connection!",Toast.LENGTH_SHORT).show();
+
+               /* if(myBottomSheet.isAdded())
                 {
                     //return;
                 }
@@ -224,7 +311,7 @@ public class MyRidesFragment extends Fragment implements RecyclerAdapter.Adapter
 
                         myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
                     }
-                }
+                }*/
 
             }
         });

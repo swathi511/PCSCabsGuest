@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/booking_id_reference"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textColor="@color/colorBlack"
                 android:gravity="center"
                 android:textStyle="bold"
@@ -43,11 +43,12 @@
             android:layout_height="wrap_content"
             android:text="@string/date_time_details"
             android:textColor="@color/colorTextBlue"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:gravity="center"
             android:layout_marginTop="16dp"
             android:layout_below="@+id/flp_ll_0"
-            android:textAllCaps="true"/>
+            android:textAllCaps="false"
+            android:alpha="0.8"/>
 
         <ImageView android:id="@+id/flp_iv_datetime"
             android:layout_width="18dp"
@@ -81,11 +82,12 @@
             android:layout_height="wrap_content"
             android:text="@string/package_details"
             android:textColor="@color/colorTextBlue"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:gravity="center"
             android:layout_below="@+id/flp_tv_datetime"
             android:layout_marginTop="12dp"
-            android:textAllCaps="true"/>
+            android:textAllCaps="false"
+            android:alpha="0.8"/>
         <ImageView android:id="@+id/flp_iv_pkg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -101,7 +103,7 @@
             android:orientation="horizontal"
             android:layout_below="@+id/flp_tv_pkg_text"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="8dp">
             <TextView android:id="@+id/flp_tv_pkg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -119,22 +121,33 @@
                 android:layout_weight="1"/>
         </LinearLayout>
 
+        <TextView android:id="@+id/flp_tv_peak_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="(includes peak time charges)"
+            android:textSize="10sp"
+            android:gravity="right"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="12dp"
+            android:layout_below="@+id/flp_ll"/>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#e0e0e0"
-            android:layout_below="@+id/flp_ll"/>
+            android:layout_below="@+id/flp_tv_peak_time"/>
 
         <TextView android:id="@+id/flp_tv_cab_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cab_category"
             android:textColor="@color/colorTextBlue"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:gravity="center"
-            android:layout_below="@+id/flp_ll"
+            android:layout_below="@+id/flp_tv_peak_time"
             android:layout_marginTop="12dp"
-            android:textAllCaps="true"/>
+            android:textAllCaps="false"
+            android:alpha="0.8"/>
         <ImageView android:id="@+id/flp_iv_cab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -271,12 +284,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/payment_type"
-            android:textColor="@color/colorTextBlue"
-            android:textSize="12sp"
+            android:textColor="@color/colorAsh"
+            android:textSize="11sp"
             android:gravity="center"
             android:layout_below="@+id/flp_ll4"
             android:layout_marginTop="12dp"
-            android:textAllCaps="true"/>
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            />
         <LinearLayout android:id="@+id/flp_ll2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -335,7 +350,7 @@
             android:layout_height="wrap_content"
             android:text="Apply Coupon"
             android:textSize="12sp"
-            android:textColor="#FF8F00"
+            android:textColor="#FFA000"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="12dp"
             android:drawableLeft="@drawable/coupon"

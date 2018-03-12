@@ -60,7 +60,7 @@
     <string name="drop_location">Drop Location</string>
     <string name="rate_card">Rate Card</string>
     <string name="ride_estimate">Get Ride Estimate</string>
-    <string name="apply_coupon">Apply Coupon</string>
+    <string name="apply_coupon">Apply</string>
     <string name="offline_msg">You seem to be Offline.</string>
     <string name="check_internet">Check Internet Settings !</string>
     <string name="from">FROM :</string>
@@ -105,8 +105,8 @@
     <string name="hyderabad">Hyderabad</string>
     <string name="standard_fare">Standard Fare</string>
     <string name="base_fare">Base Fare</string>
-    <string name="bslab">0-15 km</string>
-    <string name="aslab">After 15 km</string>
+    <string name="bslab">Below Slab Limit</string>
+    <string name="aslab">Above Slab Limit</string>
     <string name="ride_time_charges">Ride Time Charges</string>
     <string name="min_fare">Minimum Fare</string>
     <string name="peak_time_charges">Peak Time Charges</string>

@@ -6,6 +6,7 @@ import com.hjsoft.guestbooktaxi.model.BookCabPojo;
 import com.hjsoft.guestbooktaxi.model.CabArrivalTimePojo;
 import com.hjsoft.guestbooktaxi.model.CabLocationPojo;
 import com.hjsoft.guestbooktaxi.model.CabPojo;
+import com.hjsoft.guestbooktaxi.model.CancelData;
 import com.hjsoft.guestbooktaxi.model.CancelPojo;
 import com.hjsoft.guestbooktaxi.model.CatPojo;
 import com.hjsoft.guestbooktaxi.model.CityCenterPojo;
@@ -18,6 +19,7 @@ import com.hjsoft.guestbooktaxi.model.PaymentPojo;
 import com.hjsoft.guestbooktaxi.model.RideStopPojo;
 import com.hjsoft.guestbooktaxi.model.ServiceLocationPojo;
 import com.hjsoft.guestbooktaxi.model.TariffRatePojo;
+import com.hjsoft.guestbooktaxi.model.WalletDataPojo;
 
 import org.json.JSONObject;
 
@@ -68,8 +70,6 @@ public interface API {
 
     @POST("GuestCancel/CancelRide")
     Call<BookCabPojo> doCancel(@Body JsonObject v);
-
-
 
     @GET("CabLocation/GetCabLoc")
     Call<List<CabLocationPojo>> getCabLocation(@Query("ReqID") String requestId,
@@ -155,6 +155,21 @@ public interface API {
     @POST("UpdateStatus/UpdateUserStatus")
     Call<BookCabPojo> sendCabAcceptanceStatus(@Body JsonObject v);
 
+    @GET("BookingHistory/GetDetails")
+    Call<ArrayList<AllRidesPojo>> getRideHistory(@Query("profileid") String profileId,
+                                                 @Query("user") String user,
+                                                 @Query("companyid") String companyId,
+                                                 @Query("fromdate") String fromdate,
+                                                 @Query("todate") String todate);
 
+    @GET("UserWalletHistory/GetDetails")
+    Call<ArrayList<WalletDataPojo>> getWalletHistory(@Query("profileid") String profileId,
+                                                     @Query("companyid") String companyId);
+    @POST("DriverRating/AddDriverRating")
+    Call<BookCabPojo> sendRating(@Body JsonObject v);
+
+    @GET("CancellationReasons/GetReasons")
+    Call<ArrayList<CancelData>> getCancelList(@Query("companyid") String companyId,
+                                              @Query("user") String user);
 
 }

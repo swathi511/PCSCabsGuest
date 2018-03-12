@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/container_toolbar"
-            android:background="@color/colorAshLight">
+            android:background="@color/colorPrimary">
             <LinearLayout
                 android:id="@+id/fsroo_ll_cont"
                 android:layout_width="match_parent"
@@ -126,7 +126,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cab_details"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="8dp"
@@ -169,7 +169,7 @@
                     android:textColor="#6e6e6e"
                     android:layout_marginLeft="8dp"
                     android:layout_marginBottom="4dp"
-                    android:textSize="12sp"/>
+                    android:textSize="11sp"/>
                 <TextView android:id="@+id/fsroo_tv_dname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -187,7 +187,7 @@
                     android:textColor="#6e6e6e"
                     android:layout_marginLeft="8dp"
                     android:layout_marginBottom="4dp"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:layout_below="@+id/fsroo_tv_dname" />
                 <TextView android:id="@+id/fsroo_tv_gmobile"
                     android:layout_width="wrap_content"
@@ -208,7 +208,7 @@
                     android:textColor="#6e6e6e"
                     android:layout_marginLeft="8dp"
                     android:layout_marginBottom="2dp"
-                    android:textSize="12sp"/>
+                    android:textSize="11sp"/>
                 <TextView android:id="@+id/fsroo_tv_veh_regno"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -249,7 +249,8 @@
                 android:textSize="12sp"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_marginRight="4dp"/>
+                android:layout_marginRight="4dp"
+                android:visibility="gone"/>
             <TextView android:id="@+id/fsroo_tv_ploc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -284,7 +285,8 @@
                 android:layout_marginRight="6dp"
                 android:textSize="12sp"
                 android:layout_gravity="center"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:visibility="gone"/>
             <TextView android:id="@+id/fsroo_tv_dloc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

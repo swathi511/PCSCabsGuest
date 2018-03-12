@@ -211,10 +211,10 @@ public class SpecificRideFragment extends Fragment {
 
         }
 
-        tvRideStartTime.setText(data.getRideStartTime());
-        tvRideStopTime.setText(data.getRideStopTime());
+        tvRideStartTime.setText(data.getRideStartTime().split(" ")[0]+"\n"+"\n"+data.getRideStartTime().split(" ")[1]);
+        tvRideStopTime.setText(data.getRideStopTime().split(" ")[0]+"\n"+"\n"+data.getRideStopTime().split(" ")[1]);
 
-        if(data.getTravelType().equals("local")||data.getTravelType().equals("Packages")) {
+        /*if(data.getTravelType().equals("local")||data.getTravelType().equals("Packages")) {
 
             SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a", Locale.ENGLISH);
             timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -241,9 +241,9 @@ public class SpecificRideFragment extends Fragment {
 
             tvTime.setText(time);
         }
-        else {
+        else {*/
 
-            SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a", Locale.ENGLISH);
+            SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH);
             timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
             try {
@@ -268,7 +268,7 @@ public class SpecificRideFragment extends Fragment {
 
             tvTime.setText(time);
 
-        }
+        //}
 
         tvPayment.setText(data.getPaymentMode());
 

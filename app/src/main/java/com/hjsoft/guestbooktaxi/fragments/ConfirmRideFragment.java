@@ -2,6 +2,7 @@ package com.hjsoft.guestbooktaxi.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -26,6 +27,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +55,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.JsonObject;
 import com.hjsoft.guestbooktaxi.R;
 import com.hjsoft.guestbooktaxi.SessionManager;
+import com.hjsoft.guestbooktaxi.activity.HomeActivity;
 import com.hjsoft.guestbooktaxi.activity.PaymentActivity;
 import com.hjsoft.guestbooktaxi.activity.RideInProgressActivity;
 import com.hjsoft.guestbooktaxi.adapter.DBAdapter;
@@ -70,7 +73,11 @@ import com.hjsoft.guestbooktaxi.webservices.API;
 import com.hjsoft.guestbooktaxi.webservices.RestClient;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -114,7 +121,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
     String pickupLat,pickupLong,dropLat,dropLong,pickupLoc,dropLoc;
     String guestProfileId;
     String requestId;
-    int count=-5;
+    int count=-10;
     Handler handler,hStart;
     Runnable r,rStart;
     boolean waitingForDriver=false;
@@ -150,9 +157,16 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
     String stLocalFare;
     String stFare;
     TextView tvClose,tvFareMsg;
-    String stTime;
+    String stTime="0";
     TextView tvApplyCoupon;
     String stCoupon="-";
+    double surgeValue=0.0,gst=0.0;
+    double surgeRatio=0.0;
+    LinearLayout llFareEstimate;
+    TextView tvSurgeCharges;
+    boolean first=true;
+    LinearLayout llCoupon;
+    HomeActivity a;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -222,6 +236,10 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
         tvAddMoney=(TextView)rootView.findViewById(R.id.fcr_tv_add_money);
         tvFareMsg=(TextView)rootView.findViewById(R.id.fcr_tv_fare_msg);
         tvApplyCoupon=(TextView)rootView.findViewById(R.id.fcr_tv_apply_coupon);
+        llFareEstimate=(LinearLayout)rootView.findViewById(R.id.fcr_ll_fare_estimate);
+        tvSurgeCharges=(TextView)rootView.findViewById(R.id.fcr_tv_surge);
+        tvSurgeCharges.setVisibility(View.GONE);
+        llCoupon=(LinearLayout)rootView.findViewById(R.id.fcr_ll_coupon);
 
         pickupLoc=pref.getString("pickup_location",null);
         dropLoc=pref.getString("drop_location",null);
@@ -242,9 +260,12 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
             String stFareLocal[]=stFare.split(" ");
             stLocalFare=stFareLocal[1];
 
-            tvRideEstimate.setEnabled(false);
+            /*tvRideEstimate.setEnabled(false);
             tvRideEstimate.setClickable(false);
-            tvRideEstimate.setText("Fare Estimate ~ "+getString(R.string.Rs)+" " +stLocalFare);
+            tvRideEstimate.setText("Fare Estimate ~ "+getString(R.string.Rs)+" " +stLocalFare);*/
+            llFareEstimate.setEnabled(false);
+            llFareEstimate.setClickable(false);
+            tvFareMsg.setText(getString(R.string.Rs)+" " +stLocalFare+"+ Taxes apply");
             stFareEstimate=stLocalFare;
             travelPackage=stLocalPkg;
 
@@ -262,6 +283,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
             slabKm=stKmeter;
 
             travelType="Packages";
+            getFareEstimate();
         }
 
         if(dbAdapter.isWalletPresent()>0)
@@ -273,11 +295,11 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
         }
         tvWallet.setText(getString(R.string.Rs)+" "+stWalletAmount+" WALLET");
 
-        tvApplyCoupon.setOnClickListener(new View.OnClickListener() {
+        llCoupon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                /*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.alert_coupon, null);
@@ -304,7 +326,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
                             tvApplyCoupon.setText(stCoupon);
                             tvApplyCoupon.setTypeface(null, Typeface.BOLD);
-                            tvApplyCoupon.setTextColor(Color.parseColor("#4CAF50"));
+                            tvApplyCoupon.setTextColor(Color.parseColor("#FF6F00"));
                             //tvApplyCoupon.setTextColor(Color.parseColor("#FBC02D"));
                             //tvApplyCoupon.setBackgroundColor(Color.parseColor("#FFF176"));
 
@@ -316,7 +338,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
                         //Promcode Not Applicable
                     }
-                });*/
+                });
             }
         });
 
@@ -337,7 +359,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
                 stPaymentMode="cash";
                 tvCash.setTextColor(Color.parseColor("#000000"));
-                tvWallet.setTextColor(Color.parseColor("#9e9e9e"));
+                tvWallet.setTextColor(Color.parseColor("#a9a8a8"));
                 tvAddMoney.setVisibility(View.GONE);
                 btConfirmRide.setAlpha(1);
                 enoughBalance=true;
@@ -353,27 +375,27 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                 stWalletAmount=dbAdapter.getWalletAmount();
                 tvWallet.setText(getString(R.string.Rs)+" "+stWalletAmount+" WALLET");
 
-                if (Integer.parseInt(stFareEstimate) > (int)Double.parseDouble(stWalletAmount))
+                if (Double.parseDouble(stFareEstimate) > Double.parseDouble(stWalletAmount))
                 {
                     enoughBalance=false;
                     Toast.makeText(getActivity(),"Insufficient Balance! Please Add Money.",Toast.LENGTH_SHORT).show();
                     tvAddMoney.setVisibility(View.VISIBLE);
                     tvWallet.setTextColor(Color.parseColor("#000000"));
-                    tvCash.setTextColor(Color.parseColor("#9e9e9e"));
+                    tvCash.setTextColor(Color.parseColor("#a9a8a8"));
                     btConfirmRide.setAlpha(Float.parseFloat("0.5"));
 
                 }
                 else {
                     enoughBalance=true;
                     tvWallet.setTextColor(Color.parseColor("#000000"));
-                    tvCash.setTextColor(Color.parseColor("#9e9e9e"));
+                    tvCash.setTextColor(Color.parseColor("#a9a8a8"));
                 }
             }
         });
 
         myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
 
-        tvRideEstimate.setOnClickListener(new View.OnClickListener() {
+        llFareEstimate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -423,11 +445,16 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
                                     stTime=String.valueOf((t2.getValue())/60);
 
+                                    if(stTime==null)
+                                    {
+                                        stTime="0";
+                                    }
+
                                     //System.out.println("d & t is "+stKms+":"+stTime);
                                 }
                             }
 
-                            System.out.println("distance issss "+stKms);
+                            System.out.println("distance issss & time  "+stKms+"::"+stTime);
 
                             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
@@ -445,6 +472,9 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                             final TextView tvRideTime=(TextView)dialogView.findViewById(R.id.are_tv_ride_time_fare);
                             final TextView tvMinFare=(TextView)dialogView.findViewById(R.id.are_tv_min_fare);
                             final TextView tvCabCat=(TextView)dialogView.findViewById(R.id.are_tv_cab_cat);
+                            final TextView tvSurgeValue=(TextView)dialogView.findViewById(R.id.are_tv_surge);
+                            final TextView tvGST=(TextView)dialogView.findViewById(R.id.are_tv_gst);
+                            final TextView tvSlabKm=(TextView)dialogView.findViewById(R.id.are_tv_slab_km);
 
 
                             JsonObject v=new JsonObject();
@@ -465,17 +495,92 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                     List<OutStationPojo> dataList;
                                     OutStationPojo data;
 
-                                    if(response.isSuccessful())
-                                    {
-                                        dataList=response.body();
+                                    if(response.isSuccessful()) {
+                                        dataList = response.body();
 
-                                        data=dataList.get(0);
+                                        data = dataList.get(0);
 
-                                        if(data.getTotalfare().equals(""))
-                                        {
+                                        if (data.getTotalfare().equals("")) {
 
-                                        }
-                                        else {
+                                        } else {
+
+                                            if(!(data.getPeakhoursdata().equals(""))) {
+
+
+                                                String v[] = data.getPeakhoursdata().split(",");
+
+                                                outerloop:
+
+                                                for (int i = 0; i < v.length; i++) {
+                                                    String w = v[i];
+                                                    String y[] = w.split("-");
+
+                                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                    try {
+                                                        Date d1 = format.parse(getCurrentTime());
+                                                        Date d2 = format.parse(y[0]);
+                                                        Date d3 = format.parse(y[1]);
+
+                                                        String z[] = y[4].split("\\|");
+
+                                                        if (z.length != 0) {
+                                                            for (int k = 0; k < z.length; k++) {
+
+                                                                //System.out.println("z[]k isssss "+z[k] );
+
+                                                                if (z[k].equals("local")) {
+
+                                                                    if (isWithinRange(d1, d2, d3)) {
+
+                                                                        //System.out.println("is Within Range");
+
+                                                                        double a = (Double.parseDouble(y[2]) * Double.parseDouble(data.getTotalfare()));
+                                                                        double b = a / Integer.parseInt(y[3]);
+
+                                                                        surgeValue = b;
+                                                                        //surgeRatio = (Double.parseDouble(y[2]) + Double.parseDouble(y[3])) / 100;
+
+                                                                        surgeRatio = Double.parseDouble(y[2]);
+                                                                        tvSurgeCharges.setVisibility(View.VISIBLE);
+                                                                        tvSurgeValue.setText(y[2]+" - "+y[3]);
+                                                                        break outerloop;
+                                                                        //break;
+                                                                    }
+                                                                    else {
+                                                                        tvSurgeCharges.setVisibility(View.GONE);
+                                                                    }
+
+                                                                }
+                                                            }
+                                                        } else {
+
+                                                            if (y[4].equals("local")) {
+                                                                if (isWithinRange(d1, d2, d3)) {
+                                                                    double a = (Double.parseDouble(y[2]) * Double.parseDouble(data.getTotalfare()));
+                                                                    double b = a / Integer.parseInt(y[3]);
+
+                                                                    surgeValue = b;
+                                                                    //surgeRatio = Double.parseDouble(y[2]) / Double.parseDouble(y[3])/100;
+
+                                                                    surgeRatio = Double.parseDouble(y[2]);
+                                                                    tvSurgeCharges.setVisibility(View.VISIBLE);
+                                                                    tvSurgeValue.setText(y[2]+" - "+y[3]);
+                                                                    break outerloop;
+                                                                }
+                                                                else {
+                                                                    tvSurgeCharges.setVisibility(View.GONE);
+                                                                }
+                                                            }
+
+                                                        }
+
+
+                                                        //System.out.println(date);
+                                                    } catch (ParseException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            }
 
                                             int f = (int) Double.parseDouble(data.getTotalfare());
 
@@ -485,10 +590,26 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                             tvaSlab.setText(getString(R.string.Rs) + " " + data.getAfterslabkm() + " per km");
                                             tvRideTime.setText(getString(R.string.Rs) + " " + data.getRidetimepermin() + " per min");
                                             tvMinFare.setText(getString(R.string.Rs) + " " + data.getMinimumfare());
+                                            tvSlabKm.setText(data.getSlabkm());
+                                            int b = (int) (Double.parseDouble(data.getServicetax()) * (f+surgeValue)) / 100;
+                                            tvGST.setText(getString(R.string.Rs) + " " + b);
+
+                                            if (String.valueOf(surgeRatio).equals("0.0")) {
+
+                                                //tvSurgeValue.setVisibility(View.GONE);
+
+                                            } else {
+
+                                                //tvSurgeValue.setText(String.valueOf(surgeRatio));
+                                            }
 
                                             //f = f + (15 * f) / 100;
 
-                                            tvRideEstimate.setText(getString(R.string.Rs) + " " + String.valueOf(f));
+                                            stFareEstimate = String.valueOf((int)(f + surgeValue));
+
+                                            tvRideEstimate.setText(getString(R.string.Rs) + " " + String.valueOf((int)(f + surgeValue)));
+                                            tvFareMsg.setText(getString(R.string.Rs) + " " + stFareEstimate + " + " + getString(R.string.Rs) + " " + b + " GST");
+                                            gst=b;
                                         }
 
                                     }
@@ -700,8 +821,13 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
     public void sendRequestCheckAcceptance(final int p)
     {
 
+        System.out.println("soretdcab "+sortedCabDistList.size()+"@@pp"+p);
+        System.out.println("cabDatalst "+cabDataList.size());
+
         if(p<sortedCabDistList.size()) {
             final CabDist c = sortedCabDistList.get(p);
+
+            System.out.println("c.getPos "+c.getPosition());
             final CabData cda = cabDataList.get(c.getPosition());
 
             final JsonObject v = new JsonObject();
@@ -719,7 +845,8 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
             v.addProperty("bookingType","AppBooking");
             v.addProperty("location",city);
             v.addProperty("payment_type",stPaymentMode);
-            v.addProperty("fare_estimate",stFareEstimate);
+            //v.addProperty("fare_estimate",stFareEstimate);
+            v.addProperty("fare_estimate",String.valueOf(Double.parseDouble(stFareEstimate)+gst));
             v.addProperty("travelPackage",travelPackage);
             v.addProperty("slabhours",slabHr);
             v.addProperty("slabkms",slabKm);
@@ -727,6 +854,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
             v.addProperty("Promocode",stCoupon);
 
             System.out.println("*******************************************");
+            System.out.println("fare estimate iss "+String.valueOf(Double.parseDouble(stFareEstimate)+gst));
             System.out.println(cda.getProfileId());
             System.out.println(cda.getVehRegNo() + ":" + cda.getCabCat());
             System.out.println("Driver "+cda.getDriverName());
@@ -747,7 +875,6 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
             System.out.println(slabKm);
             System.out.println(stCategorySelected);
             System.out.println(stCoupon);
-
             System.out.println("****************************************");
 
 
@@ -782,10 +909,10 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                 @Override
                                 public void run() {
 
-                                    count = count + 5;
+                                    count = count + 10;
 
                                     //previously it was 20 sec
-                                    if (count >= 22) {
+                                    if (count >= 30) {
 
                                         //remove comments if useing handler code & remopve below API call:getCabRequestStatus
                                     /*count = -5;
@@ -809,7 +936,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
                                                     if (msg.getMessage().equals("1")) {
 
-                                                        count = -5;
+                                                        count = -10;
                                                         handler.removeCallbacks(r);
                                                         waitingForDriver = false;
                                                         isRequestAccepted = false;
@@ -869,7 +996,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
                                                         handler.removeCallbacks(r);
 
-                                                        count = -5;
+                                                        count = -10;
                                                         waitingForDriver = false;
                                                         isRequestAccepted = false;
 
@@ -880,7 +1007,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
                                                         handler.removeCallbacks(r);
 
-                                                        count = -5;
+                                                        count = -10;
                                                         waitingForDriver = false;
                                                         isRequestAccepted = false;
 
@@ -910,7 +1037,80 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                                         }
                                                     });*/
 
+                                                        //System.out.println("send req cab acc "+h);
                                                         sendRequestCheckAcceptance(h);
+
+
+                                                    }
+
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<BookCabPojo> call, Throwable t) {
+
+                                                Toast.makeText(getContext(), "Connectivity Issue! Please check", Toast.LENGTH_LONG).show();
+                                                alertDialog.dismiss();
+                                                handler.removeCallbacks(r);
+                                            }
+                                        });
+
+                                    } else {
+
+                                        handler.postDelayed(r, 10000);
+
+                                        System.out.println("checking for responseeeeeeeeeeee");
+
+                                        Call<BookCabPojo> callStatus = REST_CLIENT.getCabRequestStatus(v1);
+                                        callStatus.enqueue(new Callback<BookCabPojo>() {
+                                            @Override
+                                            public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
+
+                                                BookCabPojo msg;
+
+                                                if (response.isSuccessful()) {
+                                                    msg = response.body();
+
+                                                  if (msg.getMessage().equals("3")) {
+
+                                                        alertDialog.dismiss();
+                                                        handler.removeCallbacks(r);
+                                                        //  Toast.makeText(getContext(), "Cab request accepted by Driver", Toast.LENGTH_LONG).show();
+                                                        count = 0;
+                                                        waitingForDriver = false;
+                                                        isRequestAccepted = true;
+                                                        accepted = true;
+                                                        forPositionAccepted = p;
+
+                                                        CabData cd = cabDataList.get(c.getPosition());
+                                                        //CabData cd = cabDataList.get(forPositionAccepted);
+                                                        ArrayList<CabData> cabAcceptedData = new ArrayList<CabData>();
+                                                        cabAcceptedData.add(new CabData(cd.getProfileId(), cd.getVehRegNo(),
+                                                                cd.getPhoneNumber(), cd.getCabCat(), cd.getLatitude(), cd.getLongitude(), cd.getDriverName(), cd.getDriverPic(), cd.getDutyPerform()));
+
+                                                        dbAdapter.insertUserRideStatus(requestId, "not arrived");
+
+                                                        Intent i = new Intent(getActivity(), RideInProgressActivity.class);
+                                                        i.putExtra("list", cabAcceptedData);
+                                                        i.putExtra("requestId", requestId);
+                                                        i.putExtra("selectedCategory", stCategorySelected);
+                                                        i.putExtra("localPackage", stLocalPkg);
+                                                        startActivity(i);
+                                                        getActivity().finish();
+                                                    }else if (msg.getMessage().equals("5")) {
+
+                                                      handler.removeCallbacks(r);
+
+                                                      count = -10;
+                                                      waitingForDriver = false;
+                                                      isRequestAccepted = false;
+
+                                                      h = h + 1;
+                                                      sendRequestCheckAcceptance(h);
+                                                      // alertDialog.dismiss();
+                                                  }  else  {
+
+                                                      //handler.postDelayed(r, 10000);
 
 
                                                     }
@@ -926,10 +1126,6 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                                 //handler.removeCallbacks(r);
                                             }
                                         });
-
-                                    } else {
-
-                                        handler.postDelayed(this, 5000);
 
                                         //remove comments if handler is used
 
@@ -1024,7 +1220,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                         else {
 
                             alertDialog.dismiss();
-                            tvApplyCoupon.setText("Apply Coupon");
+                            tvApplyCoupon.setText("Apply");
                             tvApplyCoupon.setTypeface(null, Typeface.BOLD);
                             tvApplyCoupon.setTextSize(12);
                             tvApplyCoupon.setTextColor(Color.parseColor("#FF8F00"));
@@ -1075,6 +1271,8 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
             alertDialog.dismiss();
             btConfirmRide.setEnabled(true);
             btConfirmRide.setClickable(true);
+
+            getCabsForSelectedCategory();
 
             //remove comments if handler is used
             //hStart.post(rStart);
@@ -1381,10 +1579,10 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
                 if(stCategorySelected.equals("Mini")||stCategorySelected.equals("Micra"))
                 {
-                    mMap.addMarker(new MarkerOptions().position(ll2).icon(BitmapDescriptorFactory.fromResource(R.drawable.mini_20)));
+                    mMap.addMarker(new MarkerOptions().position(ll2).icon(BitmapDescriptorFactory.fromResource(R.drawable.mini_15)));
                 }
                 else {
-                    mMap.addMarker(new MarkerOptions().position(ll2).icon(BitmapDescriptorFactory.fromResource(R.drawable.prime_20)));
+                    mMap.addMarker(new MarkerOptions().position(ll2).icon(BitmapDescriptorFactory.fromResource(R.drawable.prime_15)));
                 }
 
                 //mMap.addMarker(new MarkerOptions().position(ll2)
@@ -1711,8 +1909,12 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
         }
         catch (Exception e){e.printStackTrace();}
 
-        showMapWithPickupDropPoints();
-        getCabsForSelectedCategory();
+        if(first) {
+
+            showMapWithPickupDropPoints();
+            getCabsForSelectedCategory();
+            first=false;
+        }
     }
 
     public void showMapWithPickupDropPoints(){
@@ -1745,6 +1947,22 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
                                     LatLngBounds.Builder bld = new LatLngBounds.Builder();
 
+                                    for(int i=0;i<cabDataList.size();i++) {
+
+                                        CabData c = cabDataList.get(i);
+                                        LatLng ll2 = new LatLng(Double.parseDouble(c.getLatitude()), Double.parseDouble(c.getLongitude()));
+
+                                        bld.include(ll2);
+
+                                        /*if (stCategorySelected.equals("Mini") || stCategorySelected.equals("Micra")) {
+                                            mMap.addMarker(new MarkerOptions().position(ll2).icon(BitmapDescriptorFactory.fromResource(R.drawable.mini_20)));
+                                        } else {
+                                            mMap.addMarker(new MarkerOptions().position(ll2).icon(BitmapDescriptorFactory.fromResource(R.drawable.prime_20)));
+                                        }*/
+                                    }
+
+
+
                                     LatLng ll = new LatLng(Double.parseDouble(pickupLat), Double.parseDouble(pickupLong));
                                     bld.include(ll);
 
@@ -1753,7 +1971,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                                     bld.include(ll1);
 
                                     LatLngBounds bounds = bld.build();
-                                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, mapView.getWidth(), mapView.getHeight(), 80));
+                                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, mapView.getWidth(), mapView.getHeight(), 120));
                                     mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                 }
                                 else {
@@ -1777,6 +1995,9 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
     public void getCabsForSelectedCategory(){
 
+        //System.out.println("API calleddddddddddddddddd");
+        cabDataList.clear();
+
         Call<List<CabPojo>> call=REST_CLIENT.getAllCabs(city,String.valueOf(locLat),String.valueOf(locLng),stCategorySelected,companyId);
         call.enqueue(new Callback<List<CabPojo>>() {
             @Override
@@ -1784,13 +2005,13 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 
                 connectivity=true;
 
-                if(myBottomSheet!=null) {
+               /* if(myBottomSheet!=null) {
 
                     if (myBottomSheet.isAdded()) {
                         myBottomSheet.dismiss();
 
                     }
-                }
+                }*/
 
                 List<CabPojo> cabs;
                 CabPojo cabData;
@@ -1798,7 +2019,7 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
                 if(response.isSuccessful())
                 {
                     cabs=response.body();
-                    cabDataList.clear();
+                    //cabDataList.clear();
 
                     for(int i=0;i<cabs.size();i++)
                     {
@@ -1869,45 +2090,49 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 //        String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
 //                "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyC4Ccgq_w6OhyF6IVblH3KByt5tKuJNtdM";
 
-        String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
-                "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+        if(travelType.equals("local")) {
 
-        Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
-        call.enqueue(new Callback<DurationPojo>() {
-            @Override
-            public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
+            String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                    "origins=" + pickupLat + "," + pickupLong + "&destinations=" + dropLat + "," + dropLong + "&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
 
-                DurationPojo d;
+            Call<DurationPojo> call = REST_CLIENT.getDistanceDetails(urlString);
+            call.enqueue(new Callback<DurationPojo>() {
+                @Override
+                public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
 
-                if(response.isSuccessful())
-                {
-                    d=response.body();
-                    List<Row> r=d.getRows();
-                    Row r1;
-                    for(int a=0;a<r.size();a++)
-                    {
-                        r1=r.get(a);
-                        List<Element> e=r1.getElements();
+                    DurationPojo d;
 
-                        Element e1;
+                    if (response.isSuccessful()) {
+                        d = response.body();
+                        List<Row> r = d.getRows();
+                        Row r1;
+                        for (int a = 0; a < r.size(); a++) {
+                            r1 = r.get(a);
+                            List<Element> e = r1.getElements();
 
-                        for(int b=0;b<e.size();b++)
-                        {
-                            e1=e.get(b);
-                            Distance t1=e1.getDistance();
+                            Element e1;
 
-                            Duration t2=e1.getDuration();
+                            for (int b = 0; b < e.size(); b++) {
+                                e1 = e.get(b);
+                                Distance t1 = e1.getDistance();
 
-                            String stDist=t1.getText();
-                            String stDistDetails[]=stDist.split(" ");
-                            stKms=stDistDetails[0];
+                                Duration t2 = e1.getDuration();
 
-                            stTime=String.valueOf((t2.getValue())/60);
+                                String stDist = t1.getText();
+                                String stDistDetails[] = stDist.split(" ");
+                                stKms = stDistDetails[0];
 
-                            //System.out.println("d & t is "+stKms+":"+stTime);
+                                stTime = String.valueOf((t2.getValue()) / 60);
 
+                                if(stTime==null)
+                                {
+                                    stTime="0";
+                                }
+
+                                //System.out.println("d & t is " + stKms + ":" + stTime);
+
+                            }
                         }
-                    }
 
                     /*
 
@@ -1931,77 +2156,615 @@ public class ConfirmRideFragment extends Fragment implements OnMapReadyCallback,
 */
 
 
-                    JsonObject v=new JsonObject();
-                    v.addProperty("companyid",companyId);
-                    v.addProperty("location",city);
-                    v.addProperty("traveltype","local");
-                    v.addProperty("vehicle_type",stCategorySelected);
-                    v.addProperty("approxkms",stKms);
-                    v.addProperty("duration",stTime);
+                        JsonObject v = new JsonObject();
+                        v.addProperty("companyid", companyId);
+                        v.addProperty("location", city);
+                        v.addProperty("traveltype", "local");
+                        v.addProperty("vehicle_type", stCategorySelected);
+                        v.addProperty("approxkms", stKms);
+                        v.addProperty("duration", stTime);
 
-                    Call<List<OutStationPojo>> call1=REST_CLIENT.getFareEstimate(v);
+                        Call<List<OutStationPojo>> call1 = REST_CLIENT.getFareEstimate(v);
 
-                    call1.enqueue(new Callback<List<OutStationPojo>>() {
-                        @Override
-                        public void onResponse(Call<List<OutStationPojo>> call, Response<List<OutStationPojo>> response) {
+                        call1.enqueue(new Callback<List<OutStationPojo>>() {
+                            @Override
+                            public void onResponse(Call<List<OutStationPojo>> call, Response<List<OutStationPojo>> response) {
 
-                            List<OutStationPojo> dataList;
-                            OutStationPojo data;
+                                List<OutStationPojo> dataList;
+                                OutStationPojo data;
 
-                            progressDialog.dismiss();
+                                progressDialog.dismiss();
 
-                            if(response.isSuccessful())
-                            {
-                                dataList=response.body();
+                                if (response.isSuccessful()) {
+                                    dataList = response.body();
 
-                                data=dataList.get(0);
+                                    data = dataList.get(0);
 
-                                if(data.getTotalfare().equals("")) {
+                                    if (data.getTotalfare().equals("")) {
 
 
-                                }
-                                else {
+                                    } else {
+                                        if (data.getPeakhoursdata().equals("")) {
 
-                                    int f = (int) Double.parseDouble(data.getTotalfare());
-                                    //f = f + (15 * f) / 100;
+                                        } else {
 
-                                    stFareEstimate = String.valueOf(f);
-                                    tvRideEstimate.setText("Fare Estimate ~  " + getString(R.string.Rs) + " " + stFareEstimate );
-                                    tvFareMsg.setText("  +  "+getString(R.string.Rs)+" "+data.getServicetax()+"  GST");
+                                            System.out.println("^^^^^ "+data.getPeakhoursdata());
+
+                                            String v[] = data.getPeakhoursdata().split(",");
+
+                                            System.out.println("v.lenght "+v.length);
+
+                                            outerloop:
+
+                                            for (int i = 0; i < v.length; i++) {
+                                                String w = v[i];
+                                                String y[] = w.split("-");
+
+                                                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                try {
+
+
+                                                    Date d1 = format.parse(getCurrentTime());
+                                                    //Date d1 = format.parse("08:00:00");
+                                                    Date d2 = format.parse(y[0]);
+                                                    Date d3 = format.parse(y[1]);
+
+                                                    System.out.println("y[4]"+y[4]);
+
+                                                    String z[] = y[4].split("\\|");
+
+                                                    System.out.println("z.lenght"+z.length);
+
+                                                    if (z.length != 0) {
+                                                        for (int k = 0; k < z.length; k++) {
+
+                                                            System.out.println("z[k]"+z[k]);
+
+                                                            if (z[k].equals("local")) {
+
+                                                                if (isWithinRange(d1, d2, d3)) {
+                                                                    double a = (Double.parseDouble(y[2]) * Double.parseDouble(data.getTotalfare()));
+                                                                    double b = a / Integer.parseInt(y[3]);
+
+                                                                    surgeValue = b;
+                                                                    //surgeRatio = (Double.parseDouble(y[2]) + Double.parseDouble(y[3])) / 100;
+
+                                                                    tvSurgeCharges.setVisibility(View.VISIBLE);
+
+                                                                    break outerloop;
+                                                                    //break;
+                                                                }
+                                                                else {
+                                                                    tvSurgeCharges.setVisibility(View.GONE);
+                                                                }
+
+                                                            }
+                                                        }
+                                                    } else {
+
+                                                        if (y[4].equals("local")) {
+                                                            if (isWithinRange(d1, d2, d3)) {
+
+                                                                System.out.println("inside eeeeeeeeee");
+
+
+                                                                double a = (Double.parseDouble(y[2]) * Double.parseDouble(data.getTotalfare()));
+                                                                double b = a / Integer.parseInt(y[3]);
+
+                                                                surgeValue = b;
+                                                                //surgeRatio = Double.parseDouble(y[2]) / Double.parseDouble(y[3])/100;
+
+                                                                tvSurgeCharges.setVisibility(View.VISIBLE);
+                                                                break outerloop;
+                                                            }
+                                                            else {
+                                                                tvSurgeCharges.setVisibility(View.GONE);
+                                                            }
+
+
+                                                        }
+
+                                                    }
+
+
+                                                    //System.out.println(date);
+                                                } catch (ParseException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
+                                           /* for (int i = 0; i < v.length; i++) {
+                                                String w = v[i];
+                                                String y[] = w.split("-");
+
+                                                System.out.println("y[4] "+y[4]);
+
+                                                if(y[4].equals("local")) {
+
+                                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                    try {
+                                                        Date d1 = format.parse(getCurrentTime());
+                                                        Date d2 = format.parse(y[0]);
+                                                        Date d3 = format.parse(y[1]);
+
+                                                        if (isWithinRange(d1, d2, d3)) {
+                                                            int a = Integer.parseInt(y[2]) * Integer.parseInt(data.getTotalfare());
+                                                            int b = a / Integer.parseInt(y[3]);
+
+                                                            surgeValue = b;
+
+                                                            break;
+                                                        }
+                                                        //System.out.println(date);
+                                                    } catch (ParseException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            }*/
+                                        }
+
+                                        int f = (int) Double.parseDouble(data.getTotalfare());
+                                        //f = f + (15 * f) / 100;
+
+                                        stFareEstimate = String.valueOf((int)(f + surgeValue));
+                                        //tvRideEstimate.setText("Fare Estimate ~  " + getString(R.string.Rs) + " " + stFareEstimate );
+                                        //tvFareMsg.setText("  +  "+getString(R.string.Rs)+" "+data.getServicetax()+"  GST");
+
+                                        int b = (int) (Double.parseDouble(data.getServicetax()) * (f+surgeValue)) / 100;
+                                        tvFareMsg.setText(getString(R.string.Rs) + " " + stFareEstimate + " + " + getString(R.string.Rs) + " " + b + " GST");
+                                        //tvFareMsg.setText(" + "+getString(R.string.Rs) + " " +b+" GST");
+                                        gst=b;
+                                    }
+
                                 }
 
                             }
 
-                        }
+                            @Override
+                            public void onFailure(Call<List<OutStationPojo>> call, Throwable t) {
 
-                        @Override
-                        public void onFailure(Call<List<OutStationPojo>> call, Throwable t) {
+                                progressDialog.dismiss();
 
-                            progressDialog.dismiss();
+                                Toast.makeText(getActivity(), "Connectivity Issue! Please Check.", Toast.LENGTH_SHORT).show();
 
-                            Toast.makeText(getActivity(),"Connectivity Issue! Please Check.",Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        progressDialog.dismiss();
+                    }
 
-                        }
-                    });
                 }
-                else
-                {
+
+                @Override
+                public void onFailure(Call<DurationPojo> call, Throwable t) {
+
                     progressDialog.dismiss();
+                    Toast.makeText(getActivity(), "Please Check Internet Connection !", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        }
+        else {
+
+            System.out.println("IN PACKAGESSSSSSSSSSSSSSSSSSSSSSSSSS");
+
+          tvRideEstimate.setText("FARE ESTIMATE");
+
+            JsonObject v = new JsonObject();
+            v.addProperty("companyid", companyId);
+            v.addProperty("location", city);
+            v.addProperty("traveltype", "local");
+            v.addProperty("vehicle_type", "All");
+            v.addProperty("approxkms", 0);
+            v.addProperty("duration", 0);
+
+            Call<List<OutStationPojo>> call1 = REST_CLIENT.getFareEstimate(v);
+
+            call1.enqueue(new Callback<List<OutStationPojo>>() {
+                @Override
+                public void onResponse(Call<List<OutStationPojo>> call, Response<List<OutStationPojo>> response) {
+
+                    List<OutStationPojo> dataList;
+                    OutStationPojo data;
+
+                    progressDialog.dismiss();
+
+                    if (response.isSuccessful()) {
+                        dataList = response.body();
+
+                        for(int k=0;k<dataList.size();k++) {
+
+                            System.out.println(" k & data size "+k+"::"+dataList.size()+stCategorySelected);
+
+                            data = dataList.get(k);
+
+                            switch (k) {
+                                case 0:
+                                    if (stCategorySelected.equals("Mini")) {
+
+//                                        if (data.getTotalfare().equals("")) {
+//
+//
+//                                        } else {
+
+                                            if (data.getPeakhoursdata().equals("")) {
+
+                                            } else {
+
+                                                System.out.println("^^^^^ " + data.getPeakhoursdata());
+
+                                                String v[] = data.getPeakhoursdata().split(",");
+
+                                                outerloop:
+
+                                                for (int i = 0; i < v.length; i++) {
+                                                    String w = v[i];
+                                                    String y[] = w.split("-");
+
+                                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                    try {
+                                                        Date d1 = format.parse(getCurrentTime());
+                                                        //Date d1=format.parse("04:00:00");
+                                                        Date d2 = format.parse(y[0]);
+                                                        Date d3 = format.parse(y[1]);
+
+                                                        System.out.println("y[4]" + y[4]);
+
+                                                        String z[] = y[4].split("\\|");
+
+                                                        System.out.println("z.lenght" + z.length);
+
+                                                        if (z.length != 0) {
+
+                                                            for (int l = 0;l < z.length; l++) {
+
+                                                                System.out.println("z[k]" + z[l]);
+
+                                                                if (z[l].equals("packages")) {
+
+                                                                    System.out.println("inside equals ....");
+
+                                                                    if (isWithinRange(d1, d2, d3)) {
+
+                                                                        System.out.println("is within range ....");
+
+                                                                        double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                                        double b = a / Integer.parseInt(y[3]);
+
+                                                                        surgeValue = b;
+                                                                        //surgeRatio = (Double.parseDouble(y[2]) + Double.parseDouble(y[3])) / 100;
+                                                                        surgeRatio = Double.parseDouble(y[2]);
+
+                                                                        tvSurgeCharges.setVisibility(View.VISIBLE);
+
+                                                                        break outerloop;
+                                                                        //break;
+                                                                    }
+                                                                    else {
+                                                                        tvSurgeCharges.setVisibility(View.GONE);
+                                                                    }
+                                                                }
+                                                            }
+                                                        } else {
+
+                                                            if (y[4].equals("packages")) {
+                                                                if (isWithinRange(d1, d2, d3)) {
+
+                                                                    System.out.println("inside eeeeeeeeee");
+
+
+                                                                    double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                                    double b = a / Integer.parseInt(y[3]);
+
+                                                                    surgeValue = b;
+                                                                    surgeRatio = Double.parseDouble(y[2]) / Double.parseDouble(y[3]) / 100;
+
+                                                                    tvSurgeCharges.setVisibility(View.VISIBLE);
+                                                                    break outerloop;
+                                                                    //break;
+                                                                }
+                                                                else {
+                                                                    tvSurgeCharges.setVisibility(View.GONE);
+                                                                }
+                                                            }
+
+                                                        }
+                                                        //System.out.println(date);
+                                                    } catch (ParseException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            }
+
+                                            //int f = (int) Double.parseDouble(data.getTotalfare());
+                                            //f = f + (15 * f) / 100;
+
+                                            // stFareEstimate = String.valueOf(f + surgeValue);
+                                            //tvFareMsg.setText(getString(R.string.Rs)+" " +stLocalFare+"+ Taxes apply");
+                                            stFareEstimate = String.valueOf(Integer.parseInt(stLocalFare) + surgeValue);
+
+                                            //tvRideEstimate.setText("Fare Estimate ~  " + getString(R.string.Rs) + " " + stFareEstimate );
+                                            //tvFareMsg.setText("  +  "+getString(R.string.Rs)+" "+data.getServicetax()+"  GST");
+
+                                            int b = (int) (Double.parseDouble(stFareEstimate) * Double.parseDouble(data.getServicetax())) / 100;
+                                            tvFareMsg.setText(getString(R.string.Rs) + " " + stFareEstimate + " + " + getString(R.string.Rs) + " " + b + " GST");
+                                            //tvFareMsg.setText(" + "+getString(R.string.Rs) + " " +b+" GST");
+                                        gst=b;
+                                        //}
+
+                                    }
+                                    break;
+                                case 2:
+                                    if (stCategorySelected.equals("SUV")) {
+
+//                                        if (data.getTotalfare().equals("")) {
+//
+//
+//                                        } else {
+
+                                            if (data.getPeakhoursdata().equals("")) {
+
+                                            } else {
+
+                                                System.out.println("^^^^^ " + data.getPeakhoursdata());
+
+                                                String v[] = data.getPeakhoursdata().split(",");
+
+                                                outerloop:
+
+                                                for (int i = 0; i < v.length; i++) {
+                                                    String w = v[i];
+                                                    String y[] = w.split("-");
+
+                                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                    try {
+                                                        Date d1 = format.parse(getCurrentTime());
+                                                        Date d2 = format.parse(y[0]);
+                                                        Date d3 = format.parse(y[1]);
+
+                                                        System.out.println("y[4]" + y[4]);
+
+                                                        String z[] = y[4].split("\\|");
+
+                                                        System.out.println("z.lenght" + z.length);
+
+                                                        if (z.length != 0) {
+                                                            for (int l = 0; l < z.length; l++) {
+
+                                                                System.out.println("z[k]" + z[l]);
+
+                                                                if (z[l].equals("packages")) {
+
+                                                                    if (isWithinRange(d1, d2, d3)) {
+                                                                        double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                                        double b = a / Integer.parseInt(y[3]);
+
+                                                                        surgeValue = b;
+                                                                        //surgeRatio = (Double.parseDouble(y[2]) + Double.parseDouble(y[3])) / 100;
+                                                                        surgeRatio = Double.parseDouble(y[2]);
+
+                                                                        tvSurgeCharges.setVisibility(View.VISIBLE);
+
+                                                                        break outerloop;
+                                                                        //break;
+                                                                    }
+                                                                    else {
+                                                                        tvSurgeCharges.setVisibility(View.GONE);
+                                                                    }
+                                                                }
+                                                            }
+                                                        } else {
+
+                                                            if (y[4].equals("packages")) {
+                                                                if (isWithinRange(d1, d2, d3)) {
+
+                                                                    System.out.println("inside eeeeeeeeee");
+
+
+                                                                    double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                                    double b = a / Integer.parseInt(y[3]);
+
+                                                                    surgeValue = b;
+                                                                    surgeRatio = Double.parseDouble(y[2]) / Double.parseDouble(y[3]) / 100;
+
+                                                                    tvSurgeCharges.setVisibility(View.VISIBLE);
+
+                                                                    break outerloop;
+                                                                    //break;
+                                                                }
+                                                                else {
+                                                                    tvSurgeCharges.setVisibility(View.GONE);
+                                                                }
+
+
+                                                            }
+
+                                                        }
+                                                        //System.out.println(date);
+                                                    } catch (ParseException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            }
+
+                                          //  int f = (int) Double.parseDouble(data.getTotalfare());
+                                            //f = f + (15 * f) / 100;
+
+                                            // stFareEstimate = String.valueOf(f + surgeValue);
+                                            //tvFareMsg.setText(getString(R.string.Rs)+" " +stLocalFare+"+ Taxes apply");
+                                            stFareEstimate = String.valueOf(Integer.parseInt(stLocalFare) + surgeValue);
+
+                                            //tvRideEstimate.setText("Fare Estimate ~  " + getString(R.string.Rs) + " " + stFareEstimate );
+                                            //tvFareMsg.setText("  +  "+getString(R.string.Rs)+" "+data.getServicetax()+"  GST");
+
+                                            int b = (int) (Double.parseDouble(stFareEstimate) * Double.parseDouble(data.getServicetax())) / 100;
+                                            tvFareMsg.setText(getString(R.string.Rs) + " " + stFareEstimate + " + " + getString(R.string.Rs) + " " + b + " GST");
+                                            //tvFareMsg.setText(" + "+getString(R.string.Rs) + " " +b+" GST");
+                                        //}
+                                        gst=b;
+                                    }
+                                    break;
+                                case 1:
+                                    if (stCategorySelected.equals("Sedan")) {
+
+//                                        if (data.getTotalfare().equals("")) {
+//
+//
+//                                        } else {
+
+                                            if (data.getPeakhoursdata().equals("")) {
+
+                                            } else {
+
+                                                System.out.println("^^^^^ " + data.getPeakhoursdata());
+
+                                                String v[] = data.getPeakhoursdata().split(",");
+
+                                                outerloop:
+
+                                                for (int i = 0; i < v.length; i++) {
+                                                    String w = v[i];
+                                                    String y[] = w.split("-");
+
+                                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                                    try {
+                                                        Date d1 = format.parse(getCurrentTime());
+                                                        Date d2 = format.parse(y[0]);
+                                                        Date d3 = format.parse(y[1]);
+
+                                                        System.out.println("y[4]" + y[4]);
+
+                                                        String z[] = y[4].split("\\|");
+
+                                                        System.out.println("z.lenght" + z.length);
+
+                                                        if (z.length != 0) {
+                                                            for (int l = 0; l < z.length; l++) {
+
+                                                                System.out.println("z[k]" + z[l]);
+
+                                                                if (z[l].equals("Packages")) {
+
+                                                                    if (isWithinRange(d1, d2, d3)) {
+                                                                        double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                                        double b = a / Integer.parseInt(y[3]);
+
+                                                                        surgeValue = b;
+                                                                        //surgeRatio = (Double.parseDouble(y[2]) + Double.parseDouble(y[3])) / 100;
+                                                                        surgeRatio = Double.parseDouble(y[2]);
+
+                                                                        tvSurgeCharges.setVisibility(View.VISIBLE);
+
+                                                                        break outerloop;
+                                                                        //break;
+                                                                    }
+                                                                    else {
+                                                                        tvSurgeCharges.setVisibility(View.GONE);
+                                                                    }
+                                                                }
+                                                            }
+                                                        } else {
+
+                                                            if (y[4].equals("Packages")) {
+                                                                if (isWithinRange(d1, d2, d3)) {
+
+                                                                    System.out.println("inside eeeeeeeeee");
+
+
+                                                                    double a = (Double.parseDouble(y[2]) * Double.parseDouble(stLocalFare));
+                                                                    double b = a / Integer.parseInt(y[3]);
+
+                                                                    surgeValue = b;
+                                                                    surgeRatio = Double.parseDouble(y[2]) / Double.parseDouble(y[3]) / 100;
+
+                                                                    tvSurgeCharges.setVisibility(View.VISIBLE);
+
+                                                                    break outerloop;
+                                                                    //break;
+                                                                }
+                                                                else {
+                                                                    tvSurgeCharges.setVisibility(View.GONE);
+                                                                }
+
+
+                                                            }
+
+                                                        }
+                                                        //System.out.println(date);
+                                                    } catch (ParseException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            }
+
+                                            //int f = (int) Double.parseDouble(data.getTotalfare());
+                                            //f = f + (15 * f) / 100;
+
+                                            // stFareEstimate = String.valueOf(f + surgeValue);
+                                            //tvFareMsg.setText(getString(R.string.Rs)+" " +stLocalFare+"+ Taxes apply");
+                                            stFareEstimate = String.valueOf(Integer.parseInt(stLocalFare) + surgeValue);
+
+                                            //tvRideEstimate.setText("Fare Estimate ~  " + getString(R.string.Rs) + " " + stFareEstimate );
+                                            //tvFareMsg.setText("  +  "+getString(R.string.Rs)+" "+data.getServicetax()+"  GST");
+
+                                            int b = (int) (Double.parseDouble(stFareEstimate) * Double.parseDouble(data.getServicetax())) / 100;
+                                            tvFareMsg.setText(getString(R.string.Rs) + " " + stFareEstimate + " + " + getString(R.string.Rs) + " " + b + " GST");
+                                            //tvFareMsg.setText(" + "+getString(R.string.Rs) + " " +b+" GST");
+                                      //  }
+                                        gst=b;
+                                    }
+                                    break;
+
+
+                            }
+                        }
+
+                    }
+
                 }
 
-            }
+                @Override
+                public void onFailure(Call<List<OutStationPojo>> call, Throwable t) {
 
-            @Override
-            public void onFailure(Call<DurationPojo> call, Throwable t) {
+                    progressDialog.dismiss();
 
-                progressDialog.dismiss();
-                Toast.makeText(getActivity(),"Please Check Internet Connection !",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Connectivity Issue! Please Check.", Toast.LENGTH_SHORT).show();
 
-            }
-        });
+                }
+            });
+
+        }
 
         return stFareEstimate;
     }
+
+    public static String getCurrentTime() {
+        //date output format
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        return dateFormat.format(cal.getTime());
+    }
+
+    boolean isWithinRange(Date testDate, Date startDate, Date endDate) {
+        return !(testDate.before(startDate) || testDate.after(endDate));
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof HomeActivity){
+            a=(HomeActivity) context;
+        }
+
+    }
+
 
 }
 

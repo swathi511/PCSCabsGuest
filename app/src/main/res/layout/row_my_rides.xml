@@ -33,7 +33,7 @@
         android:text="date"
         android:gravity="left"
         android:textColor="@color/colorTextBlue"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:layout_below="@+id/rmr_tv_tripid_title"
         android:textStyle="bold"/>
     <TextView android:id="@+id/rmr_tv_tripid"
@@ -45,7 +45,7 @@
         android:paddingLeft="10dp"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/rmr_tv_tripid_title" />
-    <TextView android:id="@+id/rmr_tv_ttype_title"
+   <!-- <TextView android:id="@+id/rmr_tv_ttype_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/travel_type"
@@ -53,7 +53,15 @@
         android:textSize="12sp"
         android:textStyle="bold"
         android:layout_below="@+id/rmr_tv_date"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="12dp" />-->
+    <TextView android:id="@+id/rmr_tv_ttype_title"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:background="@drawable/round_black"
+        android:layout_gravity="center"
+        android:layout_below="@+id/rmr_tv_date"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="2dp"/>
     <TextView android:id="@+id/rmr_tv_ttype"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -63,12 +71,13 @@
         android:textColor="@color/colorTextBlue"
         android:textSize="12sp"
         android:layout_below="@+id/rmr_tv_date"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="8dp" />
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="2dp"/>
 
 
 
-    <TextView android:id="@+id/rmr_tv_from_title"
+  <!--  <TextView android:id="@+id/rmr_tv_from_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/from"
@@ -77,7 +86,15 @@
         android:textStyle="bold"
         android:layout_below="@+id/rmr_tv_ttype_title"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"/>-->
+    <TextView android:id="@+id/rmr_tv_from_title"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:background="@drawable/round_green"
+        android:layout_gravity="center"
+        android:layout_below="@+id/rmr_tv_ttype_title"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="6dp"/>
     <TextView android:id="@+id/rmr_tv_from"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -86,10 +103,10 @@
         android:layout_below="@+id/rmr_tv_ttype_title"
         android:layout_toRightOf="@+id/rmr_tv_from_title"
         android:textColor="@color/colorAsh"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="6dp"
         android:layout_marginLeft="8dp"/>
-    <TextView android:id="@+id/rmr_tv_to_title"
+   <!-- <TextView android:id="@+id/rmr_tv_to_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/to"
@@ -97,7 +114,15 @@
         android:textSize="12sp"
         android:textStyle="bold"
         android:layout_below="@+id/rmr_tv_from"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"/>-->
+    <TextView android:id="@+id/rmr_tv_to_title"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:background="@drawable/round_pink"
+        android:layout_gravity="center"
+        android:layout_below="@+id/rmr_tv_from"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="4dp"/>
     <TextView android:id="@+id/rmr_tv_to"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -106,7 +131,7 @@
         android:layout_below="@+id/rmr_tv_from"
         android:layout_toRightOf="@+id/rmr_tv_to_title"
         android:textColor="@color/colorAsh"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginLeft="8dp"/>
 
     <TextView android:id="@+id/rmr_tv_status_title"
@@ -117,19 +142,21 @@
         android:textSize="12sp"
         android:textStyle="bold"
         android:layout_below="@+id/rmr_tv_to"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"/>
 
     <TextView android:id="@+id/rmr_tv_status"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Completed"
-        android:textSize="12sp"
+        android:textSize="11sp"
         android:layout_below="@+id/rmr_tv_to"
         android:layout_toRightOf="@+id/rmr_tv_status_title"
         android:textColor="@color/colorTextBlue"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
-        android:textAllCaps="true"/>
+        android:textAllCaps="true"
+        android:gravity="right"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

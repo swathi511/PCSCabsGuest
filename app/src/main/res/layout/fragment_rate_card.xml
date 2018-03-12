@@ -207,7 +207,7 @@
                         android:layout_weight="1"
                         android:text="@string/base_fare"
                         android:textColor="@color/colorAsh"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:gravity="left"/>
                     <TextView android:id="@+id/frc_tv_base_fare"
                         android:layout_width="wrap_content"
@@ -222,11 +222,44 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/colorAshLight"
+                    android:background="#e7e7e7"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"/>
 
-                <LinearLayout android:layout_width="match_parent"
+                <LinearLayout android:id="@+id/frc_ll_local1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp">
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Slab Km"
+                        android:textColor="@color/colorAsh"
+                        android:textSize="13sp"
+                        android:gravity="left"/>
+                    <TextView android:id="@+id/frc_tv_slab_km"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=" - "
+                        android:textColor="@color/colorBlack"
+                        android:textSize="14sp"
+                        android:gravity="right"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#e7e7e7"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"/>
+
+                <LinearLayout android:id="@+id/frc_ll_local2"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingTop="12dp"
@@ -239,7 +272,7 @@
                         android:layout_weight="1"
                         android:text="@string/bslab"
                         android:textColor="@color/colorAsh"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:gravity="left"/>
                     <TextView android:id="@+id/frc_tv_below"
                         android:layout_width="wrap_content"
@@ -257,10 +290,11 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/colorAshLight"
+                    android:background="#e7e7e7"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"/>
-                <LinearLayout android:layout_width="match_parent"
+                <LinearLayout android:id="@+id/frc_ll_local3"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingTop="12dp"
@@ -273,7 +307,7 @@
                         android:layout_weight="1"
                         android:text="@string/aslab"
                         android:textColor="@color/colorAsh"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:gravity="left"/>
                     <TextView  android:id="@+id/frc_tv_above"
                         android:layout_width="wrap_content"
@@ -291,10 +325,11 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/colorAshLight"
+                    android:background="#e7e7e7"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"/>
-                <LinearLayout android:layout_width="match_parent"
+                <LinearLayout android:id="@+id/frc_ll_local4"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingTop="12dp"
@@ -307,7 +342,7 @@
                         android:layout_weight="1"
                         android:text="@string/ride_time_charges"
                         android:textColor="@color/colorAsh"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:gravity="left"/>
                     <TextView android:id="@+id/frc_tv_ride_time_charges"
                         android:layout_width="wrap_content"
@@ -322,7 +357,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/colorAshLight"
+                    android:background="#e7e7e7"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"/>
 
@@ -338,7 +373,7 @@
                         android:layout_weight="1"
                         android:text="@string/per_km_fare"
                         android:textColor="@color/colorAsh"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:gravity="left"/>
                     <TextView android:id="@+id/frc_tv_per_km_fare"
                         android:layout_width="wrap_content"
@@ -353,9 +388,44 @@
                 <View android:id="@+id/frc_vw_per_km_fare"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/colorAshLight"
+                    android:background="#e7e7e7"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"/>
+
+                <LinearLayout android:id="@+id/frc_ll_os3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Rate per min"
+                        android:textColor="@color/colorAsh"
+                        android:textSize="13sp"
+                        android:gravity="left"/>
+                    <TextView  android:id="@+id/frc_tv_rate_per_min"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=" - "
+                        android:textColor="@color/colorBlack"
+                        android:textSize="14sp"
+                        android:gravity="right"
+                        />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#e7e7e7"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"/>
+
                 <LinearLayout android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -369,7 +439,7 @@
                         android:layout_weight="1"
                         android:text="@string/min_fare"
                         android:textColor="@color/colorAsh"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:gravity="left"/>
                     <TextView android:id="@+id/frc_tv_min_fare"
                         android:layout_width="wrap_content"
@@ -384,23 +454,24 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/colorAshLight"
+                    android:background="#e7e7e7"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"/>
                 <LinearLayout android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
                     android:paddingTop="12dp"
                     android:paddingBottom="12dp"
                     android:paddingLeft="24dp"
-                    android:paddingRight="24dp">
+                    android:paddingRight="24dp"
+                    android:visibility="gone">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/peak_time_charges"
                         android:textColor="@color/colorAsh"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:gravity="left"/>
                     <TextView  android:id="@+id/frc_tv_peak_time"
                         android:layout_width="wrap_content"
@@ -412,12 +483,107 @@
                         android:gravity="right"
                         android:layout_marginTop="8dp"/>
                 </LinearLayout>
+                <LinearLayout android:id="@+id/frc_ll_os1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Allowed Kms per day"
+                        android:textColor="@color/colorAsh"
+                        android:textSize="13sp"
+                        android:gravity="left"/>
+                    <TextView  android:id="@+id/frc_tv_min_kms"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=" - "
+                        android:textColor="@color/colorBlack"
+                        android:textSize="14sp"
+                        android:gravity="right" />
+                </LinearLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/colorAshLight"
+                    android:background="#e7e7e7"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"/>
+
+                <LinearLayout android:id="@+id/frc_ll_os2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Allowed Hrs per day"
+                        android:textColor="@color/colorAsh"
+                        android:textSize="13sp"
+                        android:gravity="left"/>
+                    <TextView  android:id="@+id/frc_tv_min_hrs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=" - "
+                        android:textColor="@color/colorBlack"
+                        android:textSize="14sp"
+                        android:gravity="right"
+                       />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#e7e7e7"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"/>
+
+
+                <LinearLayout android:id="@+id/frc_ll_os4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Driver Allowance"
+                        android:textColor="@color/colorAsh"
+                        android:textSize="13sp"
+                        android:gravity="left"/>
+                    <TextView  android:id="@+id/frc_tv_driver_allowance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=" - "
+                        android:textColor="@color/colorBlack"
+                        android:textSize="14sp"
+                        android:gravity="right" />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#e7e7e7"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"/>
+
                 <LinearLayout android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -430,9 +596,10 @@
                         android:layout_weight="1"
                         android:text="@string/service_tax"
                         android:textColor="@color/colorAsh"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:gravity="left"/>
-                    <TextView android:layout_width="wrap_content"
+                    <TextView android:id="@+id/frc_tv_gst"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text=" - "

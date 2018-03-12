@@ -1,5 +1,6 @@
 package com.hjsoft.guestbooktaxi.fragments;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,8 +14,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hjsoft.guestbooktaxi.R;
 import com.hjsoft.guestbooktaxi.SessionManager;
@@ -29,6 +32,7 @@ import com.hjsoft.guestbooktaxi.webservices.RestClient;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -53,7 +57,7 @@ public class SupportFragment extends Fragment implements RecyclerAdapter.Adapter
     AllRidesPojo allRidesData;
     API REST_CLIENT;
     View rootView;
-    BottomSheetDialogFragment myBottomSheet;
+    //BottomSheetDialogFragment myBottomSheet;
     ArrayList<FormattedAllRidesData> dataList=new ArrayList<>();
     Date date1;
     String guestProfileId;
@@ -61,6 +65,10 @@ public class SupportFragment extends Fragment implements RecyclerAdapter.Adapter
     SessionManager session;
     ImageView ivRetry;
     String companyId="CMP00001";
+    TextView tvFromDate,tvToDate,tvOk;
+    ImageView ivFrom,ivTo;
+    String fromdate,todate;
+    DatePickerDialog datePickerDialog;
 
 
     @Override
@@ -85,11 +93,29 @@ public class SupportFragment extends Fragment implements RecyclerAdapter.Adapter
 
         tvNoRides = (TextView) rootView.findViewById(R.id.fs_tv_no_rides);
         tvSelectBooking=(TextView)rootView.findViewById(R.id.fs_tv_select_booking);
-        myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
+        //myBottomSheet = MyBottomSheetDialogFragment.newInstance("Modal Bottom Sheet");
         ivRetry=(ImageView)rootView.findViewById(R.id.fs_iv_retry);
+        tvFromDate=(TextView)rootView.findViewById(R.id.fs_tv_from);
+        tvToDate=(TextView)rootView.findViewById(R.id.fs_tv_to);
+        ivFrom=(ImageView)rootView.findViewById(R.id.fs_iv_from);
+        ivTo=(ImageView)rootView.findViewById(R.id.fs_iv_to);
+        tvOk=(TextView)rootView.findViewById(R.id.fs_tv_ok);
+
+        mAdapter = new RecyclerAdapter(getActivity(), dataList, rView);
 
         tvNoRides.setVisibility(View.GONE);
         ivRetry.setVisibility(View.GONE);
+
+        final Calendar c = Calendar.getInstance();
+        final int mYear = c.get(Calendar.YEAR);
+        final int mMonth = c.get(Calendar.MONTH);
+        final int mDay = c.get(Calendar.DAY_OF_MONTH);
+
+        fromdate=mYear+"-"+(mMonth+1)+"-"+mDay;
+        todate=mYear+"-"+(mMonth+1)+"-"+mDay;
+        SimpleDateFormat sdf = new SimpleDateFormat( "dd/MM/yyyy" );
+        tvFromDate.setText(mDay+"/"+(mMonth+1)+"/"+mYear);
+        tvToDate.setText(mDay+"/"+(mMonth+1)+"/"+mYear);
 
         getAllRideDetails();
 
@@ -101,6 +127,59 @@ public class SupportFragment extends Fragment implements RecyclerAdapter.Adapter
                 getAllRideDetails();
             }
         });
+
+        ivFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog = new DatePickerDialog(getContext(),
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                tvFromDate.setText(dayOfMonth + "/"
+                                        + (monthOfYear + 1) + "/" + year);
+                                fromdate=year+"-"+(monthOfYear+1)+"-"+dayOfMonth;
+
+                            }
+                        }, mYear, mMonth, mDay);
+                datePickerDialog.show();
+
+            }
+
+
+        });
+
+        ivTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                datePickerDialog = new DatePickerDialog(getContext(),
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                tvToDate.setText(dayOfMonth + "/"
+                                        +(monthOfYear + 1)+ "/" + year);
+
+                                todate=year+"-"+(monthOfYear+1)+"-"+dayOfMonth;
+
+                            }
+                        }, mYear, mMonth, mDay);
+                datePickerDialog.show();
+
+            }
+        });
+
+        tvOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                getAllRideDetails();
+            }
+        });
+
         return rootView;
     }
 
@@ -121,12 +200,16 @@ public class SupportFragment extends Fragment implements RecyclerAdapter.Adapter
 
     public void getAllRideDetails()
     {
+        tvNoRides.setVisibility(View.GONE);
+        tvSelectBooking.setVisibility(View.VISIBLE);
+        dataList.clear();
+        //allRidesDataList.clear();
         final ProgressDialog progressDialog = new ProgressDialog(getActivity());
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Please Wait ...");
         progressDialog.show();
 
-        Call<ArrayList<AllRidesPojo>> call=REST_CLIENT.getUserRides(guestProfileId,"guest",companyId);
+        Call<ArrayList<AllRidesPojo>> call=REST_CLIENT.getRideHistory(guestProfileId,"guest",companyId,fromdate,todate);
         call.enqueue(new Callback<ArrayList<AllRidesPojo>>() {
             @Override
             public void onResponse(Call<ArrayList<AllRidesPojo>> call, Response<ArrayList<AllRidesPojo>> response) {
@@ -186,7 +269,7 @@ public class SupportFragment extends Fragment implements RecyclerAdapter.Adapter
                     });
 
                     Collections.reverse(dataList);
-                    mAdapter = new RecyclerAdapter(getActivity(), dataList, rView);
+
 
                     RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
                     rView.setLayoutManager(mLayoutManager);
@@ -198,6 +281,7 @@ public class SupportFragment extends Fragment implements RecyclerAdapter.Adapter
                 {
                     tvNoRides.setVisibility(View.VISIBLE);
                     tvSelectBooking.setVisibility(View.GONE);
+                    mAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -207,17 +291,7 @@ public class SupportFragment extends Fragment implements RecyclerAdapter.Adapter
                 progressDialog.dismiss();
                 ivRetry.setVisibility(View.VISIBLE);
 
-                if(myBottomSheet.isAdded())
-                {
-                    //return;
-                }
-                else
-                {
-                    if(rootView.isShown()) {
-
-                        myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
-                    }
-                }
+                Toast.makeText(getActivity(),"Check Internet connection!",Toast.LENGTH_SHORT).show();
 
             }
         });

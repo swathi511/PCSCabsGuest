@@ -38,6 +38,22 @@ public class OutStationPojo {
     @SerializedName("servicetax")
     @Expose
     private String servicetax;
+    @SerializedName("min_kms")
+    @Expose
+    private String minKms;
+    @SerializedName("allowed_hrs")
+    @Expose
+    private String allowedHrs;
+    @SerializedName("extra_rate_per_min")
+    @Expose
+    private String extraRatePerMin;
+    @SerializedName("driver_allowance")
+    @Expose
+    private String driverAllowance;
+    @SerializedName("peakhoursdata")
+    @Expose
+    private String peakhoursdata;
+
 
     public String getVehicleType() {
         return vehicleType;
@@ -117,6 +133,46 @@ public class OutStationPojo {
 
     public void setServicetax(String servicetax) {
         this.servicetax = servicetax;
+    }
+
+    public String getMinKms() {
+        return minKms;
+    }
+
+    public void setMinKms(String minKms) {
+        this.minKms = minKms;
+    }
+
+    public String getAllowedHrs() {
+        return allowedHrs;
+    }
+
+    public void setAllowedHrs(String allowedHrs) {
+        this.allowedHrs = allowedHrs;
+    }
+
+    public String getExtraRatePerMin() {
+        return extraRatePerMin;
+    }
+
+    public void setExtraRatePerMin(String extraRatePerMin) {
+        this.extraRatePerMin = extraRatePerMin;
+    }
+
+    public String getDriverAllowance() {
+        return driverAllowance;
+    }
+
+    public void setDriverAllowance(String driverAllowance) {
+        this.driverAllowance = driverAllowance;
+    }
+
+    public String getPeakhoursdata() {
+        return peakhoursdata;
+    }
+
+    public void setPeakhoursdata(String peakhoursdata) {
+        this.peakhoursdata = peakhoursdata;
     }
 
 }

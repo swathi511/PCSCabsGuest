@@ -2,6 +2,7 @@ package com.hjsoft.guestbooktaxi.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hjsoft.guestbooktaxi.R;
@@ -36,6 +39,12 @@ public class HomeActivity extends AppCompatActivity{
     android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
     DrawerItemCustomAdapter adapter;
     final static int REQUEST_LOCATION = 199;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
+    int PRIVATE_MODE = 0;
+    private static final String PREF_NAME = "SharedPref";
+    TextView tvName,tvMobile;
+    RelativeLayout rLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,18 +53,33 @@ public class HomeActivity extends AppCompatActivity{
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles= getResources().getStringArray(R.array.navigation_drawer_items_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerList = (ListView) findViewById(R.id.list_view_drawer);
+        tvName=(TextView)findViewById(R.id.ah_tv_name);
+        tvMobile=(TextView)findViewById(R.id.ah_tv_mobile);
+        rLayout=(RelativeLayout)findViewById(R.id.left_drawer);
+
+        pref = getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+        editor = pref.edit();
+
+        String myString=pref.getString("name","xxx");
+
+        String upperString = myString.substring(0,1).toUpperCase() + myString.substring(1);
+
+        tvName.setText(upperString);
+        tvMobile.setText(pref.getString("mobile","91xxxxxxxx"));
 
         setupToolbar();
 
-        NavigationData[] drawerItem = new NavigationData[6];
+        NavigationData[] drawerItem = new NavigationData[7];
 
         drawerItem[0] = new NavigationData(R.drawable.car, "Book a Cab");
         drawerItem[1] = new NavigationData(R.drawable.history, "My Rides");
         drawerItem[2] = new NavigationData(R.drawable.wallet, "Payments");
-        drawerItem[3] = new NavigationData(R.drawable.ratecard,"Rate Card");
-        drawerItem[4] = new NavigationData(R.drawable.support,"Support");
-        drawerItem[5] = new NavigationData(R.drawable.logout,"Logout");
+        drawerItem[3] = new NavigationData(R.drawable.transaction,"Wallet History");
+        drawerItem[4] = new NavigationData(R.drawable.ratecard,"Rate Card");
+        drawerItem[5] = new NavigationData(R.drawable.support,"Support");
+        drawerItem[6] = new NavigationData(R.drawable.logout,"Logout");
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -71,7 +95,7 @@ public class HomeActivity extends AppCompatActivity{
         Fragment fragment=new TrackCabsFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().add(R.id.content_frame, fragment,"book_a_ride").commit();
-        setTitle("Book a Cab");
+        setTitle("PCS Cabs");
 
         getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
@@ -96,13 +120,14 @@ public class HomeActivity extends AppCompatActivity{
                 else
                 {
                     mDrawerToggle.setDrawerIndicatorEnabled(true);
-                    setTitle("Book a Ride");
+                    setTitle("PCS Cabs");
 
                     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
-                            mDrawerLayout.openDrawer(mDrawerList);
+                            //mDrawerLayout.openDrawer(mDrawerList);
+                            mDrawerLayout.openDrawer(rLayout);
                         }
                     });
                 }
@@ -138,20 +163,25 @@ public class HomeActivity extends AppCompatActivity{
                 startActivity(k);
                 finish();
                 break;
-            case 3:
+            case 4:
                 Intent j=new Intent(this, RateCardActivity.class);
                 startActivity(j);
                 finish();
                 break;
-            case 4:
+            case 5:
                 Intent l=new Intent(this,SupportActivity.class);
                 startActivity(l);
                 finish();
                 break;
 
-            case 5:
+            case 6:
                 SessionManager s=new SessionManager(getApplicationContext());
                 s.logoutUser();
+                finish();
+                break;
+            case 3:
+                Intent n=new Intent(this,WalletHistoryActivity.class);
+                startActivity(n);
                 finish();
                 break;
 

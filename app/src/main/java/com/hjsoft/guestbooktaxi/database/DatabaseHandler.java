@@ -21,6 +21,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(DBAdapter.TABLE_USER_STATUS);
         sqLiteDatabase.execSQL(DBAdapter.TABLE_USER_LOCATIONS);
         sqLiteDatabase.execSQL(DBAdapter.TABLE_WALLET);
+        sqLiteDatabase.execSQL(DBAdapter.TABLE_OS_CITIES);
+        sqLiteDatabase.execSQL(DBAdapter.DB_CANCEL_OPTIONS);
     }
 
     @Override
@@ -29,6 +31,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + "USER_STATUS");
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + "USER_LOCATIONS");
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + "USER_WALLET");
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + "OS_CITIES");
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + "CANCEL_OPTIONS");
         // Create a new one.
         onCreate(sqLiteDatabase);
 
