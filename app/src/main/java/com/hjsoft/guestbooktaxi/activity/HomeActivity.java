@@ -96,6 +96,7 @@ public class HomeActivity extends AppCompatActivity{
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().add(R.id.content_frame, fragment,"book_a_ride").commit();
         setTitle("PCS Cabs");
+        adapter.setSelectedItem(0);
 
         getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
@@ -103,17 +104,41 @@ public class HomeActivity extends AppCompatActivity{
 
                 if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
 
-                    mDrawerToggle.setDrawerIndicatorEnabled(false);//showing back button
-                    setTitle("Confirm Ride");
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    Fragment currentFragment = fragmentManager.findFragmentById(R.id.content_frame);
+
+                    //System.out.println("******************"+currentFragment.getTag());
+
+                    if(currentFragment.getTag().equals("confirm_ride")) {
+                        mDrawerToggle.setDrawerIndicatorEnabled(false);//showing back button
+                        setTitle("Confirm Ride");
+
+                    }
+                    else {
+                        mDrawerToggle.setDrawerIndicatorEnabled(true);//showing back button
+                        setTitle("Ride Details");
+
+                    }
 
                     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // onBackPressed();
+
                             FragmentManager fragmentManager = getSupportFragmentManager();
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction.remove(getSupportFragmentManager().findFragmentByTag("confirm_ride"));
-                            fragmentManager.popBackStackImmediate();
+                            Fragment currentFragment = fragmentManager.findFragmentById(R.id.content_frame);
+
+                            // onBackPressed();
+
+                            if(currentFragment.getTag().equals("confirm_ride")) {
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.remove(getSupportFragmentManager().findFragmentByTag("confirm_ride"));
+                                fragmentManager.popBackStackImmediate();
+                            }
+                            else {
+                                mDrawerLayout.openDrawer(rLayout);
+                            }
+
+
                         }
                     });
                 }
@@ -150,7 +175,9 @@ public class HomeActivity extends AppCompatActivity{
         adapter.setSelectedItem(position);
 
         switch (position) {
-            case 0:
+            case 0:Intent h=new Intent(HomeActivity.this, HomeActivity.class);
+                startActivity(h);
+                finish();
 
                 break;
             case 1:
@@ -158,7 +185,7 @@ public class HomeActivity extends AppCompatActivity{
                 startActivity(i);
                 finish();
                 break;
-          case 2:
+            case 2:
                 Intent k=new Intent(this,PaymentActivity.class);
                 startActivity(k);
                 finish();
@@ -194,7 +221,7 @@ public class HomeActivity extends AppCompatActivity{
             openFragment(fragment,position);
 
         } else {
-           // Log.e("MainActivity", "Error in creating fragment");
+            // Log.e("MainActivity", "Error in creating fragment");
         }
     }
 

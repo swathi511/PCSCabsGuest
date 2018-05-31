@@ -1,6 +1,7 @@
 package com.hjsoft.guestbooktaxi.fragments;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -13,11 +14,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -25,6 +29,7 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.hjsoft.guestbooktaxi.R;
 import com.hjsoft.guestbooktaxi.SessionManager;
+import com.hjsoft.guestbooktaxi.activity.OutStationActivity;
 import com.hjsoft.guestbooktaxi.activity.PaymentActivity;
 import com.hjsoft.guestbooktaxi.adapter.DBAdapter;
 import com.hjsoft.guestbooktaxi.model.BookCabPojo;
@@ -40,6 +45,7 @@ import com.hjsoft.guestbooktaxi.webservices.RestClient;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -95,6 +101,12 @@ public class OutStationFragment extends Fragment {
     List<OutStationPojo> dataList;
     OutStationPojo data;
     String stTimeForFare="00:00:00";
+    Spinner sp;
+    TextView tvTap,tvFareVary;
+    String item="";
+    OutStationActivity a;
+    TextView tvFareEstimate;
+    LinearLayout llFareEstimate;
 
     @Nullable
     @Override
@@ -125,6 +137,16 @@ public class OutStationFragment extends Fragment {
         tvSurgeMsg.setVisibility(View.GONE);
         tvCoupon=(TextView)v.findViewById(R.id.fos_tv_coupon);
         tvAddMoney.setVisibility(View.GONE);
+        sp=(Spinner)v.findViewById(R.id.fos_spinner);
+        tvTap=(TextView)v.findViewById(R.id.fos_tv_tap);
+        tvFareVary=(TextView)v.findViewById(R.id.fos_tv_fare_vary);
+        ivDateTime.setVisibility(View.GONE);
+        ivPkg.setVisibility(View.GONE);
+        ivCab.setVisibility(View.GONE);
+        tvFareEstimate=(TextView)v.findViewById(R.id.fos_tv_fare_est);
+        tvFareEstimate.setVisibility(View.GONE);
+        llFareEstimate=(LinearLayout)v.findViewById(R.id.fos_ll6);
+        llFareEstimate.setVisibility(View.GONE);
 
         editor = pref.edit();
         REST_CLIENT= RestClient.get();
@@ -132,8 +154,9 @@ public class OutStationFragment extends Fragment {
         dbAdapter=new DBAdapter(getContext());
         dbAdapter=dbAdapter.open();
 
-        btBook.setClickable(false);
-        btBook.setEnabled(false);
+        //btBook.setClickable(false);
+        //btBook.setEnabled(false);
+        btBook.setAlpha(Float.parseFloat("0.5"));
 
         session=new SessionManager(getActivity());
         user=session.getUserDetails();
@@ -177,8 +200,8 @@ public class OutStationFragment extends Fragment {
                 tvCash.setTextColor(Color.parseColor("#0067de"));
                 stPaymentType="cash";
                 btBook.setAlpha(1);
-                btBook.setClickable(true);
-                btBook.setEnabled(true);
+                //btBook.setClickable(true);
+                //btBook.setEnabled(true);
             }
         });
 
@@ -192,22 +215,26 @@ public class OutStationFragment extends Fragment {
 
                 tvWallet.setText(getString(R.string.Rs)+" "+stWalletAmount+"  WALLET");
 
-                tvCash.setTextColor(Color.parseColor("#9e9e9e"));
-                tvWallet.setTextColor(Color.parseColor("#0067de"));
-                stPaymentType="wallet";
+
 
                 if(Integer.parseInt(stWalletAmount)<amnt)
                 {
                     Toast.makeText(getActivity(),"Insufficient balance! Please Add Money.",Toast.LENGTH_SHORT).show();
                     btBook.setAlpha(Float.parseFloat("0.5"));
-                    btBook.setClickable(false);
-                    btBook.setEnabled(false);
+                    //btBook.setClickable(false);
+                    //btBook.setEnabled(false);
                     tvAddMoney.setVisibility(View.VISIBLE);
+                    tvCash.setTextColor(Color.parseColor("#9e9e9e"));
+                    tvWallet.setTextColor(Color.parseColor("#9e9e9e"));
+                    stPaymentType="";
                 }
                 else {
                     btBook.setAlpha(1);
-                    btBook.setClickable(true);
-                    btBook.setEnabled(true);
+                    tvCash.setTextColor(Color.parseColor("#9e9e9e"));
+                    tvWallet.setTextColor(Color.parseColor("#0067de"));
+                    stPaymentType="wallet";
+                    //btBook.setClickable(true);
+                    //btBook.setEnabled(true);
 
                 }
 
@@ -287,109 +314,124 @@ public class OutStationFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-
-                if (dbAdapter.checkIfPlaceNameExists(dropLoc)) {
-
-                } else {
-
-                    if (!(dropLat.equals("-")) || !(dropLong.equals("-"))) {
-                        dbAdapter.insertUserLocation("1", dropLoc, Double.parseDouble(dropLat), Double.parseDouble(dropLong));
-                    }
-                }
-
-                if(stPkg.equals("")||stCab.equals(""))
+                if(stPaymentType.equals(""))
                 {
-                    Toast.makeText(getActivity(),"Please enter all the details",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(),"Please select the payment mode!",Toast.LENGTH_SHORT).show();
                 }
                 else {
 
-                    final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-                    progressDialog.setIndeterminate(true);
-                    progressDialog.setMessage("Please Wait ...");
-                    progressDialog.show();
+                    if (dbAdapter.checkIfPlaceNameExists(dropLoc)) {
 
-                    // System.out.println("fare estimate issssss "+amnt);
+                    } else {
 
-                    JsonObject v=new JsonObject();
-                    v.addProperty("GuestProfileid",guestProfileId);
-                    v.addProperty("PickupLat",pickupLat);
-                    v.addProperty("PickupLong",pickupLong);
-                    v.addProperty("DropLat",dropLat);
-                    v.addProperty("DropLong",dropLong);
-                    v.addProperty("PickupLoc",pickupLoc);
-                    v.addProperty("DropLoc",dropLoc);
-                    v.addProperty("companyid",companyId);
-                    v.addProperty("scheduleddate",stDate+" "+stTime);
-                    v.addProperty("scheduledtime",stTime);
-                    v.addProperty("traveltype","outstation");
-                    v.addProperty("travelpackage",stPkg);
-                    v.addProperty("vehiclecategory",stCab);
-                    v.addProperty("bookingType","AppBooking");
-                    v.addProperty("location",city);
-                    v.addProperty("payment_type",stPaymentType);
-                    v.addProperty("fare_estimate",amnt);
-                    v.addProperty("slabhours","-");
-                    v.addProperty("slabkms","-");
-                    v.addProperty("Promocode",stCoupon);
-                    //  v.addProperty("Profileid"," ");
+                        if (!(dropLat.equals("-")) || !(dropLong.equals("-"))) {
+                            dbAdapter.insertUserLocation("1", dropLoc, Double.parseDouble(dropLat), Double.parseDouble(dropLong));
+                        }
+                    }
 
-                    System.out.println("promocode is "+stCoupon);
+                    if (stPkg.equals("") || stCab.equals("")) {
+                        Toast.makeText(getActivity(), "Please enter all the details", Toast.LENGTH_LONG).show();
+                    } else {
 
-                    System.out.println("data is "+stPkg+":"+stCab+":"+amnt);
+                        final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+                        progressDialog.setIndeterminate(true);
+                        progressDialog.setMessage("Please Wait ...");
+                        progressDialog.show();
 
-                    Call<BookCabPojo> call=REST_CLIENT.sendOutstationDetails(v);
-                    call.enqueue(new Callback<BookCabPojo>() {
-                        @Override
-                        public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
+                        // System.out.println("fare estimate issssss "+amnt);
 
-                            BookCabPojo data;
+                        JsonObject v = new JsonObject();
+                        v.addProperty("GuestProfileid", guestProfileId);
+                        v.addProperty("PickupLat", pickupLat);
+                        v.addProperty("PickupLong", pickupLong);
+                        v.addProperty("DropLat", dropLat);
+                        v.addProperty("DropLong", dropLong);
+                        v.addProperty("PickupLoc", pickupLoc);
+                        v.addProperty("DropLoc", dropLoc);
+                        v.addProperty("companyid", companyId);
+                        v.addProperty("scheduleddate", stDate + " " + stTime);
+                        v.addProperty("scheduledtime", stTime);
+                        v.addProperty("traveltype", "outstation");
+                        v.addProperty("travelpackage", stPkg);
+                        v.addProperty("vehiclecategory", stCab);
+                        v.addProperty("bookingType", "AppBooking");
+                        v.addProperty("location", city);
+                        v.addProperty("payment_type", stPaymentType);
+                        v.addProperty("fare_estimate", amnt);
+                        v.addProperty("slabhours", "-");
+                        v.addProperty("slabkms", "-");
+                        v.addProperty("Promocode", stCoupon);
+                        //  v.addProperty("Profileid"," ");
 
-                            if(response.isSuccessful())
-                            {
+                        System.out.println("promocode is " + stCoupon);
 
-                                data=response.body();
-                                System.out.println("********* "+data.getMessage());
+                        System.out.println("data is " + stPkg + ":" + stCab + ":" + amnt);
 
+                        Call<BookCabPojo> call = REST_CLIENT.sendOutstationDetails(v);
+                        call.enqueue(new Callback<BookCabPojo>() {
+                            @Override
+                            public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
 
-                                String d[]=data.getMessage().split(",");
+                                BookCabPojo data;
 
-                                progressDialog.dismiss();
+                                if (response.isSuccessful()) {
 
-                                if(d.length==1) {
+                                    data = response.body();
+                                    System.out.println("********* " + data.getMessage());
 
-                                    lBookingLayout.setVisibility(View.VISIBLE);
+                                    String d[] = data.getMessage().split(",");
 
-                                    btBook.setVisibility(View.INVISIBLE);
-                                    // tvBookingid.setText("' "+data.getMessage()+" ' is your Booking Id !");
-                                    // tvBookingid.setVisibility(View.VISIBLE);
-                                    tvBookingid.setText("Booking Id ' " + data.getMessage() + " ' generated");
-                                    ivCab.setClickable(false);
-                                    ivPkg.setClickable(false);
-                                    ivDateTime.setClickable(false);
-                                    btFareEstimate.setClickable(false);
-                                    tvCash.setClickable(false);
-                                    tvWallet.setClickable(false);
-                                    tvCoupon.setClickable(false);
-                                }
-                                else {
+                                    progressDialog.dismiss();
 
-                                    tvCoupon.setText("Apply Coupon");
-                                    tvCoupon.setTypeface(null, Typeface.BOLD);
-                                    tvCoupon.setTextSize(12);
-                                    tvCoupon.setTextColor(Color.parseColor("#FF8F00"));
-                                    stCoupon = "-";
-                                    Toast.makeText(getActivity(), "Coupon: "+d[1], Toast.LENGTH_SHORT).show();
+                                    if (d.length == 1) {
+
+                                        if(data.getMessage().equals("Access denied"))
+                                        {
+                                            Toast.makeText(getActivity(),"Access denied!",Toast.LENGTH_SHORT).show();
+                                        }
+                                        else {
+
+                                            lBookingLayout.setVisibility(View.VISIBLE);
+
+                                            btBook.setVisibility(View.INVISIBLE);
+                                            // tvBookingid.setText("' "+data.getMessage()+" ' is your Booking Id !");
+                                            // tvBookingid.setVisibility(View.VISIBLE);
+                                            tvBookingid.setText("Booking Id ' " + data.getMessage() + " ' generated");
+                                            ivCab.setClickable(false);
+                                            ivPkg.setClickable(false);
+                                            ivDateTime.setClickable(false);
+                                            btFareEstimate.setClickable(false);
+                                            tvCash.setClickable(false);
+                                            tvWallet.setClickable(false);
+                                            tvCoupon.setClickable(false);
+                                        }
+                                    }
+                                    else {
+
+                                        if(d[0].equals("Access denied"))
+                                        {
+                                            Toast.makeText(getActivity(),data.getMessage(),Toast.LENGTH_LONG).show();
+                                        }
+                                        else {
+                                            tvCoupon.setText("Apply Coupon");
+                                            tvCoupon.setTypeface(null, Typeface.BOLD);
+                                            tvCoupon.setTextSize(12);
+                                            tvCoupon.setTextColor(Color.parseColor("#FF8F00"));
+                                            stCoupon = "-";
+                                            Toast.makeText(getActivity(), "Coupon: " + d[1], Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
                                 }
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Call<BookCabPojo> call, Throwable t) {
+                            @Override
+                            public void onFailure(Call<BookCabPojo> call, Throwable t) {
 
-                            progressDialog.dismiss();
-                            Toast.makeText(getActivity(),"Connectivity Error..Please Retry!",Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                                progressDialog.dismiss();
+                                Toast.makeText(getActivity(), "Connectivity Error..Please Retry!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -665,7 +707,7 @@ public class OutStationFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                showCabCategory();
+                showAfterCabCategory();
             }
         });
 
@@ -711,9 +753,9 @@ public class OutStationFragment extends Fragment {
                                     stKms = stDistDetails[0];
 
 
-                                    stDuration=String.valueOf((t2.getValue())/60);
-                                    //stHrs=String.valueOf(t2.getValue());
-                                    stHrs=String.valueOf(Double.parseDouble(stDuration)/60);
+                                    //stDuration=String.valueOf((t2.getValue())/60);
+                                    //not required ... stHrs=String.valueOf(t2.getValue());
+                                    //stHrs=String.valueOf(Double.parseDouble(stDuration)/60);
 
                                     //System.out.println("d & t is "+stKms+":"+stDuration);
 
@@ -1197,10 +1239,18 @@ public class OutStationFragment extends Fragment {
 
                                                 }
                                             }
+                                            else {
+
+                                                progressDialog.dismiss();
+                                                Toast.makeText(getActivity(),response.message(),Toast.LENGTH_SHORT).show();
+                                            }
                                         }
 
                                         @Override
                                         public void onFailure(Call<List<OutStationPojo>> call, Throwable t) {
+
+                                            progressDialog.dismiss();
+                                            Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
 
                                         }
                                     });
@@ -1224,6 +1274,13 @@ public class OutStationFragment extends Fragment {
 
     public void getFareEstimate()
     {
+        /*btFareEstimate.setVisibility(View.VISIBLE);
+        tvTap.setVisibility(View.VISIBLE);
+        tvFareVary.setVisibility(View.VISIBLE);*/
+
+        tvFareEstimate.setVisibility(View.VISIBLE);
+        llFareEstimate.setVisibility(View.VISIBLE);
+
         final ProgressDialog progressDialog = new ProgressDialog(getContext());
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Getting Fare Estimate ...");
@@ -1233,7 +1290,7 @@ public class OutStationFragment extends Fragment {
         String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
                 "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyC4Ccgq_w6OhyF6IVblH3KByt5tKuJNtdM";
 
-       Log.i("os url",urlString);
+        Log.i("os url",urlString);
 
         Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
         call.enqueue(new Callback<DurationPojo>() {
@@ -1263,8 +1320,8 @@ public class OutStationFragment extends Fragment {
                             stKms = stDistDetails[0];
 
 
-                            stDuration=String.valueOf((t2.getValue())/60);
-                            stHrs=String.valueOf(Double.parseDouble(stDuration)/60);
+                            //stDuration=String.valueOf((t2.getValue())/60);
+                            //stHrs=String.valueOf(Double.parseDouble(stDuration)/60);
 
                             System.out.println("d & t is "+stKms+":"+stDuration);
 
@@ -1658,10 +1715,18 @@ public class OutStationFragment extends Fragment {
 
                                         }
                                     }
+                                    else {
+
+                                        progressDialog.dismiss();
+                                        Toast.makeText(getActivity(),response.message(),Toast.LENGTH_SHORT).show();
+                                    }
                                 }
 
                                 @Override
                                 public void onFailure(Call<List<OutStationPojo>> call, Throwable t) {
+
+                                    progressDialog.dismiss();
+                                    Toast.makeText(getActivity(),"Internet issue..Please try again!",Toast.LENGTH_SHORT).show();
 
                                 }
                             });
@@ -1673,6 +1738,7 @@ public class OutStationFragment extends Fragment {
             @Override
             public void onFailure(Call<DurationPojo> call, Throwable t) {
 
+                progressDialog.dismiss();
                 Toast.makeText(getActivity(),"Please Check Internet  Connection !",Toast.LENGTH_SHORT).show();
 
             }
@@ -1964,7 +2030,7 @@ public class OutStationFragment extends Fragment {
 
     }
 
-    public void showCabCategory()
+    public void showAfterCabCategory()
     {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
@@ -2004,6 +2070,7 @@ public class OutStationFragment extends Fragment {
                 tvWallet.setAlpha(1);
 
                 getFareEstimate();
+                //populateSpinnerValues();
             }
         });
 
@@ -2031,6 +2098,7 @@ public class OutStationFragment extends Fragment {
                 tvWallet.setAlpha(1);
 
                 getFareEstimate();
+                //populateSpinnerValues();
             }
         });
 
@@ -2058,6 +2126,110 @@ public class OutStationFragment extends Fragment {
                 tvWallet.setAlpha(1);
 
                 getFareEstimate();
+                //populateSpinnerValues();
+            }
+        });
+
+
+    }
+
+    public void showCabCategory()
+    {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.alert_os_cab_category, null);
+        dialogBuilder.setView(dialogView);
+
+        final AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.setCancelable(false);
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+
+        final TextView tvMini=(TextView)dialogView.findViewById(R.id.aocc_tv_mini);
+        final TextView tvMicra=(TextView)dialogView.findViewById(R.id.aocc_tv_micra);
+        final TextView tvSedan=(TextView)dialogView.findViewById(R.id.aocc_tv_sedan);
+
+        tvMini.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tvMini.setTextColor(getResources().getColor(R.color.colorTextBlue));
+                tvCab.setText("Mini");
+                tvCab.setTextColor(Color.parseColor("#000000"));
+                stCab="Mini";
+                alertDialog.dismiss();
+                btFareEstimate.setText("Get Fare Estimate");
+
+
+                btFareEstimate.setEnabled(true);
+                btFareEstimate.setClickable(true);
+                btFareEstimate.setAlpha(1);
+                tvCash.setEnabled(true);
+                tvCash.setClickable(true);
+                tvCash.setAlpha(1);
+                tvWallet.setEnabled(true);
+                tvWallet.setClickable(true);
+                tvWallet.setAlpha(1);
+
+                //getFareEstimate();
+                populateSpinnerValues();
+            }
+        });
+
+        tvMicra.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tvMicra.setTextColor(getResources().getColor(R.color.colorTextBlue));
+                tvCab.setText("SUV");
+                tvCab.setTextColor(Color.parseColor("#000000"));
+                stCab="SUV";
+                alertDialog.dismiss();
+                btFareEstimate.setText("Get Fare Estimate");
+
+
+
+                btFareEstimate.setEnabled(true);
+                btFareEstimate.setClickable(true);
+                btFareEstimate.setAlpha(1);
+                tvCash.setEnabled(true);
+                tvCash.setClickable(true);
+                tvCash.setAlpha(1);
+                tvWallet.setEnabled(true);
+                tvWallet.setClickable(true);
+                tvWallet.setAlpha(1);
+
+                //getFareEstimate();
+                populateSpinnerValues();
+            }
+        });
+
+        tvSedan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tvSedan.setTextColor(getResources().getColor(R.color.colorTextBlue));
+                tvCab.setText("Sedan");
+                tvCab.setTextColor(Color.parseColor("#000000"));
+                stCab="Sedan";
+                alertDialog.dismiss();
+                btFareEstimate.setText("Get Fare Estimate");
+
+
+
+                btFareEstimate.setEnabled(true);
+                btFareEstimate.setClickable(true);
+                btFareEstimate.setAlpha(1);
+                tvCash.setEnabled(true);
+                tvCash.setClickable(true);
+                tvCash.setAlpha(1);
+                tvWallet.setEnabled(true);
+                tvWallet.setClickable(true);
+                tvWallet.setAlpha(1);
+
+                //getFareEstimate();
+                populateSpinnerValues();
             }
         });
 
@@ -2151,7 +2323,7 @@ public class OutStationFragment extends Fragment {
         System.out.println("stKKKKKKKMMMMMMMMMSSSSSSSSSS  "+stKms+":"+stDuration+":"+stHrs);
 
         System.out.println("Minkms "+mk+":"+"Allowe hrs "+ah);
-        
+
         if((2*Double.parseDouble(stKms))<=200) {
 
             amnt = (int) Math.round(stPkgNo * 2 * Double.parseDouble(stKms) * Double.parseDouble(oskr));
@@ -2267,6 +2439,83 @@ public class OutStationFragment extends Fragment {
                                                                             //tvSurgeCharges.setVisibility(View.VISIBLE);
 
                                                                             break;*/
+    }
+
+    public void populateSpinnerValues()
+    {
+
+        Toast.makeText(getActivity(),"Select travel time!",Toast.LENGTH_SHORT).show();
+
+        final List<String> categories = new ArrayList<String>();
+        categories.add("--- select travel hr(s) ---");
+        categories.add("1 hr");
+        categories.add("2 hrs");
+        categories.add("3 hrs");
+        categories.add("4 hrs");
+        categories.add("5 hrs");
+        categories.add("6 hrs");
+        categories.add("7 hrs");
+        categories.add("8 hrs");
+        categories.add("9 hrs");
+        categories.add("10 hrs");
+        categories.add("11 hrs");
+        categories.add("12 hrs");
+        categories.add("13 hrs");
+        categories.add("14 hrs");
+        categories.add("15 hrs");
+        categories.add("16 hrs");
+        categories.add("17 hrs");
+        categories.add("18 hrs");
+        categories.add("19 hrs");
+        categories.add("20 hrs");
+        categories.add("21 hrs");
+        categories.add("22 hrs");
+        categories.add("23 hrs");
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(a, android.R.layout.simple_spinner_item, categories);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        sp.setAdapter(dataAdapter);
+
+
+        sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+
+                if (position != 0) {
+
+                    item = parent.getItemAtPosition(position).toString();
+                    item=item.split(" ")[0];
+                    System.out.println("item is 0"+item);
+                    stHrs=item;
+                    stDuration=String.valueOf(Integer.parseInt(stHrs)*60);
+
+                    System.out.println("Hrs & minute "+stHrs+":"+stDuration);
+                    getFareEstimate();
+                    ivDateTime.setVisibility(View.VISIBLE);
+                    ivCab.setVisibility(View.VISIBLE);
+                    ivPkg.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof OutStationActivity){
+            a=(OutStationActivity) context;
+        }
+
     }
 }
 

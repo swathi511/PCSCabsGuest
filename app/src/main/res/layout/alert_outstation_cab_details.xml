@@ -42,13 +42,39 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Per Km Rate"
+            android:text="Rate per Km"
             android:textColor="#5e5e5e"
             android:textSize="13sp"
             android:layout_weight="1"
             android:gravity="left"/>
 
         <TextView android:id="@+id/aocd_tv_mini_kms_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Rs. - "
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:gravity="right"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rate per minute"
+            android:textColor="#5e5e5e"
+            android:textSize="13sp"
+            android:layout_weight="1"
+            android:gravity="left"/>
+
+        <TextView android:id="@+id/aocd_tv_extra_rate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Rs. - "
@@ -169,6 +195,8 @@
         android:background="#faf09d"
         android:padding="8dp">
 
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -179,13 +207,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Rate per minute"
+                android:text="Allowed Kms per day"
                 android:textColor="#5e5e5e"
                 android:textSize="12sp"
                 android:layout_weight="1"
                 android:gravity="left"/>
 
-            <TextView android:id="@+id/aocd_tv_extra_rate"
+            <TextView android:id="@+id/aocd_tv_min_kms"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=" Rs. - "
@@ -195,61 +223,35 @@
                 android:gravity="right"/>
         </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp">
-        <TextView
-            android:layout_width="wrap_content"
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Minimum Kms per day"
-            android:textColor="#5e5e5e"
-            android:textSize="12sp"
-            android:layout_weight="1"
-            android:gravity="left"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Allowed Hrs per day"
+                android:textColor="#5e5e5e"
+                android:textSize="12sp"
+                android:layout_weight="1"
+                android:gravity="left"/>
 
-        <TextView android:id="@+id/aocd_tv_min_kms"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" Rs. - "
-            android:textColor="@color/colorBlack"
-            android:textSize="13sp"
-            android:layout_weight="1"
-            android:gravity="right"/>
-    </LinearLayout>
-
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Allowed Hrs per day"
-            android:textColor="#5e5e5e"
-            android:textSize="12sp"
-            android:layout_weight="1"
-            android:gravity="left"/>
-
-        <TextView android:id="@+id/aocd_tv_allowed_hrs"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" Rs. - "
-            android:textColor="@color/colorBlack"
-            android:textSize="13sp"
-            android:layout_weight="1"
-            android:gravity="right"/>
-    </LinearLayout>
-
+            <TextView android:id="@+id/aocd_tv_allowed_hrs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" Rs. - "
+                android:textColor="@color/colorBlack"
+                android:textSize="13sp"
+                android:layout_weight="1"
+                android:gravity="right"/>
         </LinearLayout>
+
+    </LinearLayout>
 
 
 

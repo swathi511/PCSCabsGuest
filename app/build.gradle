@@ -8,8 +8,8 @@ android {
         applicationId "com.hjsoft.guestbooktaxi"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 48
-        versionName "1.6.1"
+        versionCode 55
+        versionName "1.6.8"
     }
     buildTypes {
         release {
@@ -34,7 +34,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.facebook.fresco:fresco:1.1.0'
-    //compile "com.google.android.gms:play-services-gcm:9.4.0"
-   // apply plugin: 'com.google.gms.google-services'
+    compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.12.0'
+    compile 'com.inrista.loggliest:loggliest:0.2'
     compile project(':sdkui')
 }

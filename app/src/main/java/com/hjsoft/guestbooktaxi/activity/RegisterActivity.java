@@ -54,18 +54,6 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_register);
 
-        REST_CLIENT= RestClient.get();
-
-        pref = getSharedPreferences(PREF_NAME, PRIVATE_MODE);
-        editor = pref.edit();
-
-        session=new SessionManager(getApplicationContext());
-
-        b=getIntent().getExtras();
-
-        String mobile=b.getString("mobile","");
-
-
         etEmail=(EditText)findViewById(R.id.ar_et_email);
         etName=(EditText)findViewById(R.id.ar_et_name);
         //etPwd=(EditText)findViewById(R.id.ar_et_pwd);
@@ -75,7 +63,28 @@ public class RegisterActivity extends AppCompatActivity {
         btRegister=(TextView) findViewById(R.id.ar_bt_register);
         fabNext=(FloatingActionButton)findViewById(R.id.ar_fab_next);
 
-        etMobile.setText(mobile);
+        REST_CLIENT= RestClient.get();
+
+        pref = getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+        editor = pref.edit();
+
+        session=new SessionManager(getApplicationContext());
+
+        b=getIntent().getExtras();
+
+        //System.out.println("Bundle obj "+b);
+        if(b==null)
+        {
+            Toast.makeText(RegisterActivity.this,"Unexpected error..Please try again!",Toast.LENGTH_SHORT).show();
+            Intent i=new Intent(RegisterActivity.this,MainActivity.class);
+            startActivity(i);
+            finish();
+        }
+        else {
+
+            String mobile = b.getString("mobile","");
+            etMobile.setText(mobile);
+        }
 
         fabNext.setOnClickListener(new View.OnClickListener() {
             @Override

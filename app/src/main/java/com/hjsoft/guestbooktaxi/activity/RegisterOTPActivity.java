@@ -141,6 +141,7 @@ public class RegisterOTPActivity extends AppCompatActivity {
                         }
                         else
                         {
+                            System.out.println("****"+response.message());
                             Toast.makeText(RegisterOTPActivity.this,"OTP Authentication Failed !",Toast.LENGTH_SHORT).show();
                         }
                     }

@@ -1,7 +1,5 @@
 package com.hjsoft.guestbooktaxi.fragments;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -23,15 +21,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,17 +54,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hjsoft.guestbooktaxi.R;
-import com.hjsoft.guestbooktaxi.activity.HomeActivity;
+import com.hjsoft.guestbooktaxi.SessionManager;
 import com.hjsoft.guestbooktaxi.activity.LocalPackagesActivity;
 import com.hjsoft.guestbooktaxi.activity.OutStationActivity;
 import com.hjsoft.guestbooktaxi.activity.PackagesActivity;
 import com.hjsoft.guestbooktaxi.activity.PlacesAutoCompleteActivity;
 import com.hjsoft.guestbooktaxi.activity.TeleCallActivity;
 import com.hjsoft.guestbooktaxi.adapter.DBAdapter;
+import com.hjsoft.guestbooktaxi.model.AllRidesPojo;
 import com.hjsoft.guestbooktaxi.model.CabArrivalTimePojo;
 import com.hjsoft.guestbooktaxi.model.CabData;
 import com.hjsoft.guestbooktaxi.model.CabPojo;
@@ -71,13 +72,21 @@ import com.hjsoft.guestbooktaxi.model.Distance;
 import com.hjsoft.guestbooktaxi.model.Duration;
 import com.hjsoft.guestbooktaxi.model.DurationPojo;
 import com.hjsoft.guestbooktaxi.model.Element;
+import com.hjsoft.guestbooktaxi.model.FormattedAllRidesData;
 import com.hjsoft.guestbooktaxi.model.Row;
 import com.hjsoft.guestbooktaxi.model.ServiceLocationPojo;
 import com.hjsoft.guestbooktaxi.webservices.API;
 import com.hjsoft.guestbooktaxi.webservices.RestClient;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -119,7 +128,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
     int PRIVATE_MODE = 0;
     private static final String PREF_NAME = "SharedPref";
     String pickupLat,pickupLong,dropLat,dropLong;
-    String guestProfileId="UP0000001";
+    String guestProfileId;
     Handler hStart,h;
     Runnable rStart,r;
     CoordinatorLayout cLayout;
@@ -160,6 +169,14 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
     ImageView ivMini,ivSedan,ivSuv,ivOs;
     ArrayList<String> osCities=new ArrayList<>();
     boolean flagOs=true;
+    String fromdate,todate;
+    ArrayList<AllRidesPojo> allRidesDataList=new ArrayList<>();
+    ArrayList<FormattedAllRidesData> dataList=new ArrayList<>();
+    Date date1;
+    TextView tvOngoingBooking,tvCont;
+    RelativeLayout llContinue;
+    SessionManager session;
+    HashMap<String, String> user;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -169,6 +186,10 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
         //tvCloc=(TextView)findViewById(R.id.at_tv_cloc);
         dbAdapter=new DBAdapter(getContext());
         dbAdapter=dbAdapter.open();
+
+        session=new SessionManager(getActivity());
+        user=session.getUserDetails();
+        guestProfileId=user.get(SessionManager.KEY_PROFILE_ID);
 
         pref = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
@@ -283,6 +304,11 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
         ivSuv=(ImageView)rootView.findViewById(R.id.ftc_iv_suv);
         ivOs=(ImageView)rootView.findViewById(R.id.ftc_iv_os);
 
+        tvOngoingBooking=(TextView)rootView.findViewById(R.id.ftc_tv_ongoing_booking);
+        tvCont=(TextView)rootView.findViewById(R.id.ftc_tv_cont);
+        llContinue=(RelativeLayout)rootView.findViewById(R.id.ftc_ll_ongoing);
+        llContinue.setVisibility(View.GONE);
+
         /*
 
         final Animation animation = new AlphaAnimation(1,0); // Change alpha from fully visible to invisible
@@ -304,6 +330,24 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
         });
 
         cLayout=(CoordinatorLayout)rootView.findViewById(R.id.ftc_cLayout);
+
+        tvCont.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Bundle args = new Bundle();
+                args.putInt("position",0);
+                args.putSerializable("list",dataList);
+                Fragment fragmnt = new SpecificRideOngoingFragment();
+                fragmnt.setArguments(args);
+
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.content_frame, fragmnt, "specific_ride_ongoing");
+                fragmentTransaction.addToBackStack(SpecificRideOngoingFragment.class.getSimpleName());
+                fragmentTransaction.commit();
+            }
+        });
 
         tvLocalPkg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -409,16 +453,16 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                 if(!pickupChanged) {
                     if (curntloc != null) {
                         mMap.addMarker(new MarkerOptions().position(curntloc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                     } else if (lastLoc.latitude!=0.0&&lastLoc.longitude!=0.0) {
                         mMap.addMarker(new MarkerOptions().position(lastLoc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                     }
                 }else {
 
                     LatLng pLatLng=new LatLng(Double.parseDouble(locLat),Double.parseDouble(locLong));
                     mMap.addMarker(new MarkerOptions().position(pLatLng)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                 }
 
                 //mMap.clear();
@@ -936,185 +980,204 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                     }
                                     else{
 
-                                    final ProgressDialog progressDialog = new ProgressDialog(getContext());
-                                    progressDialog.setIndeterminate(true);
-                                    progressDialog.setMessage("Please wait...");
-                                    progressDialog.show();
+                                        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+                                        progressDialog.setIndeterminate(true);
+                                        progressDialog.setMessage("Please wait...");
+                                        progressDialog.show();
 
                                    /* String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
                                             "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+pickupLat+","+pickupLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
 */
-                                    String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
-                                            "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+pickupLat+","+pickupLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+                                        String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                                "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+pickupLat+","+pickupLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
 
                                         System.out.println("url String is  "+urlString);
 
-                                    Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
-                                    call.enqueue(new Callback<DurationPojo>() {
-                                        @Override
-                                        public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
+                                        Call<DurationPojo> call=REST_CLIENT.getDistanceDetails(urlString);
+                                        call.enqueue(new Callback<DurationPojo>() {
+                                            @Override
+                                            public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
 
-                                            DurationPojo d;
+                                                DurationPojo d;
 
-                                            if(response.isSuccessful())
-                                            {
-                                                d=response.body();
-                                                List<Row> r=d.getRows();
-                                                Row r1;
-                                                for(int a=0;a<r.size();a++)
+                                                if(response.isSuccessful())
                                                 {
-                                                    r1=r.get(a);
-                                                    List<Element> e=r1.getElements();
-
-                                                    Element e1;
-
-                                                    for(int b=0;b<e.size();b++)
+                                                    d=response.body();
+                                                    List<Row> r=d.getRows();
+                                                    Row r1;
+                                                    for(int a=0;a<r.size();a++)
                                                     {
-                                                        e1=e.get(b);
-                                                        Distance t1=e1.getDistance();
+                                                        r1=r.get(a);
+                                                        List<Element> e=r1.getElements();
 
-                                                        Duration t2=e1.getDuration();
+                                                        Element e1;
 
-                                                        System.out.println("t1.getText "+t1.getText());
+                                                        for(int b=0;b<e.size();b++)
+                                                        {
+                                                            e1=e.get(b);
+                                                            Distance t1=e1.getDistance();
 
-                                                        String stDist=t1.getText();
-                                                        String stDistDetails[]=stDist.split(" ");
-                                                        localDistance=Double.parseDouble(stDistDetails[0]);
-                                                        //progressDialog.dismiss();
+                                                            Duration t2=e1.getDuration();
+
+                                                            System.out.println("t1.getText "+t1.getText());
+
+                                                            String stDist=t1.getText();
+                                                            String stDistDetails[]=stDist.split(" ");
+                                                            localDistance=Double.parseDouble(stDistDetails[0]);
+                                                            //progressDialog.dismiss();
 
 //                            stTime=String.valueOf((t2.getValue())/60);
-                                                        //System.out.println("d & t is "+stKms+":"+stTime);
+                                                            //System.out.println("d & t is "+stKms+":"+stTime);
 
-                                                        System.out.println("************ "+localDistance+":"+radius);
+                                                            System.out.println("************ "+localDistance+":"+radius);
 
-                                                        if (localDistance < radius) {
+                                                            if (localDistance < radius) {
 
-                                                            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                                                //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 //                                                            String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
 //                                                                    "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
 
-                                                            String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
-                                                                    "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+                                                                String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                                                        "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
 
 
-                                                            System.out.println("url String is  "+urlString);
+                                                                System.out.println("url String is  "+urlString);
 
-                                                            Call<DurationPojo> call1=REST_CLIENT.getDistanceDetails(urlString);
-                                                            call1.enqueue(new Callback<DurationPojo>() {
-                                                                @Override
-                                                                public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
+                                                                Call<DurationPojo> call1=REST_CLIENT.getDistanceDetails(urlString);
+                                                                call1.enqueue(new Callback<DurationPojo>() {
+                                                                    @Override
+                                                                    public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
 
-                                                                    DurationPojo d;
+                                                                        DurationPojo d;
 
-                                                                    if(response.isSuccessful())
-                                                                    {
-                                                                        d=response.body();
-                                                                        List<Row> r=d.getRows();
-                                                                        Row r1;
-                                                                        for(int a=0;a<r.size();a++)
+                                                                        if(response.isSuccessful())
                                                                         {
-                                                                            r1=r.get(a);
-                                                                            List<Element> e=r1.getElements();
+                                                                            d=response.body();
 
-                                                                            Element e1;
 
-                                                                            for(int b=0;b<e.size();b++)
+
+
+                                                                            List<Row> r=d.getRows();
+                                                                            Row r1;
+                                                                            for(int a=0;a<r.size();a++)
                                                                             {
-                                                                                e1=e.get(b);
-                                                                                Distance t1=e1.getDistance();
+                                                                                r1=r.get(a);
+                                                                                List<Element> e=r1.getElements();
 
-                                                                                Duration t2=e1.getDuration();
+                                                                                Element e1;
 
-                                                                                String stDist=t1.getText();
-                                                                                String stDistDetails[]=stDist.split(" ");
-                                                                                outstationDistance=Double.parseDouble(stDistDetails[0]);
-                                                                               // progressDialog.dismiss();
+                                                                                System.out.println("e sisze isssssss "+e.size());
+
+
+
+                                                                                for (int b = 0; b < e.size(); b++) {
+                                                                                    e1 = e.get(b);
+
+                                                                                    if(e1.getStatus().equals("ZERO_RESULTS")) {
+
+                                                                                        Toast.makeText(getActivity(),"Invalid location!",Toast.LENGTH_SHORT).show();
+                                                                                        progressDialog.dismiss();
+                                                                                    }
+                                                                                    else {
+
+                                                                                        Distance t1 = e1.getDistance();
+
+                                                                                        Duration t2 = e1.getDuration();
+
+                                                                                        String stDist = t1.getText();
+                                                                                        String stDistDetails[] = stDist.split(" ");
+                                                                                        outstationDistance = Double.parseDouble(stDistDetails[0]);
+                                                                                        // progressDialog.dismiss();
 
 //                            stTime=String.valueOf((t2.getValue())/60);
+                                                                                        //System.out.println("d & t is "+stKms+":"+stTime);
 
-                                                                                //System.out.println("d & t is "+stKms+":"+stTime);
+                                                                                        //System.out.println("************ "+outstationDistance+":"+radius);
+                                                                                        if (outstationDistance < radius) {
 
-                                                                                //System.out.println("************ "+outstationDistance+":"+radius);
-                                                                                if (outstationDistance < radius) {
+                                                                                            progressDialog.dismiss();
 
-                                                                                    progressDialog.dismiss();
+                                                                                            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                                                                            //view.clearAnimation();
 
-                                                                                    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                                                                                    //view.clearAnimation();
+                                                                                            //hStart.removeCallbacks(rStart);
+                                                                                            //h.removeCallbacks(r);
+                                                                                            //Reason for not removing callbacks is in case if this is called again from confirmfragment.
+                                                                                            Fragment frag = new ConfirmRideFragment();
+                                                                                            Bundle args = new Bundle();
+                                                                                            args.putString("CategorySelected", stCategorySelected);
+                                                                                            args.putDouble("latitude", Double.parseDouble(locLat));
+                                                                                            args.putDouble("longitude", Double.parseDouble(locLong));
+                                                                                            args.putString("city", city);
+                                                                                            args.putString("localPackage", stLocalPkg);
+                                                                                            args.putString("travelType", stTravelType);
+                                                                                            args.putString("fare", stFare);
+                                                                                            frag.setArguments(args);
+                                                                                            FragmentManager fragmentManager = getFragmentManager();
+                                                                                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                                                                            fragmentTransaction.add(R.id.content_frame, frag, "confirm_ride");
+                                                                                            fragmentTransaction.addToBackStack(null);
+                                                                                            fragmentTransaction.commit();
+                                                                                        } else {
 
-                                                                                    //hStart.removeCallbacks(rStart);
-                                                                                    //h.removeCallbacks(r);
-                                                                                    //Reason for not removing callbacks is in case if this is called again from confirmfragment.
-                                                                                    Fragment frag = new ConfirmRideFragment();
-                                                                                    Bundle args = new Bundle();
-                                                                                    args.putString("CategorySelected", stCategorySelected);
-                                                                                    args.putDouble("latitude", Double.parseDouble(locLat));
-                                                                                    args.putDouble("longitude", Double.parseDouble(locLong));
-                                                                                    args.putString("city", city);
-                                                                                    args.putString("localPackage", stLocalPkg);
-                                                                                    args.putString("travelType", stTravelType);
-                                                                                    args.putString("fare", stFare);
-                                                                                    frag.setArguments(args);
-                                                                                    FragmentManager fragmentManager = getFragmentManager();
-                                                                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                                                                    fragmentTransaction.add(R.id.content_frame, frag, "confirm_ride");
-                                                                                    fragmentTransaction.addToBackStack(null);
-                                                                                    fragmentTransaction.commit();
-                                                                                } else {
+                                                                                            Toast.makeText(getActivity(), " Invalid Drop! Location outside city limits.", Toast.LENGTH_SHORT).show();
+                                                                                            progressDialog.dismiss();
 
-                                                                                    Toast.makeText(getActivity(), " Invalid Drop! Location outside city limits.", Toast.LENGTH_SHORT).show();
-                                                                                    progressDialog.dismiss();
+                                                                                        }
+                                                                                    }
+                                                                                    //
+
 
                                                                                 }
 
 
+
+
+
                                                                             }
-
-
                                                                         }
+
                                                                     }
 
-                                                                }
+                                                                    @Override
+                                                                    public void onFailure(Call<DurationPojo> call, Throwable t) {
 
-                                                                @Override
-                                                                public void onFailure(Call<DurationPojo> call, Throwable t) {
+                                                                        progressDialog.dismiss();
+                                                                        Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
 
-                                                                    progressDialog.dismiss();
-                                                                    Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
-
-                                                                }
-                                                            });
+                                                                    }
+                                                                });
 
 
 
-                                                            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                                                //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-                                                        } else {
-                                                            Toast.makeText(getActivity(), "Invalid Pickup! Location outside city limits.", Toast.LENGTH_LONG).show();
-                                                            progressDialog.dismiss();
+                                                            } else {
+                                                                Toast.makeText(getActivity(), "Invalid Pickup! Location outside city limits.", Toast.LENGTH_LONG).show();
+                                                                progressDialog.dismiss();
+                                                            }
+
                                                         }
 
+
                                                     }
-
-
                                                 }
+                                                else {
+
+                                                    System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^ "+response.message()+":"+response.code()+":"+response.isSuccessful());
+                                                }
+
                                             }
-                                            else {
 
-                                                System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^ "+response.message()+":"+response.code()+":"+response.isSuccessful());
+                                            @Override
+                                            public void onFailure(Call<DurationPojo> call, Throwable t) {
+
+                                                progressDialog.dismiss();
+                                                Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
+
                                             }
-
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<DurationPojo> call, Throwable t) {
-
-                                            progressDialog.dismiss();
-                                            Toast.makeText(getActivity(),"Please check Internet connection!",Toast.LENGTH_SHORT).show();
-
-                                        }
-                                    });
+                                        });
 
 
 
@@ -1123,7 +1186,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
 
 
-                                    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 
@@ -1135,46 +1198,46 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
 
 
-//                                        outstationDistance = outstationDistance + (long) results[0];
-//                                        outstationDistance = outstationDistance / 1000;
-                                        System.out.println("data isssss "+getDistance(pickupLat,pickupLong,dropLat,dropLong));
+                                         //                                        outstationDistance = outstationDistance + (long) results[0];
+                                         //                                        outstationDistance = outstationDistance / 1000;
+                                         System.out.println("data isssss "+getDistance(pickupLat,pickupLong,dropLat,dropLong));
 
-                                        outstationDistance=Long.parseLong(getDistance(pickupLat,pickupLong,dropLat,dropLong));
+                                         outstationDistance=Long.parseLong(getDistance(pickupLat,pickupLong,dropLat,dropLong));
 
-                                        System.out.println("outstation distance isssss "+outstationDistance);
+                                         System.out.println("outstation distance isssss "+outstationDistance);
 
-                                        if (outstationDistance < radius) {
+                                         if (outstationDistance < radius) {
 
-                                            view.clearAnimation();
+                                         view.clearAnimation();
 
-                                            //hStart.removeCallbacks(rStart);
-                                            //h.removeCallbacks(r);
-                                            //Reason for not removing callbacks is in case if this is called again from confirmfragment.
-                                            Fragment frag = new ConfirmRideFragment();
-                                            Bundle args = new Bundle();
-                                            args.putString("CategorySelected", stCategorySelected);
-                                            args.putDouble("latitude", Double.parseDouble(locLat));
-                                            args.putDouble("longitude", Double.parseDouble(locLong));
-                                            args.putString("city", city);
-                                            args.putString("localPackage", stLocalPkg);
-                                            args.putString("travelType", stTravelType);
-                                            args.putString("fare", stFare);
-                                            frag.setArguments(args);
-                                            FragmentManager fragmentManager = getFragmentManager();
-                                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                            fragmentTransaction.add(R.id.content_frame, frag, "confirm_ride");
-                                            fragmentTransaction.addToBackStack(null);
-                                            fragmentTransaction.commit();
-                                        } else {
+                                         //hStart.removeCallbacks(rStart);
+                                         //h.removeCallbacks(r);
+                                         //Reason for not removing callbacks is in case if this is called again from confirmfragment.
+                                         Fragment frag = new ConfirmRideFragment();
+                                         Bundle args = new Bundle();
+                                         args.putString("CategorySelected", stCategorySelected);
+                                         args.putDouble("latitude", Double.parseDouble(locLat));
+                                         args.putDouble("longitude", Double.parseDouble(locLong));
+                                         args.putString("city", city);
+                                         args.putString("localPackage", stLocalPkg);
+                                         args.putString("travelType", stTravelType);
+                                         args.putString("fare", stFare);
+                                         frag.setArguments(args);
+                                         FragmentManager fragmentManager = getFragmentManager();
+                                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                         fragmentTransaction.add(R.id.content_frame, frag, "confirm_ride");
+                                         fragmentTransaction.addToBackStack(null);
+                                         fragmentTransaction.commit();
+                                         } else {
 
-                                            Toast.makeText(getActivity(), " Invalid Drop! Location outside City.", Toast.LENGTH_SHORT).show();
+                                         Toast.makeText(getActivity(), " Invalid Drop! Location outside City.", Toast.LENGTH_SHORT).show();
 
-                                        }
-                                        //actual logic
-                                    } else {
-                                        Toast.makeText(getActivity(), "Invalid Local Booking! Change location.", Toast.LENGTH_LONG).show();
-                                    }*/
-                                }
+                                         }
+                                         //actual logic
+                                         } else {
+                                         Toast.makeText(getActivity(), "Invalid Local Booking! Change location.", Toast.LENGTH_LONG).show();
+                                         }*/
+                                    }
                                 } else {
 
                                     Toast.makeText(getContext(), "Please enter drop location!", Toast.LENGTH_SHORT).show();
@@ -1245,164 +1308,164 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                                     else {
 
 
-                                    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-                                    final ProgressDialog progressDialog = new ProgressDialog(getContext());
-                                    progressDialog.setIndeterminate(true);
-                                    progressDialog.setMessage("Please wait...!");
-                                    progressDialog.show();
+                                        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+                                        progressDialog.setIndeterminate(true);
+                                        progressDialog.setMessage("Please wait...!");
+                                        progressDialog.show();
 
                                     /*String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
                                             "origins="+cityCenterLat+","+cityCenterLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
 */
-                                    String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?" +
-                                            "origins=" + cityCenterLat + "," + cityCenterLong + "&destinations=" + dropLat + "," + dropLong + "&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+                                        String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                                "origins=" + cityCenterLat + "," + cityCenterLong + "&destinations=" + dropLat + "," + dropLong + "&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
 
-                                    System.out.println("url String is  " + urlString);
+                                        System.out.println("url String is  " + urlString);
 
-                                    Call<DurationPojo> call = REST_CLIENT.getDistanceDetails(urlString);
-                                    call.enqueue(new Callback<DurationPojo>() {
-                                        @Override
-                                        public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
+                                        Call<DurationPojo> call = REST_CLIENT.getDistanceDetails(urlString);
+                                        call.enqueue(new Callback<DurationPojo>() {
+                                            @Override
+                                            public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
 
-                                            DurationPojo d;
+                                                DurationPojo d;
 
-                                            if (response.isSuccessful()) {
-                                                d = response.body();
-                                                List<Row> r = d.getRows();
-                                                Row r1;
-                                                for (int a = 0; a < r.size(); a++) {
-                                                    r1 = r.get(a);
-                                                    List<Element> e = r1.getElements();
+                                                if (response.isSuccessful()) {
+                                                    d = response.body();
+                                                    List<Row> r = d.getRows();
+                                                    Row r1;
+                                                    for (int a = 0; a < r.size(); a++) {
+                                                        r1 = r.get(a);
+                                                        List<Element> e = r1.getElements();
 
-                                                    Element e1;
+                                                        Element e1;
 
-                                                    for (int b = 0; b < e.size(); b++) {
-                                                        e1 = e.get(b);
-                                                        Distance t1 = e1.getDistance();
+                                                        for (int b = 0; b < e.size(); b++) {
+                                                            e1 = e.get(b);
+                                                            Distance t1 = e1.getDistance();
 
-                                                        Duration t2 = e1.getDuration();
+                                                            Duration t2 = e1.getDuration();
 
-                                                        String stDist = t1.getText();
-                                                        String stDistDetails[] = stDist.split(" ");
-                                                        localDistance = Double.parseDouble(stDistDetails[0]);
-                                                        //progressDialog.dismiss();
+                                                            String stDist = t1.getText();
+                                                            String stDistDetails[] = stDist.split(" ");
+                                                            localDistance = Double.parseDouble(stDistDetails[0]);
+                                                            //progressDialog.dismiss();
 
 //                            stTime=String.valueOf((t2.getValue())/60);
-                                                        //System.out.println("d & t is "+stKms+":"+stTime);
+                                                            //System.out.println("d & t is "+stKms+":"+stTime);
 
-                                                        //System.out.println("************ "+localDistance+":"+radius);
+                                                            //System.out.println("************ "+localDistance+":"+radius);
 
-                                                        if (localDistance < radius) {
+                                                            if (localDistance < radius) {
 
-                                                            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                                                //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 //                                                            String urlString="https://maps.googleapis.com/maps/api/distancematrix/json?" +
 //                                                                    "origins="+pickupLat+","+pickupLong+"&destinations="+dropLat+","+dropLong+"&key=AIzaSyB0z7WOiu8JIcf1fKj2LqiI7MVRmX5ZwR8";
 
-                                                            String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?" +
-                                                                    "origins=" + pickupLat + "," + pickupLong + "&destinations=" + dropLat + "," + dropLong + "&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
+                                                                String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                                                                        "origins=" + pickupLat + "," + pickupLong + "&destinations=" + dropLat + "," + dropLong + "&key=AIzaSyBNlJ8qfN-FCuka8rjh7NEK1rlwWmxG1Pw";
 
 
-                                                            System.out.println("url String is  " + urlString);
+                                                                System.out.println("url String is  " + urlString);
 
-                                                            Call<DurationPojo> call1 = REST_CLIENT.getDistanceDetails(urlString);
-                                                            call1.enqueue(new Callback<DurationPojo>() {
-                                                                @Override
-                                                                public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
+                                                                Call<DurationPojo> call1 = REST_CLIENT.getDistanceDetails(urlString);
+                                                                call1.enqueue(new Callback<DurationPojo>() {
+                                                                    @Override
+                                                                    public void onResponse(Call<DurationPojo> call, Response<DurationPojo> response) {
 
-                                                                    DurationPojo d;
+                                                                        DurationPojo d;
 
-                                                                    if (response.isSuccessful()) {
-                                                                        d = response.body();
-                                                                        List<Row> r = d.getRows();
-                                                                        Row r1;
-                                                                        for (int a = 0; a < r.size(); a++) {
-                                                                            r1 = r.get(a);
-                                                                            List<Element> e = r1.getElements();
+                                                                        if (response.isSuccessful()) {
+                                                                            d = response.body();
+                                                                            List<Row> r = d.getRows();
+                                                                            Row r1;
+                                                                            for (int a = 0; a < r.size(); a++) {
+                                                                                r1 = r.get(a);
+                                                                                List<Element> e = r1.getElements();
 
-                                                                            Element e1;
+                                                                                Element e1;
 
-                                                                            for (int b = 0; b < e.size(); b++) {
-                                                                                e1 = e.get(b);
-                                                                                Distance t1 = e1.getDistance();
+                                                                                for (int b = 0; b < e.size(); b++) {
+                                                                                    e1 = e.get(b);
+                                                                                    Distance t1 = e1.getDistance();
 
-                                                                                Duration t2 = e1.getDuration();
+                                                                                    Duration t2 = e1.getDuration();
 
-                                                                                String stDist = t1.getText();
-                                                                                String stDistDetails[] = stDist.split(" ");
-                                                                                outstationDistance = Double.parseDouble(stDistDetails[0]);
-                                                                                // progressDialog.dismiss();
+                                                                                    String stDist = t1.getText();
+                                                                                    String stDistDetails[] = stDist.split(" ");
+                                                                                    outstationDistance = Double.parseDouble(stDistDetails[0]);
+                                                                                    // progressDialog.dismiss();
 
 //                            stTime=String.valueOf((t2.getValue())/60);
 
-                                                                                //System.out.println("d & t is "+stKms+":"+stTime);
+                                                                                    //System.out.println("d & t is "+stKms+":"+stTime);
 
-                                                                                //System.out.println("************ "+outstationDistance+":"+radius);
-                                                                                if (outstationDistance > radius) {
+                                                                                    //System.out.println("************ "+outstationDistance+":"+radius);
+                                                                                    if (outstationDistance > radius) {
 
-                                                                                    progressDialog.dismiss();
+                                                                                        progressDialog.dismiss();
 
-                                                                                    Intent i = new Intent(getActivity(), OutStationActivity.class);
-                                                                                    i.putExtra("city", city);
-                                                                                    startActivity(i);
+                                                                                        Intent i = new Intent(getActivity(), OutStationActivity.class);
+                                                                                        i.putExtra("city", city);
+                                                                                        startActivity(i);
 
-                                                                                } else {
+                                                                                    } else {
 
-                                                                                    Toast.makeText(getActivity(), " Invalid Outstation drop. Change Location!", Toast.LENGTH_SHORT).show();
-                                                                                    progressDialog.dismiss();
+                                                                                        Toast.makeText(getActivity(), " Invalid Outstation drop. Change Location!", Toast.LENGTH_SHORT).show();
+                                                                                        progressDialog.dismiss();
+
+                                                                                    }
+
 
                                                                                 }
 
 
                                                                             }
-
-
                                                                         }
+
                                                                     }
 
-                                                                }
+                                                                    @Override
+                                                                    public void onFailure(Call<DurationPojo> call, Throwable t) {
 
-                                                                @Override
-                                                                public void onFailure(Call<DurationPojo> call, Throwable t) {
+                                                                        progressDialog.dismiss();
+                                                                        Toast.makeText(getActivity(), "Please check Internet connection!", Toast.LENGTH_SHORT).show();
 
-                                                                    progressDialog.dismiss();
-                                                                    Toast.makeText(getActivity(), "Please check Internet connection!", Toast.LENGTH_SHORT).show();
-
-                                                                }
-                                                            });
+                                                                    }
+                                                                });
 
 
-                                                            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                                                //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-                                                        } else {
+                                                            } else {
 
-                                                            progressDialog.dismiss();
+                                                                progressDialog.dismiss();
 
-                                                            Intent i = new Intent(getActivity(), OutStationActivity.class);
-                                                            i.putExtra("city", city);
-                                                            startActivity(i);
+                                                                Intent i = new Intent(getActivity(), OutStationActivity.class);
+                                                                i.putExtra("city", city);
+                                                                startActivity(i);
+                                                            }
+
                                                         }
 
+
                                                     }
-
-
                                                 }
+
                                             }
 
-                                        }
+                                            @Override
+                                            public void onFailure(Call<DurationPojo> call, Throwable t) {
 
-                                        @Override
-                                        public void onFailure(Call<DurationPojo> call, Throwable t) {
+                                                progressDialog.dismiss();
+                                                Toast.makeText(getActivity(), "Please check Internet connection!", Toast.LENGTH_SHORT).show();
 
-                                            progressDialog.dismiss();
-                                            Toast.makeText(getActivity(), "Please check Internet connection!", Toast.LENGTH_SHORT).show();
-
-                                        }
-                                    });
+                                            }
+                                        });
 
 
-                                    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 //
@@ -1471,7 +1534,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 //                                        i.putExtra("city", city);
 //                                        startActivity(i);
 //                                    }
-                                }
+                                    }
 
                                 }
 
@@ -1915,17 +1978,17 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                             if(!pickupChanged) {
                                 if (curntloc != null) {
                                     mMap.addMarker(new MarkerOptions().position(curntloc)
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                                 } else if (lastLoc.latitude!=0.0&&lastLoc.longitude!=0.0) {
                                     mMap.addMarker(new MarkerOptions().position(lastLoc)
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                                 }
                             }else {
 
                                 if(locLat!=null&&locLong!=null) {
                                     LatLng pLatLng = new LatLng(Double.parseDouble(locLat), Double.parseDouble(locLong));
                                     mMap.addMarker(new MarkerOptions().position(pLatLng)
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                                 }
                             }
 
@@ -2092,16 +2155,16 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                     if(!pickupChanged) {
                         if (curntloc != null) {
                             mMap.addMarker(new MarkerOptions().position(curntloc)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                         } else if (lastLoc != null) {
                             mMap.addMarker(new MarkerOptions().position(lastLoc)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                         }
                     }else {
 
                         LatLng pLatLng=new LatLng(Double.parseDouble(locLat),Double.parseDouble(locLong));
                         mMap.addMarker(new MarkerOptions().position(pLatLng)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                     }
 
 
@@ -2209,18 +2272,18 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
         if(!pickupChanged) {
             if (curntloc != null) {
                 mMap.addMarker(new MarkerOptions().position(curntloc)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
 
 
             } else if (lastLoc.latitude!=0.0&&lastLoc.longitude!=0.0) {
                 mMap.addMarker(new MarkerOptions().position(lastLoc)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
             }
         }else {
 
             LatLng pLatLng=new LatLng(Double.parseDouble(locLat),Double.parseDouble(locLong));
             mMap.addMarker(new MarkerOptions().position(pLatLng)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
         }
 
         CabData c;
@@ -2301,7 +2364,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
             }*/
 
 
-             //  **************************************
+            //  **************************************
         }
         else {
 
@@ -2375,6 +2438,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
         buildGoogleApiClient();
         buildLocationSettingsRequest();
+        showIfBookingIsOngoing();
         entered=true;
         //getCabs();
     }
@@ -2459,6 +2523,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onResume() {
+
         super.onResume();
 
         if(entered)
@@ -2657,7 +2722,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                         cab.setPosition(curntloc);
                     } else {
                         cab = mMap.addMarker(new MarkerOptions().position(lastLoc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                     }
 
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curntloc, Float.parseFloat("12.8")));
@@ -2810,7 +2875,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                     cab.setPosition(lastLoc);
                 } else {
                     cab = mMap.addMarker(new MarkerOptions().position(lastLoc)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                 }
             }
         }
@@ -2906,7 +2971,7 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
                             }
                             else {
                                 cab = mMap.addMarker(new MarkerOptions().position(pLatLng)
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue_opt)));
                             }
 
                             try{
@@ -3316,5 +3381,99 @@ public class TrackCabsFragment extends Fragment implements OnMapReadyCallback,
 
         return stKms;
 
+    }
+
+
+    public void showIfBookingIsOngoing()
+    {
+        //llContinue.setVisibility(View.GONE);
+
+        final Calendar c = Calendar.getInstance();
+        final int mYear = c.get(Calendar.YEAR);
+        final int mMonth = c.get(Calendar.MONTH);
+        final int mDay = c.get(Calendar.DAY_OF_MONTH);
+
+        fromdate=mYear+"-"+(mMonth+1)+"-"+mDay;
+        todate=mYear+"-"+(mMonth+1)+"-"+mDay;
+
+
+        Call<ArrayList<AllRidesPojo>> call=REST_CLIENT.getRideHistory(guestProfileId,"guest",companyId,fromdate,todate);
+        call.enqueue(new Callback<ArrayList<AllRidesPojo>>() {
+            @Override
+            public void onResponse(Call<ArrayList<AllRidesPojo>> call, Response<ArrayList<AllRidesPojo>> response) {
+
+                AllRidesPojo data;
+
+                if(response.isSuccessful())
+                {
+                    allRidesDataList=response.body();
+
+                    for(int i=0;i<allRidesDataList.size();i++)
+                    {
+                        data=allRidesDataList.get(i);
+
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a",Locale.ENGLISH);
+                        // SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy",Locale.getDefault());
+                        try {
+                            date1 = dateFormat.parse(data.getRidedate());
+                        }catch(ParseException e)
+                        {e.printStackTrace();}
+
+                        if(data.getStatusofride().equals("BOOKED")&&(data.getTravelType().equals("local")||data.getTravelType().equals("Packages"))&&(data.getBookingType().equals("AppBooking")||data.getBookingType().equals(""))&&(!(data.getVehicleCategory().equals(""))))
+                        {
+                            //data.getTravelPackage().equals("")
+
+                        }
+                        else {
+
+                            //it means it is offline request...(so adding to the list)
+                            if(data.getStatusofride().equals("")||data.getStatusofride().equals("NORESPONSE")||data.getStatusofride().equals("DECLINED"))
+                            {
+
+                            }
+                            else {
+
+                                if(data.getStatusofride().equals("ONGOING"))
+                                {
+                                    dataList.add(new FormattedAllRidesData(date1, data.getRequestid(), data.getFromlocation(), data.getTolocation(), data.getVehicleCategory(),
+                                            data.getVehicleType(), data.getDistancetravelled(), data.getStatusofride(), data.getRidestarttime(), data.getRidestoptime(),
+                                            data.getTotalamount(), data.getDrivername(), data.getDriverpic(), data.getTravelType(), data.getBookingType(), data.getTravelpackage(), data.getDrivermobile(),data.getDriverBattaAmt(),data.getPaymentMode(),data.getOtherCharges(),data.getDriverProfileId()));
+
+                                    llContinue.setVisibility(View.VISIBLE);
+                                    break;
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+                else
+                {
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<AllRidesPojo>> call, Throwable t) {
+
+                //progressDialog.dismiss();
+
+                //Toast.makeText(getActivity(),"Check Internet connection!",Toast.LENGTH_SHORT).show();
+
+               /* if(myBottomSheet.isAdded())
+                {
+                    //return;
+                }
+                else
+                {
+                    if(rootView.isShown()) {
+
+                        myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                    }
+                }*/
+
+            }
+        });
     }
 }

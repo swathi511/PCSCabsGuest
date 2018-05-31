@@ -25,6 +25,7 @@ import com.hjsoft.guestbooktaxi.model.BookCabPojo;
 import com.hjsoft.guestbooktaxi.model.RideStopPojo;
 import com.hjsoft.guestbooktaxi.webservices.API;
 import com.hjsoft.guestbooktaxi.webservices.RestClient;
+import com.inrista.loggliest.Loggly;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -488,8 +489,7 @@ public class RideStopFragment extends Fragment {
                                 llCashInfo.setVisibility(View.VISIBLE);
                             }
 
-
-
+                            Loggly.forceUpload();
 
                         }
                         else {

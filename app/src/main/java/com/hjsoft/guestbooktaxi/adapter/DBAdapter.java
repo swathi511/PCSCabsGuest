@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class DBAdapter {
 
     static final String DATABASE_NAME = "cabs.db";
-    static final int DATABASE_VERSION = 48;
+    static final int DATABASE_VERSION = 55;
     public static final int NAME_COLUMN = 1;
 
     public static final String TABLE_USER_STATUS="create table if not exists "+"USER_STATUS"+

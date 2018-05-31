@@ -55,9 +55,7 @@
         android:background="@drawable/rect_ash_stroke_bg_single_line"
         android:maxLength="6"
         android:textColorHint="#cacaca"
-        android:visibility="gone"
-
-        />
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -75,7 +73,6 @@
             android:layout_marginRight="6dp"
             android:layout_weight="1"
             android:inputType="number"
-
             android:textColorHint="#c0c0c0"/>
         <EditText android:id="@+id/alo_et_otp2"
             android:layout_width="wrap_content"

@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences.Editor editor;
     int PRIVATE_MODE = 0;
     private static final String PREF_NAME = "SharedPref";
-    String version="4.5";//4.5//5.1
+    String version="4.5";//4.5//5.9 //change loggly token while testing & pubnub also.
     String city="Visakhapatnam";
     FloatingActionButton fabNext;
     //String version="2";//20
@@ -324,8 +324,13 @@ public class MainActivity extends AppCompatActivity {
                                 else {
                                     Toast.makeText(MainActivity.this, "New User!\n Please Signup!", Toast.LENGTH_SHORT).show();
 
+                                    //System.out.println("data adding in bundle!!!!");
+
                                     Intent i=new Intent(MainActivity.this,RegisterActivity.class);
-                                    i.putExtra("mobile",stEmail);
+                                    Bundle b=new Bundle();
+                                    b.putString("mobile",stEmail);
+                                    //i.putExtra("mobile",stEmail);
+                                    i.putExtras(b);
                                     startActivity(i);
                                     finish();
 

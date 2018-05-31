@@ -2,16 +2,12 @@ package com.hjsoft.guestbooktaxi.fragments;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -20,15 +16,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,9 +62,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.hjsoft.guestbooktaxi.Constants;
 import com.hjsoft.guestbooktaxi.R;
-import com.hjsoft.guestbooktaxi.activity.HomeActivity;
+
 import com.hjsoft.guestbooktaxi.activity.MyRidesActivity;
 import com.hjsoft.guestbooktaxi.activity.RideCancelActivity;
 import com.hjsoft.guestbooktaxi.activity.RideInProgressActivity;
@@ -88,10 +84,21 @@ import com.hjsoft.guestbooktaxi.model.RideStopPojo;
 import com.hjsoft.guestbooktaxi.model.Row;
 import com.hjsoft.guestbooktaxi.webservices.API;
 import com.hjsoft.guestbooktaxi.webservices.RestClient;
+import com.inrista.loggliest.Loggly;
+import com.pubnub.api.PNConfiguration;
+import com.pubnub.api.PubNub;
+import com.pubnub.api.callbacks.PNCallback;
+import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.enums.PNReconnectionPolicy;
+import com.pubnub.api.models.consumer.PNPublishResult;
+import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -173,17 +180,49 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
     RideInProgressActivity a;
     boolean checked=false;
     String cancelOption="";
+    String driverId;
+    Bundle d;
+    //private final static String API_KEY = "3PzQvg.MchECw:Brb2D4FEUuEXMuKs";
+    private final static String API_KEY = "kcfhRA.H13JVA:pX7G9-lrgVftOHBZ";
+    double lat,lng;
+    PubNub pubnub;
+    boolean debugLogs;
+
+    /*private Thread.UncaughtExceptionHandler androidDefaultUEH;
+
+    private Thread.UncaughtExceptionHandler handler1 = new Thread.UncaughtExceptionHandler() {
+        public void uncaughtException(Thread thread, Throwable ex) {
+
+            Log.e("TestApplication", "Uncaught exception is: ", ex);
+            // log it & phone home.
+
+            String trace = ex.toString() + "\n";
+
+            for (StackTraceElement e1 : ex.getStackTrace()) {
+                trace += "\t at " + e1.toString() + "\n";
+            }
+
+            Loggly.i("TrackRideFragment","Uncaught Exception: "+trace);
+            Loggly.forceUpload();
+
+            androidDefaultUEH.uncaughtException(thread, ex);
+        }
+    };*/
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+       /* androidDefaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(handler1);*/
+
         Fresco.initialize(getActivity().getApplicationContext());
 
         geocoder = new Geocoder(getContext(), Locale.getDefault());
 
         pref = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+        debugLogs=pref.getBoolean("debugLogs",true);
         editor = pref.edit();
 
         dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
@@ -202,25 +241,6 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
         mp=MediaPlayer.create(getActivity(),R.raw.beep);
         notificationManager =(NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if(Build.VERSION.SDK_INT<23)
-        {
-            establishConnection();
-        }
-        else
-        {
-            if(getActivity().checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED)
-            {
-                establishConnection();
-            }
-            else
-            {
-                if(shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_FINE_LOCATION))
-                {
-                    Toast.makeText(getActivity(),"Location Permission is required for this app to run!",Toast.LENGTH_LONG).show();
-                }
-                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_LOCATION);
-            }
-        }
     }
 
     @Nullable
@@ -262,6 +282,67 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
         rlCont.setVisibility(View.INVISIBLE);
         btTrackRide.setVisibility(View.GONE);
 
+
+        list=(ArrayList<CabData>) getActivity().getIntent().getSerializableExtra("list");
+
+        if(list!=null) {
+
+            data = list.get(0);
+            //System.out.println("***"+data.getPhoneNumber()+":"+data.getVehRegNo()+":"+data.getDriverName()+":");
+            driverMobile=data.getPhoneNumber();
+            tvVehRegNo.setText(data.getVehRegNo());
+            tvDriverName.setText(data.getDriverName());
+            driverName=data.getDriverName();
+            driverMobile=data.getPhoneNumber();
+            tvDriverMobile.setText(data.getPhoneNumber());
+
+            String driverPic=data.getDriverPic();
+
+
+
+            if(driverPic.equals(""))
+            {
+
+            }
+            else
+            {
+                Uri imageUri = Uri.parse(driverPic);
+                ivDriverPic.setImageURI(imageUri);
+            }
+
+        }
+
+        d=getActivity().getIntent().getExtras();
+        if(d!=null) {
+            requestId = d.getString("requestId");
+            stCategorySelected=d.getString("selectedCategory");
+            stLocalPkg=d.getString("localPackage");
+
+
+        }
+
+        driverId=data.getProfileId();
+
+        if(Build.VERSION.SDK_INT<23)
+        {
+            establishConnection();
+        }
+        else
+        {
+            if(getActivity().checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED)
+            {
+                establishConnection();
+            }
+            else
+            {
+                if(shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_FINE_LOCATION))
+                {
+                    Toast.makeText(getActivity(),"Location Permission is required for this app to run!",Toast.LENGTH_LONG).show();
+                }
+                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_LOCATION);
+            }
+        }
+
         final BottomSheetBehavior behavior = BottomSheetBehavior.from(vwBottomSheet);
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -295,41 +376,6 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
         });
 
 
-        list=(ArrayList<CabData>) getActivity().getIntent().getSerializableExtra("list");
-
-        if(list!=null) {
-
-            data = list.get(0);
-            driverMobile=data.getPhoneNumber();
-            tvVehRegNo.setText(data.getVehRegNo());
-            tvDriverName.setText(data.getDriverName());
-            driverName=data.getDriverName();
-            driverMobile=data.getPhoneNumber();
-            tvDriverMobile.setText(data.getPhoneNumber());
-
-            String driverPic=data.getDriverPic();
-
-
-
-            if(driverPic.equals(""))
-            {
-
-            }
-            else
-            {
-                Uri imageUri = Uri.parse(driverPic);
-                ivDriverPic.setImageURI(imageUri);
-            }
-
-        }
-
-        Bundle d=getActivity().getIntent().getExtras();
-        if(d!=null) {
-            requestId = d.getString("requestId");
-            stCategorySelected=d.getString("selectedCategory");
-            stLocalPkg=d.getString("localPackage");
-
-        }
 
         if(!(stLocalPkg.equals("")))
         {
@@ -380,6 +426,84 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
             }
         });
 
+        /*btTrackRide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!OTPAuthenticated) {
+
+                    Toast.makeText(getActivity(),"OTP Authentication in progress!",Toast.LENGTH_LONG).show();
+                    btTrackRide.setAlpha(Float.parseFloat("0.5"));
+
+                } else {
+
+
+                dbAdapter.updateUserRideStatus(requestId, "tracked");
+
+                trackingRide = true;
+                //llArrivalTime.setVisibility(View.GONE);
+                // llCont.setVisibility(View.VISIBLE);
+                rlCont.setVisibility(View.VISIBLE);
+                btTrackRide.setVisibility(View.GONE);
+                LatLng cabLocLatLng = new LatLng(lat, lng);
+
+                if (mMap != null) {
+                    if (cab == null) {
+                        if (stCategorySelected.equals("Mini") || stCategorySelected.equals("Micra")) {
+                            cab = mMap.addMarker(new MarkerOptions().position(cabLocLatLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.mini_15)));
+                        } else {
+                            cab = mMap.addMarker(new MarkerOptions().position(cabLocLatLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.prime_15)));
+                        }
+                    } else {
+                        //cab.setPosition(cabLocLatLng);
+
+                        startPosition = cab.getPosition();
+                        finalPosition = new LatLng(lat, lng);
+                        double toRotation = bearingBetweenLocations(startPosition, finalPosition);
+                        rotateMarker(cab, (float) toRotation);
+                        accelerateDecelerate();
+
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(finalPosition, 16));
+                        mMap.getUiSettings().setMapToolbarEnabled(false);
+
+//                                                    CameraPosition oldPos = mMap.getCameraPosition();
+//
+//                                                    CameraPosition pos = CameraPosition.builder(oldPos).bearing((float)toRotation).build();
+//                                                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(pos));
+
+                    }
+                }
+
+                try {
+                    addresses = geocoder.getFromLocation(lat, lng, 1);
+                    if (addresses.size() != 0) {
+                        String address = addresses.get(0).getAddressLine(0);
+                        String add1 = addresses.get(0).getAddressLine(1);
+                        String add2 = addresses.get(0).getAddressLine(2);
+                        String city = addresses.get(0).getLocality();
+                        String state = addresses.get(0).getAdminArea();
+
+                        if (add1 != null && add2 != null) {
+                            complete_address = address + " " + add1 + " " + add2;
+                        } else {
+                            complete_address = address;
+                        }
+
+                        tvMyLoc.setText(complete_address);
+                    } else {
+                        tvMyLoc.setText("-");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    complete_address = "Unable to get the location details";
+                    tvMyLoc.setText(complete_address);
+                }
+            }
+            }
+        });*/
+
         btTrackRide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -416,12 +540,6 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
                                 @Override
                                 public void onResponse(Call<List<CabLocationPojo>> call, Response<List<CabLocationPojo>> response) {
 
-                                    /*if(myBottomSheet!=null) {
-
-                                        if (myBottomSheet.isAdded()) {
-                                            myBottomSheet.dismiss();
-                                        }
-                                    }*/
                                     CabLocationPojo cl;
                                     List<CabLocationPojo> cabLocData;
                                     if (response.isSuccessful()) {
@@ -501,17 +619,6 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
 
                                     Toast.makeText(a,"Check Internet connection!",Toast.LENGTH_SHORT).show();
 
-                                    /*if(myBottomSheet!=null) {
-
-                                        if (myBottomSheet.isAdded()) {
-                                            //return;
-                                        } else {
-
-                                            if (rootView.isShown()) {
-                                                myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
-                                            }
-                                        }
-                                    }*/
                                 }
                             });
                         }
@@ -703,7 +810,7 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
         });
     }
 
-    public  void checkForArrivalNotification(){
+    public void checkForArrivalNotification(){
 
         h=new Handler();
         run=new Runnable() {
@@ -859,50 +966,50 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
 
     public void checkForDutyFinish()
     {
-        hStopTime=new Handler();
-        rStopTime=new Runnable() {
+        // hStopTime=new Handler();
+        // rStopTime=new Runnable() {
+        //@Override
+        // public void run() {
+
+        // hStopTime.postDelayed(this,15000);
+        Call<List<RideStopPojo>> call=REST_CLIENT.getRideStopData(requestId,companyId,"guest");
+        call.enqueue(new Callback<List<RideStopPojo>>() {
             @Override
-            public void run() {
+            public void onResponse(Call<List<RideStopPojo>> call, Response<List<RideStopPojo>> response) {
 
-                hStopTime.postDelayed(this,15000);
-                Call<List<RideStopPojo>> call=REST_CLIENT.getRideStopData(requestId,companyId,"guest");
-                call.enqueue(new Callback<List<RideStopPojo>>() {
-                    @Override
-                    public void onResponse(Call<List<RideStopPojo>> call, Response<List<RideStopPojo>> response) {
+                List<RideStopPojo> dataList;
+                RideStopPojo data;
 
-                        List<RideStopPojo> dataList;
-                        RideStopPojo data;
+                if(response.isSuccessful())
+                {
+                    dataList=response.body();
 
-                        if(response.isSuccessful())
-                        {
-                            dataList=response.body();
+                    data=dataList.get(0);
 
-                            data=dataList.get(0);
-
-                            if(data.getDistancetravelled().equals(""))
-                            {
-
-                            }
-                            else {
-                                hStopTime.removeCallbacks(rStopTime);
-                                Intent i = new Intent(getActivity(),RideStopActivity.class);
-                                i.putExtra("requestId", requestId);
-                                i.putExtra("driverName",driverName);
-                                i.putExtra("driverNumber",driverMobile);
-                                startActivity(i);
-                                getActivity().finish();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<RideStopPojo>> call, Throwable t) {
+                    if(data.getDistancetravelled().equals(""))
+                    {
 
                     }
-                });
+                    else {
+                        //hStopTime.removeCallbacks(rStopTime);
+                        Intent i = new Intent(getActivity(),RideStopActivity.class);
+                        i.putExtra("requestId", requestId);
+                        i.putExtra("driverName",driverName);
+                        i.putExtra("driverNumber",driverMobile);
+                        startActivity(i);
+                        getActivity().finish();
+                    }
+                }
             }
-        };
-        hStopTime.post(rStopTime);
+
+            @Override
+            public void onFailure(Call<List<RideStopPojo>> call, Throwable t) {
+
+            }
+        });
+        // }
+        //  };
+        // hStopTime.post(rStopTime);
     }
 
     public void establishConnection(){
@@ -910,7 +1017,8 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
         buildGoogleApiClient();
         buildLocationSettingsRequest();
         entered=true;
-        checkForArrivalNotification();
+
+        initPubNub(driverId);
     }
 
     @Override
@@ -957,7 +1065,9 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
         }
 
         if(trackingRide) {
-            handler.removeCallbacks(r);
+            if(handler!=null) {
+                handler.removeCallbacks(r);
+            }
         }
 
       /*  if(OTPAuthenticated)
@@ -990,7 +1100,9 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
 
         if(trackingRide)
         {
-            handler.post(r);
+            if(handler!=null) {
+                handler.post(r);
+            }
         }
 
       /*  if(OTPAuthenticated)
@@ -1289,7 +1401,7 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                System.out.println(rg.getCheckedRadioButtonId()+"::"+checkedId);
+
                 int checkedRadioButtonId =rg.getCheckedRadioButtonId();
                 RadioButton radioBtn = (RadioButton)dialogView.findViewById(checkedId);
                 //System.out.println("++++"+radioBtn.getText());
@@ -1307,6 +1419,16 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
 
                 if(checked)
                 {
+                   /* try {
+
+                        publishMessage(requestId+"cancelled_guest");
+
+                    }catch (AblyException e)
+                    {
+                        e.printStackTrace();
+                    }*/
+
+                    publish(requestId+"cancelled_guest",driverId);
 
                     if (OTPAuthenticated) {
                         hOtp.removeCallbacks(rOtp);
@@ -1317,7 +1439,7 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
 
                     String id = dbAdapter.getCancelId(cancelOption);
 
-                   // System.out.println("@@@@@@ id iss "+id);
+                    // System.out.println("@@@@@@ id iss "+id);
 
                     final JsonObject v = new JsonObject();
                     v.addProperty("requestid", requestId);
@@ -1376,7 +1498,7 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
                                                         data.getPhoneNumber(), data.getCabCat(), data.getLatitude(), data.getLongitude(), data.getDriverName(), data.getDriverPic(), data.getDutyPerform()));
 
                                                 // dbAdapter.updateUserRideEntry(requestId,"cancelled");
-                                                h.removeCallbacks(run);
+                                                //h.removeCallbacks(run);
                                                 Intent i = new Intent(getActivity(), RideCancelActivity.class);
                                                 i.putExtra("list", cabAcceptedData);
                                                 i.putExtra("cancelFee", cancelFee);
@@ -1392,7 +1514,14 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
                                     }
 
                                     @Override
-                                    public void onFailure(Call<List<CancelPojo>> call, Throwable t) {
+                                    public void onFailure(Call<List<CancelPojo>> call, Throwable t1) {
+
+                                        String trace = t1.toString() + "\n";
+
+                                        for (StackTraceElement e1 : t1.getStackTrace()) {
+                                            trace += "\t at " + e1.toString() + "\n";
+                                        }
+                                        Loggly.i("TrackRideFragment",requestId+" [API failed,Cancel Booking] "+trace);
 
                                     }
                                 });
@@ -1499,5 +1628,559 @@ public class TrackRideFragment extends Fragment implements OnMapReadyCallback,
             a=(RideInProgressActivity) context;
         }
 
+    }
+
+    /*private void initAbly(String driverid) throws AblyException {
+
+        System.out.println("ABLY IS INITIALIZED!!!");
+        System.out.println("driverId is "+driverid);
+
+        //Bundle d=getActivity().getIntent().getExtras();
+
+        //requestId = d.getString("requestId");
+
+        AblyRealtime realtime = new AblyRealtime(API_KEY);
+
+        channel = realtime.channels.get(driverid);
+
+        //Toast.makeText(getBaseContext(), "Message received: " + messages.data, Toast.LENGTH_SHORT).show();
+
+        channel.subscribe(new Channel.MessageListener() {
+
+            @Override
+            public void onMessage(final Message messages) {
+
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        System.out.println("****** msg received!!!"+messages.data.toString());
+
+                        if(messages.data.toString().equals(requestId+"cancelled_driver"))
+                        {
+
+                            //h.removeCallbacks(run);
+
+                            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+                            LayoutInflater inflater = getActivity().getLayoutInflater();
+                            final View dialogView = inflater.inflate(R.layout.alert_ride_cancelled, null);
+                            dialogBuilder.setView(dialogView);
+
+                            final AlertDialog alertDialog = dialogBuilder.create();
+                            alertDialog.show();
+                            alertDialog.setCanceledOnTouchOutside(false);
+                            alertDialog.setCancelable(false);
+
+                            Button ok=(Button) dialogView.findViewById(R.id.arc_bt_ok);
+
+                            ok.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                    alertDialog.dismiss();
+                                    Intent i=new Intent(getActivity(), MyRidesActivity.class);
+                                    getActivity().startActivity(i);
+                                    getActivity().finish();
+                                }
+                            });
+                        }
+
+                        if(messages.data.toString().equals(requestId+"finished"))
+                        {
+                            checkForDutyFinish();
+                        }
+
+                        if(messages.data.toString().equals(requestId+"arrived"))
+                        {
+                            callArrivalApi();
+                        }
+
+                        if(messages.data.toString().equals(requestId+"otp_validated"))
+                        {
+                            OTPAuthenticated = true;
+                            llArrivalTime.setVisibility(View.GONE);
+                            ibPhone.setVisibility(View.GONE);
+                            btTrackRide.setAlpha(Float.parseFloat("1"));
+                        }
+
+                        String d[]=messages.data.toString().split("-");
+
+                        if(d[0].equals("coordinates"))
+                        {
+                            String c[]=d[1].split(",");
+                            //getTrackCoordinatesApi(Double.parseDouble(c[0]),Double.parseDouble(c[1]));
+                            lat=Double.parseDouble(c[0]);
+                            lng=Double.parseDouble(c[1]);
+
+                            if(trackingRide)
+                            {
+                                getTrackCoordinatesApi(lat,lng);
+                            }
+                        }
+
+                    }
+                });
+
+//                new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(getActivity(), "Msg** "+messages.data, Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+
+            }
+
+        });
+    }
+
+
+    public void publishMessage(String msg) throws AblyException{
+
+        channel.publish("update", msg, new CompletionListener() {
+            @Override
+            public void onSuccess() {
+
+                System.out.println("***************** success");
+
+                //Toast.makeText(getBaseContext(), "Message sent", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(ErrorInfo reason) {
+
+                System.out.println("********************** error");
+
+                // Toast.makeText(getBaseContext(), "Message not sent", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }*/
+
+    private final void initPubNub(String driverId) {
+        PNConfiguration config = new PNConfiguration();
+
+        config.setPublishKey(Constants.PUBNUB_PUBLISH_KEY);
+        config.setSubscribeKey(Constants.PUBNUB_SUBSCRIBE_KEY);
+        config.setReconnectionPolicy(PNReconnectionPolicy.LINEAR);
+        // config.setUuid(this.mUsername);
+        config.setSecure(true);
+
+        pubnub=new PubNub(config);
+
+        pubnub.subscribe()
+                .channels(Arrays.asList(driverId)) // subscribe to channels
+                .execute();
+
+        pubnub.addListener(subscribeCallback);
+
+        if(debugLogs)
+        {
+            Loggly.i("TrackRideFragment",requestId+" Pubnub Initialised");
+        }
+
+    }
+
+    public void publish(final String msg,String driverId)
+    {
+        pubnub.publish()
+                .message(msg)
+                .channel(driverId)
+                .async(new PNCallback<PNPublishResult>() {
+                    @Override
+                    public void onResponse(PNPublishResult result, PNStatus status) {
+                        // handle publish result, status always present, result if successful
+                        // status.isError() to see if error happened
+                        if(!status.isError()) {
+                            //System.out.println("pub timetoken: " + result.getTimetoken());
+                            if(debugLogs)
+                            {
+                                Loggly.i("TrackRideFragment",requestId+" "+msg+" [published]");
+                            }
+                        }
+                        else {
+                            Loggly.i("TrackRideFragment",requestId+" "+msg+" [error,published]"+status.isError());
+                        }
+                    }
+                });
+    }
+
+    SubscribeCallback subscribeCallback=new SubscribeCallback() {
+        @Override
+        public void status(PubNub pubnub, PNStatus status) {
+            /*switch (status.getOperation()) {
+                // let's combine unsubscribe and subscribe handling for ease of use
+                case PNSubscribeOperation:
+                case PNUnsubscribeOperation:
+                    // note: subscribe statuses never have traditional
+                    // errors, they just have categories to represent the
+                    // different issues or successes that occur as part of subscribe*/
+
+            switch (status.getCategory()) {
+                case PNConnectedCategory:
+                    //Toast.makeText(MainActivity.this, "hey", Toast.LENGTH_SHORT).show();
+                    // this is expected for a subscribe, this means there is no error or issue whatsoever
+                    break;
+                case PNReconnectedCategory:
+                    // this usually occurs if subscribe temporarily fails but reconnects. This means
+                    // there was an error but there is no longer any issue
+                    break;
+                case PNDisconnectedCategory:
+                    // this is the expected category for an unsubscribe. This means there
+                    // was no error in unsubscribing from everything
+                    break;
+
+                case PNUnexpectedDisconnectCategory:
+
+                    pubnub.reconnect();
+
+                    break;
+                // this is usually an issue with the internet connection, this is an error, handle appropriately
+                case PNTimeoutCategory:
+
+                    pubnub.reconnect();
+
+                    break;
+                case PNAccessDeniedCategory:
+                    // this means that PAM does allow this client to subscribe to this
+                    // channel and channel group configuration. This is another explicit error
+                    break;
+                default:
+                    // More errors can be directly specified by creating explicit cases for other
+                    // error categories of `PNStatusCategory` such as `PNTimeoutCategory` or `PNMalformedFilterExpressionCategory` or `PNDecryptionErrorCategory`
+                    break;
+            }
+                /*case PNHeartbeatOperation:
+                    // heartbeat operations can in fact have errors, so it is important to check first for an error.
+                    // For more information on how to configure heartbeat notifications through the status
+                    // PNObjectEventListener callback, consult <link to the PNCONFIGURATION heartbeart config>
+                    if (status.isError()) {
+                        // There was an error with the heartbeat operation, handle here
+                    } else {
+                        // heartbeat operation was successful
+                    }
+                default: {
+                    // Encountered unknown status type
+                }
+            }*/
+        }
+
+        @Override
+        public void message(PubNub pubnub, PNMessageResult message) {
+
+            System.out.println(message.toString());
+
+            final JsonElement msg = message.getMessage();
+            String s=message.toString();
+
+            if(msg.getAsString().equals("Hello"))
+            {
+                //mainUIThread("Hurray");
+            }
+
+
+            if(debugLogs)
+            {
+                Loggly.i("TrackRideFragment",requestId+" "+msg.getAsString()+" [subscribe msg]");
+            }
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+
+                    //System.out.println("****** msg received!!!"+messages.data.toString());
+
+                    if(msg.getAsString().equals(requestId+"cancelled_driver"))
+                    {
+
+                        //h.removeCallbacks(run);
+
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+                        LayoutInflater inflater = getActivity().getLayoutInflater();
+                        final View dialogView = inflater.inflate(R.layout.alert_ride_cancelled, null);
+                        dialogBuilder.setView(dialogView);
+
+                        final AlertDialog alertDialog = dialogBuilder.create();
+                        alertDialog.show();
+                        alertDialog.setCanceledOnTouchOutside(false);
+                        alertDialog.setCancelable(false);
+
+                        Button ok=(Button) dialogView.findViewById(R.id.arc_bt_ok);
+
+                        ok.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                alertDialog.dismiss();
+                                Intent i=new Intent(getActivity(), MyRidesActivity.class);
+                                getActivity().startActivity(i);
+                                getActivity().finish();
+                            }
+                        });
+                    }
+
+                    if(msg.getAsString().equals(requestId+"finished"))
+                    {
+                        checkForDutyFinish();
+                    }
+
+                    if(msg.getAsString().equals(requestId+"arrived"))
+                    {
+                        callArrivalApi();
+                    }
+
+                    if(msg.getAsString().equals(requestId+"otp_validated"))
+                    {
+                        OTPAuthenticated = true;
+                        llArrivalTime.setVisibility(View.GONE);
+                        ibPhone.setVisibility(View.GONE);
+                        btTrackRide.setAlpha(Float.parseFloat("1"));
+                    }
+
+                    /*String d[]=msg.getAsString().split("-");
+
+                    if(d[0].equals("coordinates"))
+                    {
+                        String c[]=d[1].split(",");
+                        //getTrackCoordinatesApi(Double.parseDouble(c[0]),Double.parseDouble(c[1]));
+                        lat=Double.parseDouble(c[0]);
+                        lng=Double.parseDouble(c[1]);
+
+                        if(trackingRide)
+                        {
+                            getTrackCoordinatesApi(lat,lng);
+                        }
+                    }
+*/
+                }
+            });
+
+
+
+            //getHistory();
+
+        }
+
+        @Override
+        public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+
+        }
+
+    };
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if(pubnub!=null)
+        {
+            pubnub.removeListener(subscribeCallback);
+            pubnub.unsubscribe();
+        }
+    }
+
+    public void callArrivalApi()
+    {
+        JsonObject v=new JsonObject();
+        v.addProperty("requestid",requestId);
+        v.addProperty("companyid",companyId);
+
+        Call<BookCabPojo> call=REST_CLIENT.getNotification(v);
+        call.enqueue(new Callback<BookCabPojo>() {
+            @Override
+            public void onResponse(Call<BookCabPojo> call, Response<BookCabPojo> response) {
+
+                        /*if(myBottomSheet!=null) {
+
+                            if (myBottomSheet.isAdded()) {
+                                myBottomSheet.dismiss();
+
+                            }
+                        }*/
+                BookCabPojo msg1;
+
+                if(response.isSuccessful())
+                {
+                    msg1=response.body();
+
+                    if(msg1.getMessage().equals("cancelled"))
+                    {
+
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+                        LayoutInflater inflater = getActivity().getLayoutInflater();
+                        final View dialogView = inflater.inflate(R.layout.alert_ride_cancelled, null);
+                        dialogBuilder.setView(dialogView);
+
+                        final AlertDialog alertDialog = dialogBuilder.create();
+                        alertDialog.show();
+                        alertDialog.setCanceledOnTouchOutside(false);
+                        alertDialog.setCancelable(false);
+
+                        Button ok=(Button) dialogView.findViewById(R.id.arc_bt_ok);
+
+                        ok.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                alertDialog.dismiss();
+                                Intent i=new Intent(getActivity(), MyRidesActivity.class);
+                                getActivity().startActivity(i);
+                                getActivity().finish();
+                            }
+                        });
+                    }
+                    else {
+
+                        String m[]=msg1.getMessage().split("-");
+
+                        tvOTP.setVisibility(View.VISIBLE);
+
+                        tvOTP.setText("OTP : "+m[1]);
+
+                        if(m[0].equals("Cab arrived at your pickup location. OTP ")) {
+                            mp.start();
+                            //alertDialog.dismiss();
+                            dbAdapter.updateUserRideStatus(requestId, "arrived");
+                            // llArrivalTime.setVisibility(View.GONE);
+                            tvArrivalText.setText("Cab has Arrived !");
+                            //tvArrivalText.setTextColor(Color.parseColor("#0067de"));
+                            tvArrivalTime.setVisibility(View.GONE);
+                            // tvCancelRide.setVisibility(View.GONE);
+                            // llTrackRide.setVisibility(View.VISIBLE);
+                            btTrackRide.setVisibility(View.VISIBLE);
+
+
+
+
+                                /*
+
+                                NotificationCompat.Builder mBuilder =
+                                        new NotificationCompat.Builder(getActivity())
+                                                .setSmallIcon(R.drawable.car_image)
+                                                .setContentTitle("HJ Taxi")
+                                                .setContentText("Cab has Arrived!");
+
+                                int mNotificationId = 001;
+// Gets an instance of the NotificationManager service
+                                NotificationManager mNotifyMgr =
+                                        (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+// Builds the notification and issues it.
+                                mNotifyMgr.notify(mNotificationId, mBuilder.build());*/
+                            //dbAdapter.updateUserRideEntry(requestId,"ongoing");
+
+                                /*String msgText = "Cab has Arrived! "
+                                        + "\n"+"Driver: "+driverName+""
+                                        + "\n"+"Mobile Number: "+driverMobile+"";*/
+
+                            String msgText = driverName + " (" + data.getVehRegNo() + ") has arrived, Waiting at your location.";
+
+                            android.app.Notification.Builder builder = new Notification.Builder(getActivity());
+                            builder.setContentTitle("PCS Cabs")
+                                    .setContentText("Cab has Arrived !")
+                                    .setSmallIcon(R.drawable.car_image).setAutoCancel(true)
+                                    .setStyle(new Notification.BigTextStyle().bigText(msgText));
+                                /*Intent myIntent = new Intent(getActivity(), RideInProgressActivity.class);
+                                myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(
+                                        getActivity(),
+                                        0,
+                                        myIntent, 0);
+                                builder.setContentIntent(pendingIntent);*/
+                            //Notification notification = new Notification.BigTextStyle(builder).bigText(msgText).build();
+
+                            notificationManager.notify(0, builder.build());
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BookCabPojo> call, Throwable t) {
+
+                Toast.makeText(a,"Check Internet connection!",Toast.LENGTH_SHORT).show();
+
+
+                        /*if(myBottomSheet!=null) {
+
+                            if (myBottomSheet.isAdded()) {
+                                //return;
+
+                            } else {
+
+                                if (rootView.isShown()) {
+                                    myBottomSheet.show(getChildFragmentManager(), myBottomSheet.getTag());
+                                }
+                            }
+                        }*/
+            }
+        });
+    }
+
+    public void getTrackCoordinatesApi(double lat,double lng)
+    {
+
+        LatLng cabLocLatLng = new LatLng(lat,lng);
+
+        if (mMap != null) {
+            if (cab == null) {
+                if(stCategorySelected.equals("Mini")||stCategorySelected.equals("Micra"))
+                {
+                    cab = mMap.addMarker(new MarkerOptions().position(cabLocLatLng)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.mini_15)));
+                }
+                else {
+                    cab = mMap.addMarker(new MarkerOptions().position(cabLocLatLng)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.prime_15)));
+                }
+            } else {
+                //cab.setPosition(cabLocLatLng);
+
+                startPosition = cab.getPosition();
+                finalPosition = new LatLng(lat,lng);
+                double toRotation = bearingBetweenLocations(startPosition, finalPosition);
+                rotateMarker(cab, (float) toRotation);
+                accelerateDecelerate();
+
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(finalPosition, 16));
+                mMap.getUiSettings().setMapToolbarEnabled(false);
+
+//                                                    CameraPosition oldPos = mMap.getCameraPosition();
+//
+//                                                    CameraPosition pos = CameraPosition.builder(oldPos).bearing((float)toRotation).build();
+//                                                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(pos));
+
+            }
+        }
+
+        try {
+            addresses = geocoder.getFromLocation(lat, lng, 1);
+            if(addresses.size()!=0) {
+                String address = addresses.get(0).getAddressLine(0);
+                String add1 = addresses.get(0).getAddressLine(1);
+                String add2 = addresses.get(0).getAddressLine(2);
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+
+                if(add1!=null&&add2!=null) {
+                    complete_address = address + " " + add1 + " " + add2;
+                }
+                else {
+                    complete_address=address;
+                }
+
+                tvMyLoc.setText(complete_address);
+            }
+            else
+            {
+                tvMyLoc.setText("-");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            complete_address = "Unable to get the location details";
+            tvMyLoc.setText(complete_address);
+        }
     }
 }

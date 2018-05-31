@@ -247,7 +247,7 @@ public class SupportFragment extends Fragment implements RecyclerAdapter.Adapter
 
                                 dataList.add(new FormattedAllRidesData(date1, data.getRequestid(), data.getFromlocation(), data.getTolocation(), data.getVehicleCategory(),
                                         data.getVehicleType(), data.getDistancetravelled(), data.getStatusofride(), data.getRidestarttime(), data.getRidestoptime(),
-                                        data.getTotalamount(), data.getDrivername(), data.getDriverpic(), data.getTravelType(), data.getBookingType(), data.getTravelpackage(), data.getDrivermobile(),data.getDriverBattaAmt(),data.getPaymentMode(),data.getOtherCharges()));
+                                        data.getTotalamount(), data.getDrivername(), data.getDriverpic(), data.getTravelType(), data.getBookingType(), data.getTravelpackage(), data.getDrivermobile(),data.getDriverBattaAmt(),data.getPaymentMode(),data.getOtherCharges(),data.getDriverProfileId()));
 
                             }
                         }

@@ -21,6 +21,7 @@
 -dontwarn retrofit2.**
 -dontwarn sun.misc.Unsafe
 
+-dontwarn rx.**
 -dontwarn com.squareup.okhttp.**
 -dontwarn okhttp3.**
 -dontwarn javax.annotation.**
@@ -28,7 +29,11 @@
 -dontwarn com.android.volley.toolbox.**
 -dontwarn com.mixpanel.**
 
+# gson
 -keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.examples.android.model.** { *; }
+
+#-keep class sun.misc.Unsafe { *; }
 -keep class com.google.gson.** { *; }
 -keep,allowobfuscation @interface com.facebook.common.internal.DoNotStrip
 -keep @com.facebook.common.internal.DoNotStrip class *
@@ -41,6 +46,16 @@
 -keepclassmembers class * {
     @retrofit.** *;
 }
+
+-dontwarn retrofit.**
+-keep class retrofit.** { *; }
+-keepclassmembers,allowobfuscation interface * {
+    @retrofit.http.** <methods>;
+}
+
+#-keepclassmembers,allowobfuscation interface * {
+ #   @retrofit.http.** <methods>;
+#}
 
 -keepclassmembers class * {
     @com.facebook.common.internal.DoNotStrip *;
@@ -64,11 +79,22 @@
      }
 
 -renamesourcefileattribute SourceFile
--keepattributes  Signature,SourceFile,LineNumberTable
--keepattributes *Annotation*
+#-keepattributes  Signature,SourceFile,LineNumberTable
+#-keepattributes *Annotation*
 -keepattributes JavascriptInterface
--keepattributes Exceptions
+#-keepattributes Exceptions
 -keep public class * extends android.app.Application
 -keep public class com.payu.sdk.ProcessPaymentActivity$PayUJavaScriptInterface
 -keep public class * implements com.payu.sdk.ProcessPaymentActivity$PayUJavaScriptInterface
+
+#-keepattributes InnerClasses,Deprecated,EnclosingMethod
+
+-keepattributes Exceptions, InnerClasses,*Annotation*, Signature, Deprecated, SourceFile, LineNumberTable,EnclosingMethod
+
+-dontwarn com.pubnub.**
+-keep class com.pubnub.** { *; }
+
+-dontwarn org.slf4j.**
+
+
 

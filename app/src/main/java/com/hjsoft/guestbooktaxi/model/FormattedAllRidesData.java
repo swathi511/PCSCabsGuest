@@ -1,7 +1,6 @@
 package com.hjsoft.guestbooktaxi.model;
 
 import java.io.Serializable;
-import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -12,10 +11,11 @@ public class FormattedAllRidesData implements Serializable{
     String requestId,fromLocation,toLocation,vehicleCategory,vehicleType,distanceTravelled;
     String rideStatus,rideStartTime,rideStopTime,totalAmount,driverName,travelType,bookingType,travelPackage,driverMobile,osBatta;
     Date rideDate;
-    String driverPic,paymentMode,otherCharges;
+    String driverPic,paymentMode,otherCharges,driverProfileId;
 
     public FormattedAllRidesData(Date rideDate, String requestId,String fromLocation,String toLocation,String vehicleCategory,String vehicleType,String distanceTravelled,
-            String rideStatus,String rideStartTime,String rideStopTime,String totalAmount,String driverName,String driverPic,String travelType,String bookingType,String travelPackage,String driverMobile,String osBatta,String paymentMode,String otherCharges)
+                                 String rideStatus,String rideStartTime,String rideStopTime,String totalAmount,String driverName,String driverPic,String travelType,String bookingType,String travelPackage,String driverMobile,String osBatta,String paymentMode,String otherCharges,
+                                 String driverProfileId)
     {
         this.rideDate=rideDate;
         this.requestId=requestId;
@@ -37,6 +37,7 @@ public class FormattedAllRidesData implements Serializable{
         this.osBatta=osBatta;
         this.paymentMode=paymentMode;
         this.otherCharges=otherCharges;
+        this.driverProfileId=driverProfileId;
     }
 
     public String getDriverPic() {
@@ -197,6 +198,14 @@ public class FormattedAllRidesData implements Serializable{
 
     public void setOtherCharges(String otherCharges) {
         this.otherCharges = otherCharges;
+    }
+
+    public String getDriverProfileId() {
+        return driverProfileId;
+    }
+
+    public void setDriverProfileId(String driverProfileId) {
+        this.driverProfileId = driverProfileId;
     }
 }
 

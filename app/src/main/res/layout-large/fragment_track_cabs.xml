@@ -191,11 +191,47 @@
 
         </LinearLayout>
 
+        <RelativeLayout android:id="@+id/ftc_ll_ongoing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_above="@+id/ftc_vw"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="@color/colorBlack"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp">
+
+            <TextView android:id="@+id/ftc_tv_ongoing_booking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your recent booking is in Ongoing. "
+                android:gravity="center"
+                android:padding="2dp"
+                android:textColor="@color/colorWhite"
+                android:textSize="10sp"
+                android:layout_centerInParent="true"/>
+
+            <TextView android:id="@+id/ftc_tv_cont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Continue"
+                android:textColor="@color/colorWhite"
+                android:textAllCaps="true"
+                android:textSize="7sp"
+                android:background="@drawable/rect_white_stroke_bg"
+                android:padding="5dp"
+                android:layout_alignParentRight="true"
+                />
+
+        </RelativeLayout>
+
         <View android:id="@+id/ftc_vw"
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:background="#abc9f2"
             android:layout_above="@+id/ftc_hsv"/>
+
 
         <HorizontalScrollView android:id="@+id/ftc_hsv"
             android:layout_width="fill_parent"
@@ -261,6 +297,12 @@
                         android:layout_margin="2dp"
                         android:textColor="@color/colorAsh"/>
                 </LinearLayout>
+
+                <View android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/colorAsh"
+                    android:layout_weight="1"/>
+
                 <LinearLayout android:id="@+id/ftc_ll_micra"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -352,6 +394,11 @@
                         android:textColor="@color/colorAsh"/>
                 </LinearLayout>
 
+                <View android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/colorAsh"
+                    android:layout_weight="1"/>
+
                 <LinearLayout android:id="@+id/ftc_ll_suv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -442,6 +489,11 @@
                         android:textColor="@color/colorAsh"/>
                 </LinearLayout>
 
+                <View android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/colorAsh"
+                    android:layout_weight="1"/>
+
                 <LinearLayout android:id="@+id/ftc_ll_outstation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -454,8 +506,7 @@
                     android:gravity="center"
                     android:layout_marginLeft="6dp"
                     android:layout_marginRight="6dp"
-                    android:layout_weight="1"
-                    >
+                    android:layout_weight="1">
 
                     <!-- <TextView android:id="@+id/ftc_tv_outstation_time"
                          android:layout_width="wrap_content"
@@ -521,6 +572,7 @@
                     android:layout_marginLeft="6dp"
                     android:layout_marginRight="6dp"
                     android:layout_weight="1"
+                    android:visibility="gone"
                     >
 
                     <!--<TextView android:id="@+id/ftc_tv_sedan_time"
@@ -609,7 +661,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_alignParentBottom="true">
+
+            android:layout_alignParentBottom="true"
+            >
 
             <Button android:id="@+id/ftc_bt_ride_now"
                 android:layout_width="match_parent"
@@ -637,6 +691,8 @@
                 android:layout_weight="1"
                 android:visibility="gone"/>
         </LinearLayout>
+
+
 
     </RelativeLayout>
 

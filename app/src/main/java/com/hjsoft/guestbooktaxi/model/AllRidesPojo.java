@@ -70,6 +70,9 @@ public class AllRidesPojo implements Serializable {
     @SerializedName("othercharges")
     @Expose
     private String otherCharges;
+    @SerializedName("driverProfileId")
+    @Expose
+    private String driverProfileId;
 
 
     public String getRequestid() {
@@ -230,6 +233,14 @@ public class AllRidesPojo implements Serializable {
 
     public void setOtherCharges(String otherCharges) {
         this.otherCharges = otherCharges;
+    }
+
+    public String getDriverProfileId() {
+        return driverProfileId;
+    }
+
+    public void setDriverProfileId(String driverProfileId) {
+        this.driverProfileId = driverProfileId;
     }
 }
 
