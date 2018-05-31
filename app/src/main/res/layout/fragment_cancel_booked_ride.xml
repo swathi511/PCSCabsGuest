@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+
+
+    <TextView android:id="@+id/fcbr_tv_trip_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/colorTextBlue"
+        android:text="TRIP ID"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+
+        <TextView android:id="@+id/fcbr_tv_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="date"
+            android:gravity="right"
+            android:textColor="@color/colorAshLight"
+            android:textSize="12sp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="12dp"/>
+
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorAshLight"
+        android:layout_margin="16dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ride_start_time"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="4dp"
+            android:textColor="@color/colorAsh"
+            android:textSize="10sp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/round_black"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"/>
+        <TextView android:id="@+id/fcbr_tv_travel_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorAsh"
+            android:layout_weight="1"
+            android:layout_marginLeft="8dp"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:gravity="center">
+
+        <TextView android:id="@+id/fsr_tv_ride_start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ride_start_time"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="4dp"
+            android:textColor="@color/colorAsh"
+            android:textSize="10sp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/round_green"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"/>
+        <TextView android:id="@+id/fcbr_tv_from"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorAsh"
+            android:layout_weight="1"
+            android:layout_marginLeft="8dp"
+            android:textSize="12sp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:gravity="center">
+
+        <TextView android:id="@+id/fsr_tv_ride_stop_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ride_end_time"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="4dp"
+            android:textColor="@color/colorAsh"
+            android:textSize="10sp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/round_pink"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"/>
+        <TextView android:id="@+id/fcbr_tv_to"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/xxx"
+            android:textColor="@color/colorAsh"
+            android:layout_weight="1"
+            android:layout_marginLeft="8dp"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+    </LinearLayout>
+
+
+    <Button android:id="@+id/fcbr_bt_cancel_ride"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cancel Ride"
+        android:background="@drawable/ride_now_bg"
+        android:textColor="#ffd600"
+        android:textSize="13sp"
+        android:padding="8dp"
+        />
+
+
+
+
+</LinearLayout>

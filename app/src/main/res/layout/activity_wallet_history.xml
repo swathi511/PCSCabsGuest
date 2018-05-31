@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView android:id="@+id/awh_iv_retry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/retry"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:visibility="gone"/>
+
+    <TextView android:id="@+id/awh_tv_no_wh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No Wallet History found!"
+        android:textSize="18sp"
+        android:textColor="@color/colorBlack"
+        android:gravity="center"
+        android:layout_margin="16dp"/>
+
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:padding="4dp"
+            android:visibility="gone">
+
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_calendar"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:visibility="gone"/>
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date"
+                android:layout_weight="1"
+
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textSize="12sp"
+                android:textColor="@color/colorAshLight"/>
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_cash"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:visibility="gone"/>
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Amount"
+
+
+
+
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textSize="12sp"
+                android:textColor="@color/colorAshLight"
+                />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/info"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:visibility="gone"/>
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:layout_weight="1"
+
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textSize="12sp"
+                android:textColor="@color/colorAshLight"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/colorWhite">
+
+
+
+        </LinearLayout>
+
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/awh_rview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>
